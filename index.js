@@ -78,9 +78,7 @@ Serialport.list().then((portList, error) => {
     // console.log('Available Ports:', portList);
 });
 
-const port = new Serialport(configuration.commPort,{
-    baudRate: 9600
-}); // instance of the port
+const port = new Serialport(configuration.commPort,{ baudRate: 9600 }); // instance of the port
 
 // This generates an instance of the parser to read each line returned by monitors.
 const parser = new Readline();
@@ -94,4 +92,4 @@ parser.on('data',(voltageReading)=>{
 });
 
 // Generates CRC for check
-crcValue = crc8(encodedBuffer);
+// crcValue = crc8(encodedBuffer);
