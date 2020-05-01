@@ -2,8 +2,10 @@
 //TODO: need to externalize this so I can save to a file
 
 // Default Port
-const defaultPort = '/dev/ttyS0' // PI Port
+// const defaultPort = '/dev/ttyS0' // PI Port using ttyso
+const defaultPort = '/dev/ttyAMA0' // PI Port
 // const defaultPort = '/dev/cu.SLAB_USBtoUART' // Mac port
+
 // Configuration
 const configuration = {
   commPort: defaultPort,
@@ -13,6 +15,9 @@ const configuration = {
   sample: 40,
   availablePorts: []
 }
+
+console.log('default port: ', defaultPort);
+console.log('configuration: ', configuration);
 
 const Serialport = require('serialport');
 const Readline = require('@serialport/parser-readline');
@@ -90,7 +95,7 @@ port.on('open', function () {
 
   const parser = new Readline();
   port.pipe(parser);
-  console.log(`listening port: ${configuration.port}`)
+  console.log(`listening port: ${configuration.commPort}`)
   parser.on('data', line => console.log(`> ${line}`));
 
 });
