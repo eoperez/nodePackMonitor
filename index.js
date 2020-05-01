@@ -2,9 +2,10 @@
 //TODO: need to externalize this so I can save to a file
 
 // Default Port
-// const defaultPort = '/dev/ttyS0' // PI Port using ttyso
-const defaultPort = '/dev/ttyAMA0' // PI Port
-// const defaultPort = '/dev/cu.SLAB_USBtoUART' // Mac port
+// const defaultPort = '/dev/ttyS0' // PI Port using ttys0
+// const defaultPort = '/dev/ttyAMA0' // PI Port
+const defaultPort = '/dev/serial0';
+// const defaultPort = '/dev/cu.SLAB_USBtoUART'; // Mac port
 
 // Configuration
 const configuration = {
