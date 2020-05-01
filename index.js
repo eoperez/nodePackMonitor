@@ -1,7 +1,9 @@
 // Software Configuration. 
 //TODO: need to externalize this so I can save to a file
+// PI port: /dev/ttyS0
+// Mac port: /dev/cu.SLAB_USBtoUART
 const configuration = {
-    commPort: "/dev/ttyS0",
+    commPort: "/dev/cu.SLAB_USBtoUART",
     calibration: 517,
     voltageTolerance: 10,
     serverPort: 3030,
@@ -75,21 +77,11 @@ function decode(buffer) {
 // Get a list of serial ports
 Serialport.list().then((portList, error) => {
     configuration.availablePorts = portList;
-    // console.log('Available Ports:', portList);
+    console.log('Available Ports:', portList);
 });
 
 const port = new Serialport(configuration.commPort,{ baudRate: 9600 }); // instance of the port
 
-// This generates an instance of the parser to read each line returned by monitors.
 const parser = new Readline();
-// Instruct the port instance to use the parser
 port.pipe(parser);
-
-let reading;
-parser.on('data',(voltageReading)=>{
-    reading ++;
-    console.log(voltageReading);
-});
-
-// Generates CRC for check
-// crcValue = crc8(encodedBuffer);
+parser.on('data', line => console.log(`> ${line}`));
