@@ -3,7 +3,7 @@
 // PI port: /dev/ttyS0
 // Mac port: /dev/cu.SLAB_USBtoUART
 const configuration = {
-    commPort: "/dev/cu.SLAB_USBtoUART",
+    commPort: "/dev/ttyS0",
     calibration: 517,
     voltageTolerance: 10,
     serverPort: 3030,
