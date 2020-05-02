@@ -20,6 +20,7 @@ console.log('configuration: ', configuration);
 
 const Serialport = require('serialport');
 const Readline = require('@serialport/parser-readline');
+const ByteLength = require('@serialport/parser-byte-length')
 const { crc8 } = require('crc');
 
 /********************** MONITOR CODE ***************************** */
@@ -90,13 +91,15 @@ Serialport.list().then((portList, error) => {
 const port = new Serialport(configuration.commPort, { baudRate: 9600 }); // instance of the port
 
 port.on('open', function () {
-  console.log('port opened');
-
-  const parser = new Readline();
-  port.pipe(parser);
-  console.log(`listening port: ${configuration.commPort}`)
-  parser.on('data', line => console.log(`> ${line}`));
-
+  console.log(`Port opened, listening using: ${configuration.commPort}`);
+  const parser = port.pipe(new ByteLength({length: 1}));
+  parser.on('data', (buffer) => {
+    console.log(buffer);
+    for (let index = 0; index < buffer.length; index++) {
+      console.log(`Buffer position ${index} the value is: ${buffer[index]}`);
+      debugAsBinary(buffer[index]);
+    }
+  });
 });
 
 port.on('error', function (err) {
