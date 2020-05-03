@@ -92,14 +92,10 @@ const port = new Serialport(configuration.commPort, { baudRate: 9600 }); // inst
 
 port.on('open', function () {
   console.log(`Port opened, listening using: ${configuration.commPort}`);
-  const parser = port.pipe(new ByteLength({length: 1}));
-  parser.on('data', (buffer) => {
-    console.log(buffer);
-    for (let index = 0; index < buffer.length; index++) {
-      console.log(`Buffer position ${index} the value is: ${buffer[index]}`);
-      debugAsBinary(buffer[index]);
-    }
-  });
+  console.log('Sending byte');
+  sendMessage();
+  const parser = port.pipe(new ByteLength({length: 5}));
+  parser.on('data', console.log);
 });
 
 port.on('error', function (err) {
@@ -109,7 +105,7 @@ port.on('error', function (err) {
 });
 
 function sendMessage() {
-  port.write('running\n', function (err) {
+  port.write([0x1], function (err) {
     if (err) {
       console.log(err);
     } else {
