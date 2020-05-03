@@ -95,7 +95,9 @@ port.on('open', function () {
   console.log('Sending byte');
   sendMessage();
   const parser = port.pipe(new ByteLength({length: 5}));
-  parser.on('data', console.log);
+  parser.on('data', (data)=>{
+    console.log(data);
+  });
 });
 
 port.on('error', function (err) {
