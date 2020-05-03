@@ -97,9 +97,11 @@ port.on('open', function () {
   const parser = port.pipe(new ByteLength({length: 5}));
   parser.on('data', (data)=>{
     console.log(data);
+    byteNum = 0;
     for (const item of data) {
       console.log('Value of: ', item)
-      debugAsBinary(data.readUInt8(item));
+      debugAsBinary(data.readUInt8(byteNum));
+      byteNum++;
     }
   });
 });
