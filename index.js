@@ -97,7 +97,8 @@ port.on('open', function () {
   const parser = port.pipe(new ByteLength({length: 5}));
   parser.on('data', (data)=>{
     console.log(data);
-    console.log('decoded:', decode(data));
+    console.log('Decoded: ', decode(data));
+  });
 });
 
 port.on('error', function (err) {
