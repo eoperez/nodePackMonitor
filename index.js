@@ -153,6 +153,7 @@ function sendSerialMessage(buffer) {
   const crc = crc8(buffer,PACKET_LENGTH);
   buffer.push(crc);
   console.log(buffer);
+  debugAsBinary(crc);
   port.write(buffer, function (err) {
     if (err) {
       console.log(err);
