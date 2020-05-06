@@ -129,7 +129,7 @@ function responseHandler(data){
       default:
         // This is broadcast 
         packNumbers = response.value -1;
-        console.log(packNumbers);
+        console.log('number of packs:', packNumbers);
         break;
     }
 }
