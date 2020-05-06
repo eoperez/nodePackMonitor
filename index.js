@@ -114,23 +114,9 @@ port.on('error', function (err) {
   process.exit(1);
 });
 
-function responseHandler(data){
-  const response = decode(data);
-  if(response.request == 0 ){
-    // TODO: Validate CRC
-
-    // if this a response of the address broadcast need to set the number of monitors found
-    if(response.address == ADDRESS_BROADCAST){
-      packNumbers = response.value;
-      // call loopFunction
-    }
-  } else {
-    // TODO: handle error because we should not be handling requests.
-  }
-}
 
 function sendMessage(buffer) {
-  port.write(buffer, function (err) {
+  port.write([0x01], function (err) {
     if (err) {
       console.log(err);
     } else {
