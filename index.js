@@ -96,7 +96,7 @@ const port = new Serialport(configuration.commPort, { baudRate: 9600 }); // inst
 port.on('open', function () {
   console.log(`Port opened, listening using: ${configuration.commPort}`);
   // TODO: Create setMonitors method to send registration command to all monitors 
-  sendSerialMessage([0x01]);
+  setMonitorAddress(1);
 });
 
 // Reading only 5 bytes, a Packet includes all data within those 5 bytes.
