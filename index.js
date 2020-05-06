@@ -104,18 +104,39 @@ const parser = port.pipe(new ByteLength({length: 5}));
 // Listen to serial port for incoming data 
 
 parser.on('data', (data)=>{
-  // Decodes the incoming data into Packet object.
-  const response = decode(data);
-  console.log('Decoded: ', response);
+  // Handle the response
+  responseHandler(data);
+  
   // TODO: Switch between responses: Address Broadcast, Voltage information, or Temperature. 
 });
 
 port.on('error', function (err) {
-  console.error('Hmm..., error!');
+  console.error('Serial Error! ');
   console.error(err);
   process.exit(1);
 });
 
+function responseHandler(data){
+  response = decode(data);
+  switch (response.reg) {
+      case REG_VOLTAGE:
+        // TODO: emit to socket type "voltage" {pack:ADDRESS, value: VALUE}
+        console.log('Voltage', response.address, response.value);
+        break;
+      case REG_TEMP:
+        
+        break;
+      default:
+        // This is broadcast 
+        packNumbers = response.value -1;
+        console.log(packNumbers);
+        break;
+    }
+}
+
+function publishOutput(valuePair) {
+  console.log(valuePair);
+}
 
 function sendMessage(buffer) {
   port.write(buffer, function (err) {
