@@ -151,7 +151,8 @@ function setMonitorAddress(startAddress){
 
 function sendSerialMessage(buffer) {
   const crc = crc8(buffer,PACKET_LENGTH);
-  console.log('crc val:', crc);
+  buffer.push(crc);
+  console.log(buffer);
   port.write(buffer, function (err) {
     if (err) {
       console.log(err);
