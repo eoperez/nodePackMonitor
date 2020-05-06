@@ -33,6 +33,9 @@ const REG_VOLTAGE = 0x3;
 const REG_TEMP = 0x4;
 const PACKET_LENGTH = 4;
 
+// Globals
+let packNumbers = 0;
+
 // Packet containing payload to assemble the request to monitors
 let packet = {
   address: ADDRESS_BROADCAST, // Address of the monitor, use 0 for broadcast.
@@ -92,15 +95,18 @@ const port = new Serialport(configuration.commPort, { baudRate: 9600 }); // inst
 
 port.on('open', function () {
   console.log(`Port opened, listening using: ${configuration.commPort}`);
-  console.log('Sending byte');
+  // TODO: Create setMonitors method to send registration command to all monitors 
   sendMessage();
-  const parser = port.pipe(new ByteLength({length: 5}));
-  parser.on('data', (data)=>{
-    console.log(data);
-    const decoded = decode(data);
-    console.log('Decoded: ', decoded);
-    console.log('Encoded:', encode(decoded));
-  });
+});
+
+// Reading only 5 bytes, a Packet includes all data within those 5 bytes.
+const parser = port.pipe(new ByteLength({length: 5}));
+// Listen to serial port for incoming data 
+parser.on('data', (data)=>{
+  // Decodes the incoming data into Packet object.
+  const response = decode(data);
+  console.log('Decoded: ', response);
+  // TODO: Switch between responses: Address Broadcast, Voltage information, or Temperature. 
 });
 
 port.on('error', function (err) {
@@ -109,8 +115,23 @@ port.on('error', function (err) {
   process.exit(1);
 });
 
-function sendMessage() {
-  port.write([0x1], function (err) {
+function responseHandler(data){
+  const response = decode(data);
+  if(response.request == 0 ){
+    // TODO: Validate CRC
+
+    // if this a response of the address broadcast need to set the number of monitors found
+    if(response.address == ADDRESS_BROADCAST){
+      packNumbers = response.value;
+      // call loopFunction
+    }
+  } else {
+    // TODO: handle error because we should not be handling requests.
+  }
+}
+
+function sendMessage(buffer) {
+  port.write(buffer, function (err) {
     if (err) {
       console.log(err);
     } else {
