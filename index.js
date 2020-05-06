@@ -96,7 +96,7 @@ const port = new Serialport(configuration.commPort, { baudRate: 9600 }); // inst
 port.on('open', function () {
   console.log(`Port opened, listening using: ${configuration.commPort}`);
   // TODO: Create setMonitors method to send registration command to all monitors 
-  sendMessage([0x01]);
+  sendSerialMessage([0x01]);
 });
 
 // Reading only 5 bytes, a Packet includes all data within those 5 bytes.
@@ -138,7 +138,20 @@ function publishOutput(valuePair) {
   console.log(valuePair);
 }
 
-function sendMessage(buffer) {
+function setMonitorAddress(startAddress){
+  const buffer = encode({
+    address: ADDRESS_BROADCAST, // Address of the monitor, use 0 for broadcast.
+    reg: REG_ADDRESS, // command registry: supported by monitor: address registration = 1 (0x1), Voltage request = 3 (0x3) and temperature request = 4 (0x4)
+    request: true, // true if is a request, false is a response.
+    value: startAddress, // value in will use 2 bytes
+    write: true // if is a write (true) or read (false)
+  });
+  sendSerialMessage(buffer);
+}
+
+function sendSerialMessage(buffer) {
+  const crc = crc8(buffer,PACKET_LENGTH);
+  console.log('crc val:', crc);
   port.write(buffer, function (err) {
     if (err) {
       console.log(err);
