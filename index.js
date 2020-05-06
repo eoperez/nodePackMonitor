@@ -97,15 +97,17 @@ port.on('open', function () {
   console.log(`Port opened, listening using: ${configuration.commPort}`);
   // TODO: Create setMonitors method to send registration command to all monitors 
   sendMessage();
-  // Reading only 5 bytes, a Packet includes all data within those 5 bytes.
-  const parser = port.pipe(new ByteLength({length: 5}));
-  // Listen to serial port for incoming data 
-  parser.on('data', (data)=>{
-    // Decodes the incoming data into Packet object.
-    const response = decode(data);
-    console.log('Decoded: ', response);
-    // TODO: Switch between responses: Address Broadcast, Voltage information, or Temperature. 
-  });
+});
+
+// Reading only 5 bytes, a Packet includes all data within those 5 bytes.
+const parser = port.pipe(new ByteLength({length: 5}));
+// Listen to serial port for incoming data 
+
+parser.on('data', (data)=>{
+  // Decodes the incoming data into Packet object.
+  const response = decode(data);
+  console.log('Decoded: ', response);
+  // TODO: Switch between responses: Address Broadcast, Voltage information, or Temperature. 
 });
 
 port.on('error', function (err) {
