@@ -149,7 +149,7 @@ function setMonitorAddress(startAddress){
 }
 
 function crc8(buffer, length){
-  const crc = 0;
+  let crc = 0;
   let data;
   for (let i = 0; i < length; i++) {
     data = crc ^ buffer[i];
