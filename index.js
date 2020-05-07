@@ -63,12 +63,14 @@ function debugAsBinary(number) {
 // Encodes a packet into a array 
 function encode(packet) {
   // return an array (buffer) with 4 bytes build as described above.
-  return [
+  buffer = [
     (packet.address << 1) | (packet.request ? 1 : 0),
     (packet.reg << 1) | (packet.write ? 1 : 0),
     packet.value >> 8, // 8 bits 
     packet.value & 0xFF // rest of the 8 bits
-  ]
+  ];
+  debugAsBinary(buffer[1]);
+  return buffer
 }
 
 // decodes buffer into a packet
