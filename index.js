@@ -20,8 +20,7 @@ console.log('configuration: ', configuration);
 
 const Serialport = require('serialport');
 const Readline = require('@serialport/parser-readline');
-const ByteLength = require('@serialport/parser-byte-length')
-const { crc8 } = require('crc');
+const ByteLength = require('@serialport/parser-byte-length');
 
 /********************** MONITOR CODE ***************************** */
 /* 
@@ -147,6 +146,24 @@ function setMonitorAddress(startAddress){
     write: true // if is a write (true) or read (false)
   });
   sendSerialMessage(buffer);
+}
+
+function crc8(buffer, length){
+  const crc = 0;
+  let data;
+  for (let i = 0; i < length; i++) {
+    data = crc ^ buffer[i];
+    for (let j = 0; j < 8; j++) {
+      if (data & 0x80) {
+        data <<= 1;
+        data ^= 0x07;
+      } else {
+        data <<= 1;
+      }
+    }
+    crc = data;
+  }
+  return crc;
 }
 
 function sendSerialMessage(buffer) {
