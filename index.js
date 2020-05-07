@@ -118,6 +118,8 @@ port.on('error', function (err) {
 function responseHandler(data){
   debugAsBinary(data[4]);
   response = decode(data);
+  const crcReceived = crc8(data, PACKET_LENGTH);
+  debugAsBinary(crcReceived);
   switch (response.reg) {
       case REG_VOLTAGE:
         // TODO: emit to socket type "voltage" {pack:ADDRESS, value: VALUE}
