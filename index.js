@@ -145,7 +145,7 @@ function getMonitorInfo(monitorAddress, REG){
     packet.value = configuration.startAddress;
     packet.write = false
   }
-  const buffer = encode();
+  const buffer = encode(packet);
   sendSerialMessage(buffer);
 }
 
