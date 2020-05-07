@@ -119,7 +119,7 @@ function responseHandler(data){
   debugAsBinary(data[4]);
   response = decode(data);
   const crcReceived = crc8(data, PACKET_LENGTH);
-  Buffer.byteLength(crcReceived);
+  Buffer.(crcReceived.toString());
   debugAsBinary(crcReceived);
   console.log((crcReceived == data[4]));
   switch (response.reg) {
