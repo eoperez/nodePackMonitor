@@ -12,6 +12,7 @@ const configuration = {
   voltageTolerance: 10,
   serverPort: 3030,
   sample: 40,
+  startAddress: 1,
   availablePorts: []
 }
 
@@ -94,8 +95,8 @@ const port = new Serialport(configuration.commPort, { baudRate: 9600 }); // inst
 
 port.on('open', function () {
   console.log(`Port opened, listening using: ${configuration.commPort}`);
-  // TODO: Create setMonitors method to send registration command to all monitors 
-  setMonitorAddress(1);
+  //get monitor information
+  getMonitorInfo(ADDRESS_BROADCAST, REG_ADDRESS);
 });
 
 // Reading only 5 bytes, a Packet includes all data within those 5 bytes.
@@ -105,7 +106,6 @@ const parser = port.pipe(new ByteLength({length: 5}));
 parser.on('data', (data)=>{
   // Handle the response
   responseHandler(data);
-  
   // TODO: Switch between responses: Address Broadcast, Voltage information, or Temperature. 
 });
 
@@ -133,18 +133,19 @@ function responseHandler(data){
     }
 }
 
-function publishOutput(valuePair) {
-  console.log(valuePair);
-}
-
-function setMonitorAddress(startAddress){
-  const buffer = encode({
-    address: ADDRESS_BROADCAST, // Address of the monitor, use 0 for broadcast.
-    reg: REG_ADDRESS, // command registry: supported by monitor: address registration = 1 (0x1), Voltage request = 3 (0x3) and temperature request = 4 (0x4)
+function getMonitorInfo(monitorAddress, REG){
+  packet = {
+    address: monitorAddress, // Address of the monitor, use 0 for broadcast.
+    reg: REG, // command registry: supported by monitor: address registration = 1 (0x1), Voltage request = 3 (0x3) and temperature request = 4 (0x4)
     request: true, // true if is a request, false is a response.
-    value: startAddress, // value in will use 2 bytes
-    write: true // if is a write (true) or read (false)
-  });
+    value: 0, // value in will use 2 bytes
+    write: false // if is a write (true) or read (false)
+  }
+  if(monitorAddress === 0){
+    packet.value = configuration.startAddress;
+    packet.write = false
+  }
+  const buffer = encode();
   sendSerialMessage(buffer);
 }
 
@@ -176,4 +177,10 @@ function sendSerialMessage(buffer) {
       console.log('Message sent successfully');
     }
   });
+}
+
+function loop(packNumbers){
+  for (let pack = 0; pack < packNumbers; pack++) {
+    //
+  }
 }
