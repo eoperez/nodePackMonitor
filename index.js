@@ -119,9 +119,8 @@ function responseHandler(data){
   debugAsBinary(data[4]);
   response = decode(data);
   const crcReceived = crc8(data, PACKET_LENGTH);
-  buf = Buffer.from([crcReceived]);
-  console.log(buf.readInt8(0));
   debugAsBinary(crcReceived);
+  console.log((crcReceived == data[4]));
   switch (response.reg) {
       case REG_VOLTAGE:
         // TODO: emit to socket type "voltage" {pack:ADDRESS, value: VALUE}
