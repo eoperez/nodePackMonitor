@@ -34,7 +34,7 @@ const REG_TEMP = 0x4;
 const PACKET_LENGTH = 4;
 
 // Globals
-let packNumbers = 0;
+let numberPacks = 0;
 
 // Packet containing payload to assemble the request to monitors
 let packet = {
@@ -127,8 +127,8 @@ function responseHandler(data){
         break;
       default:
         // This is broadcast 
-        packNumbers = response.value -1;
-        console.log('number of packs:', packNumbers);
+        numberPacks = response.value -1;
+        console.log('number of packs:', numberPacks);
         break;
     }
 }
