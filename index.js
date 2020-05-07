@@ -105,7 +105,6 @@ const parser = port.pipe(new ByteLength({length: 5}));
 
 parser.on('data', (data)=>{
   // Handle the response
-  debugAsBinary(data[0]);
   responseHandler(data);
   // TODO: Switch between responses: Address Broadcast, Voltage information, or Temperature. 
 });
@@ -144,7 +143,7 @@ function getMonitorInfo(monitorAddress, REG){
   }
   if(monitorAddress === 0){
     packet.value = configuration.startAddress;
-    packet.write = false
+    packet.write = true
   }
   const buffer = encode(packet);
   sendSerialMessage(buffer);
