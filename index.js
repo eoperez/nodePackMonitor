@@ -119,7 +119,8 @@ function responseHandler(data){
   debugAsBinary(data[4]);
   response = decode(data);
   const crcReceived = crc8(data, PACKET_LENGTH);
-  console.log('CRC received:', data[4], 'Calculated:', crcReceived);
+  Buffer.byteLength(crcReceived);
+  debugAsBinary(crcReceived);
   console.log((crcReceived == data[4]));
   switch (response.reg) {
       case REG_VOLTAGE:
