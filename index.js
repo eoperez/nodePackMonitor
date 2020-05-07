@@ -116,6 +116,7 @@ port.on('error', function (err) {
 });
 
 function responseHandler(data){
+  debugAsBinary(data[4]);
   response = decode(data);
   switch (response.reg) {
       case REG_VOLTAGE:
@@ -168,8 +169,6 @@ function crc8(buffer, length){
 
 function sendSerialMessage(buffer) {
   const crc = crc8(buffer,PACKET_LENGTH);
-  console.log('Calculated CRC: ');
-  debugAsBinary(crc);
   buffer.push(crc);
   port.write(buffer, function (err) {
     if (err) {
