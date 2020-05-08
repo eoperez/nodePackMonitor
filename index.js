@@ -185,6 +185,8 @@ function sendSerialMessage(buffer) {
 }
 
 function loop(numPacks){
+  getMonitorInfo(pack, REG_VOLTAGE);
+  /*
   for (let pack = 1; pack <= numPacks; pack++) {
     // request voltage
     setInterval(function() {
@@ -196,4 +198,5 @@ function loop(numPacks){
     },configuration.interval);
   }
   loop(numPacks);
+  */
 }
