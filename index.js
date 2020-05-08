@@ -123,17 +123,29 @@ function responseHandler(data){
       case REG_VOLTAGE:
         // TODO: emit to socket type "voltage" {pack:ADDRESS, value: VALUE}
         console.log('Voltage', response.address, response.value);
+        // 2nd  request chain with current address now move to temp
+        getMonitorInfo(response.address, REG_TEMP);
         break;
       case REG_TEMP:
         // TODO: emit to socket type "temp" {pack:ADDRESS, value: VALUE}
         console.log('Temp', response.address, response.value);
+        // move pointer to next monitor.
+        const nextMonitor = response.address+1;
+        // if is less or equal to number of packs request voltage
+        if(nextMonitor <= numberPacks){
+          getMonitorInfo(nextMonitor, REG_VOLTAGE);
+        } else {
+          // Start request again
+          getMonitorInfo(configuration.startAddress, REG_VOLTAGE);
+        }
+        
         break;
       case REG_ADDRESS:
         // This is broadcast 
         numberPacks = response.value -1;
         console.log('number of packs:', numberPacks);
-        // kickoff monitor data requests
-        loop(numberPacks);
+        // start the request chain with startAddress and start with Voltage
+        getMonitorInfo(configuration.startAddress, REG_VOLTAGE);
         break;
       default:
         console.log('Serial package data bad formatted.', data);
@@ -185,25 +197,4 @@ function sendSerialMessage(buffer) {
       console.log("Packet sent");
     }
   });
-}
-
-function loop(numPacks){
-  getMonitorInfo(1,REG_VOLTAGE);
-  setTimeout(function(){
-    console.log('after 1 sec');
-    getMonitorInfo(1,REG_TEMP);
-  },1000);
-  /*
-  for (let pack = 1; pack <= numPacks; pack++) {
-    // request voltage
-    setInterval(function() {
-      getMonitorInfo(pack, REG_VOLTAGE)
-    },configuration.interval);
-    // request temperature
-    setInterval(function() {
-      getMonitorInfo(pack, REG_TEMP)
-    },configuration.interval);
-  }
-  loop(numPacks);
-  */
 }
