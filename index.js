@@ -13,6 +13,7 @@ const configuration = {
   serverPort: 3030,
   sample: 40,
   startAddress: 1,
+  interval: 250,
   availablePorts: []
 }
 
@@ -124,12 +125,15 @@ function responseHandler(data){
         console.log('Voltage', response.address, response.value);
         break;
       case REG_TEMP:
-        
+        // TODO: emit to socket type "temp" {pack:ADDRESS, value: VALUE}
+        console.log('Temp', response.address, response.value);
         break;
       default:
         // This is broadcast 
         numberPacks = response.value -1;
         console.log('number of packs:', numberPacks);
+        // kickoff monitor data requests
+        loop(numberPacks);
         break;
     }
 }
@@ -181,8 +185,12 @@ function sendSerialMessage(buffer) {
   });
 }
 
-function loop(packNumbers){
-  for (let pack = 0; pack < packNumbers; pack++) {
+function loop(numPacks){
+  for (let pack = 1; pack <= numPacks; pack++) {
     //
+    setInterval(getMonitorInfo(pack, REG_VOLTAGE),configuration.interval);
+    setInterval(getMonitorInfo(pack, REG_TEMP),configuration.interval);
+    ;
   }
+  loop(numPacks);
 }
