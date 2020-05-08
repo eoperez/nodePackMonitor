@@ -188,9 +188,12 @@ function sendSerialMessage(buffer) {
 function loop(numPacks){
   for (let pack = 1; pack <= numPacks; pack++) {
     //
-    setInterval(getMonitorInfo(pack, REG_VOLTAGE),configuration.interval);
-    setInterval(getMonitorInfo(pack, REG_TEMP),configuration.interval);
-    ;
+    setInterval(function() {
+      getMonitorInfo(pack, REG_VOLTAGE)
+    },configuration.interval);
+    setInterval(function() {
+      getMonitorInfo(pack, REG_VOLTAGE)
+    },configuration.interval);
   }
   loop(numPacks);
 }
