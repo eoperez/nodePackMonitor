@@ -69,7 +69,6 @@ function encode(packet) {
     packet.value >> 8, // 8 bits 
     packet.value & 0xFF // rest of the 8 bits
   ];
-  debugAsBinary(buffer[1]);
   return buffer
 }
 
