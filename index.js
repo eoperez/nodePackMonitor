@@ -128,12 +128,15 @@ function responseHandler(data){
         // TODO: emit to socket type "temp" {pack:ADDRESS, value: VALUE}
         console.log('Temp', response.address, response.value);
         break;
-      default:
+      case REG_ADDRESS:
         // This is broadcast 
         numberPacks = response.value -1;
         console.log('number of packs:', numberPacks);
         // kickoff monitor data requests
         loop(numberPacks);
+        break;
+      default:
+        console.log('Serial package data bad formatted.', data);
         break;
     }
 }
