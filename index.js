@@ -188,9 +188,10 @@ function sendSerialMessage(buffer) {
 }
 
 function loop(numPacks){
-  getMonitorInfo(1,REG_TEMP);
+  getMonitorInfo(1,REG_VOLTAGE);
   setTimeout(function(){
     console.log('after 1 sec');
+    getMonitorInfo(1,REG_TEMP);
   },1000);
   /*
   for (let pack = 1; pack <= numPacks; pack++) {
