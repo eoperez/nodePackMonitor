@@ -13,7 +13,7 @@ const configuration = {
   serverPort: 3030,
   sample: 40,
   startAddress: 1,
-  interval: 400,
+  interval: 600,
   availablePorts: []
 }
 
