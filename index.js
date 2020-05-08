@@ -179,14 +179,17 @@ function sendSerialMessage(buffer) {
     if (err) {
       console.log(err);
     } else {
-      console.log('Message sent successfully');
+      console.log("Packet sent");
     }
   });
 }
 
 function loop(numPacks){
   getMonitorInfo(1, REG_VOLTAGE);
-  getMonitorInfo(1, REG_TEMP);
+  setInterval(function(){
+    getMonitorInfo(1, REG_TEMP);
+  }, configuration.interval);
+  
   /*
   for (let pack = 1; pack <= numPacks; pack++) {
     // request voltage
