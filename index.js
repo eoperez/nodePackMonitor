@@ -150,7 +150,6 @@ function getMonitorInfo(monitorAddress, REG){
     packet.value = configuration.startAddress;
     packet.write = true
   }
-  console.log(packet);
   const buffer = encode(packet);
   sendSerialMessage(buffer);
 }
@@ -187,12 +186,13 @@ function sendSerialMessage(buffer) {
 
 function loop(numPacks){
   for (let pack = 1; pack <= numPacks; pack++) {
-    //
+    // request voltage
     setInterval(function() {
       getMonitorInfo(pack, REG_VOLTAGE)
     },configuration.interval);
+    // request temperature
     setInterval(function() {
-      getMonitorInfo(pack, REG_VOLTAGE)
+      getMonitorInfo(pack, REG_TEMP)
     },configuration.interval);
   }
   loop(numPacks);
