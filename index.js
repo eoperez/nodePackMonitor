@@ -21,7 +21,6 @@ console.log('default port: ', defaultPort);
 console.log('configuration: ', configuration);
 
 const Serialport = require('serialport');
-const Readline = require('@serialport/parser-readline');
 const ByteLength = require('@serialport/parser-byte-length');
 
 /********************** MONITOR CODE ***************************** */
