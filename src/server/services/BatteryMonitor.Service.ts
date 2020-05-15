@@ -47,11 +47,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         // Reading only 5 bytes, a Packet includes all data within those 5 bytes.
         const parser: SerialPort.parsers.ByteLength = this.port.pipe(new SerialPort.parsers.ByteLength({ length: 5 }));
 
-        this.port.on('open', function () {
-            console.log(`Port opened, listening using serial configuraiton: ${config}`);
-            //get monitor information
-            this.getMonitorInfo(this.ADDRESS_BROADCAST, this.REG_ADDRESS);
-          });
+        this.port.on('open', this.portOpenCallback);
 
         // Catch any errors with the Serial
         this.port.on('error', function (err) {
@@ -67,6 +63,12 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             this.responseHandler(data); 
         });
 
+    }
+
+    portOpenCallback = (): void => {
+        console.log(`Port opened, listening using serial configuraiton`);
+        //get monitor information
+        this.getMonitorInfo(this.ADDRESS_BROADCAST, this.REG_ADDRESS);
     }
 
     debugAsBinary(number: number){
