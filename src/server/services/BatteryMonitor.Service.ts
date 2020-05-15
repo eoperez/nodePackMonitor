@@ -69,7 +69,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
 
     }
 
-    debugAsBinary = (number: number) => {
+    debugAsBinary(number: number){
         let binary = number.toString(2);
         binary = "00000000".substr(binary.length) + binary;
         console.log(binary);
@@ -85,7 +85,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     */
 
     // Encodes a packet into a array 
-    encode = (packet: IPacket): Array<number> => {
+    encode(packet: IPacket): Array<number>{
         // return an array (buffer) with 4 bytes build as described above.
         const buffer: Array<number> = [
             (packet.address << 1) | (packet.request ? 1 : 0),
@@ -96,7 +96,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         return buffer
     }
     // Decode buffer into a packet object
-    decode = (buffer: Array<number>): IPacket => {
+    decode(buffer: Array<number>): IPacket{
         // return an packet object with data included in the buffer
         return {
             address: buffer[0] >> 1,
@@ -107,7 +107,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         }
     }
     // Handles all serrial responses.
-    responseHandler = (buffer: Array<number>) => {
+    responseHandler(buffer: Array<number>){
         const response: IPacket = this.decode(buffer);
         switch (response.reg) {
             case this.REG_VOLTAGE:
@@ -143,7 +143,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         }
     }
 
-    getMonitorInfo = (monitorAddress: number, REG: number) => {
+    getMonitorInfo(monitorAddress: number, REG: number){
         this.packet = {
             address: monitorAddress, // Address of the monitor, use 0 for broadcast.
             reg: REG, // command registry: supported by monitor: address registration = 1 (0x1), Voltage request = 3 (0x3) and temperature request = 4 (0x4)
