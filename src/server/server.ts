@@ -1,13 +1,22 @@
 import * as express from 'express'
+import * as SerialPort from 'serialport'
 import { Application, Router, Request, Response} from 'express'
 import { join } from "path";
 import { Server } from "http";
 import * as SocketIO from "socket.io";
-import { IPacket, ISerialConfiguration} from "./interfaces/ISerialData.interface";
+
+import {IBaterryMonitorService} from "./interfaces/IIBaterryMonitorService.interface";
+import BatteriesMonitor from "./services/BatteryMonitor.Service"
 
 const app: Application = express();
 const router: Router = express.Router()
 const port: number = 5000;
+let availablePorts: SerialPort.PortInfo[] = [];
+const commPort: string = '/dev/ttyS0';
+
+SerialPort.list().then((commPorts: SerialPort.PortInfo[]) => {
+    availablePorts = commPorts;
+});
 
 // define route
 const mainRoute = (req: Request, res: Response) => {
@@ -31,3 +40,8 @@ const server: Server = app.listen(port, () => {
     console.log(`App is listening on port:${port}`)
 });
 
+// Initiate IO Server
+const io: SocketIO.Server = SocketIO(server);
+
+const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
+batteriesMonitor.init({commPort: commPort});
