@@ -16,3 +16,9 @@ export interface IBatteriesMonitorConfig {
     commPort: string;
     startAddress?: number;
 }
+
+export interface ICellInfo {
+    id: number;
+    voltage: number;
+    temp?: number;
+}

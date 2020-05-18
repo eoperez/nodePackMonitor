@@ -24,12 +24,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function Dashboard({}: Props): ReactElement {
     const classes = useStyles();
-    const [response, setResponse] = useState("");
+    const [response, setResponse] = useState([]);
 
     useEffect(() => {
       const socket = socketIOClient(ENDPOINT);
-      socket.on("monitorVolt", (data: any) => {
-        console.log('volts object:', JSON.stringify(data) );
+      socket.on("bankInfo", (data: any) => {
+        console.log('bankInfo object:', JSON.stringify(data) );
         setResponse(data);
       });
     }, []);

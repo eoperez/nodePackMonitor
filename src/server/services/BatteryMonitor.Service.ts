@@ -1,6 +1,6 @@
 import * as SocketIO from "socket.io";
 import * as SerialPort from 'serialport';
-import { IPacket, IBatteriesMonitorConfig, IBaterryMonitorService } from "../interfaces/IIBaterryMonitorService.interface";
+import { IPacket, IBatteriesMonitorConfig, IBaterryMonitorService, IBatBankInfo as ICellInfo } from "../interfaces/IIBaterryMonitorService.interface";
 
 export default class BatteryMonitor implements IBaterryMonitorService {
     ioSocketServer: SocketIO.Server;
@@ -14,7 +14,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     packet: IPacket;
     public numberPacks: number;
     buffer: Array<number>; // it should have array of integers
-    port: SerialPort
+    port: SerialPort;
+    bankInfo: Array<ICellInfo>;
 
     constructor(ioServer: SocketIO.Server) {
         // Sets instance of Socket.IO
@@ -36,7 +37,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             value: 4200,
             write: true
         }; // by defult using broadcast address request. Value is ignored just using ramdom number for now
-
+        this.bankInfo = []; // new batteries array to store values.
     }
     // triggers communication over serial port to send and collect sensor data
     init = (config: IBatteriesMonitorConfig): void => {
@@ -118,15 +119,15 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         const response: IPacket = this.decode(buffer);
         switch (response.reg) {
             case this.REG_VOLTAGE:
-                //emit to socket type "voltage" {pack:ADDRESS, value: VALUE}
-                this.ioSocketServer.sockets.emit('monitorVolt', {id: response.address, value: response.value});
+                // Upsert cell record with the voltage
+                this.bankInfo[response.address] = {id: response.address, voltage: response.value}
                 console.log('Voltage', response.address, response.value);
                 // 2nd  request chain with current address now move to temp
                 this.getMonitorInfo(response.address, this.REG_TEMP);
                 break;
             case this.REG_TEMP:
-                // emit to socket type "temp" {pack:ADDRESS, value: VALUE}
-                this.ioSocketServer.sockets.emit('monitorTemp', {id: response.address, value: response.value});
+                // update record to include temperature.
+                this.bankInfo[response.address].temp = response.value;
                 console.log('Temp', response.address, response.value);
                 // move pointer to next monitor.
                 const nextMonitor = response.address + 1;
@@ -150,6 +151,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 console.log('Serial package data bad formatted.', buffer);
                 break;
         }
+        //emit bank information using socket service.
+        this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
     }
 
     getMonitorInfo(monitorAddress: number, REG: number){
