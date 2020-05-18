@@ -1,6 +1,8 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useState, useEffect } from 'react'
 import {Grid, Paper, makeStyles, createStyles, Theme} from '@material-ui/core'
 import BarChart from './BarChart'
+import socketIOClient from "socket.io-client"
+const ENDPOINT = "http://192.168.0.6:5000"
 
 interface Props {
 
@@ -22,6 +24,15 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function Dashboard({}: Props): ReactElement {
     const classes = useStyles();
+    const [response, setResponse] = useState("");
+
+    useEffect(() => {
+      const socket = socketIOClient(ENDPOINT);
+      socket.on("monitorVolt", (data: any) => {
+        console.log('volts object:', JSON.stringify(data) );
+        setResponse(data);
+      });
+    }, []);
     return (
         <div className={classes.root}>
         <Grid container spacing={1}>

@@ -126,7 +126,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 break;
             case this.REG_TEMP:
                 // emit to socket type "temp" {pack:ADDRESS, value: VALUE}
-                this.ioSocketServer.sockets.emit('monitorVolt', {id: response.address, value: response.value});
+                this.ioSocketServer.sockets.emit('monitorTemp', {id: response.address, value: response.value});
                 console.log('Temp', response.address, response.value);
                 // move pointer to next monitor.
                 const nextMonitor = response.address + 1;
