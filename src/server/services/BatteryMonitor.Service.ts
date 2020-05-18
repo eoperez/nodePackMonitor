@@ -37,6 +37,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             value: 4200,
             write: true
         }; // by defult using broadcast address request. Value is ignored just using ramdom number for now
+        this.bankInfo = [];
     }
     // triggers communication over serial port to send and collect sensor data
     init = (config: IBatteriesMonitorConfig): void => {
@@ -131,7 +132,6 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             case this.REG_TEMP:
                 // update record to include temperature.
                 this.bankInfo[response.address].temp = response.value;
-            
                 // move pointer to next monitor.
                 const nextMonitor = response.address + 1;
                 // if is less or equal to number of packs request voltage
@@ -153,11 +153,13 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 console.log('Serial package data bad formatted.', buffer);
                 break;
         }
-        //emit bank information using socket service if we have information to send.
-        if(this.bankInfo.length > 0){
-            console.log('emitting bank info:', this.bankInfo);
-            this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
+        // remove null value before sending.
+        if(this.bankInfo[0] === null ){
+            delete this.bankInfo[0];
         }
+        //emit bank information using socket service.
+        console.log('emitting bank info:', this.bankInfo);
+        this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
     }
 
     getMonitorInfo(monitorAddress: number, REG: number){
