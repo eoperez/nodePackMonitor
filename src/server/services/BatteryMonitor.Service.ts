@@ -117,21 +117,22 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     // Handles all serrial responses.
     responseHandler(buffer: Array<number>){
         const response: IPacket = this.decode(buffer);
+        const key: number = response.address - 1;
         switch (response.reg) {
             case this.REG_VOLTAGE:
                 // Upsert cell record with the voltage
-                if ( typeof this.bankInfo[response.address] === 'undefined') {
-                    this.bankInfo[response.address] = {id: response.address, voltage: response.value};
+                if ( typeof this.bankInfo[key] === 'undefined') {
+                    this.bankInfo[key] = {id: response.address, voltage: response.value};
                 } else {
                     // persisting temp value 
-                    this.bankInfo[response.address] = {id: response.address, voltage: response.value, temp: this.bankInfo[response.address].temp};
+                    this.bankInfo[key] = {id: response.address, voltage: response.value, temp: this.bankInfo[key].temp};
                 }
                 // 2nd  request chain with current address now move to temp
                 this.getMonitorInfo(response.address, this.REG_TEMP);
                 break;
             case this.REG_TEMP:
                 // update record to include temperature.
-                this.bankInfo[response.address].temp = response.value;
+                this.bankInfo[key].temp = response.value;
                 // move pointer to next monitor.
                 const nextMonitor = response.address + 1;
                 // if is less or equal to number of packs request voltage
@@ -152,10 +153,6 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             default:
                 console.log('Serial package data bad formatted.', buffer);
                 break;
-        }
-        // remove null value before sending.
-        if(this.bankInfo[0] === null ){
-            delete this.bankInfo[0];
         }
         //emit bank information using socket service.
         console.log('emitting bank info:', this.bankInfo);
