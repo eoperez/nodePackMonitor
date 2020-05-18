@@ -37,7 +37,6 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             value: 4200,
             write: true
         }; // by defult using broadcast address request. Value is ignored just using ramdom number for now
-        this.bankInfo = []; // new batteries array to store values.
     }
     // triggers communication over serial port to send and collect sensor data
     init = (config: IBatteriesMonitorConfig): void => {
@@ -126,15 +125,13 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                     // persisting temp value 
                     this.bankInfo[response.address] = {id: response.address, voltage: response.value, temp: this.bankInfo[response.address].temp};
                 }
-                
-                console.log('Voltage', response.address, response.value);
                 // 2nd  request chain with current address now move to temp
                 this.getMonitorInfo(response.address, this.REG_TEMP);
                 break;
             case this.REG_TEMP:
                 // update record to include temperature.
                 this.bankInfo[response.address].temp = response.value;
-                console.log('Temp', response.address, response.value);
+            
                 // move pointer to next monitor.
                 const nextMonitor = response.address + 1;
                 // if is less or equal to number of packs request voltage
@@ -144,7 +141,6 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                     // Start request again
                     this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
                 }
-
                 break;
             case this.REG_ADDRESS:
                 // This is broadcast 
