@@ -157,8 +157,10 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 console.log('Serial package data bad formatted.', buffer);
                 break;
         }
-        //emit bank information using socket service.
-        this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
+        //emit bank information using socket service if we have information to send.
+        if(this.bankInfo.length > 0){
+            this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
+        }
     }
 
     getMonitorInfo(monitorAddress: number, REG: number){

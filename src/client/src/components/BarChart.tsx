@@ -4,7 +4,8 @@ import {Paper, makeStyles, Theme, createStyles} from '@material-ui/core'
 
 export interface Bar {
     id: number;
-    value: number;
+    voltage: number;
+    temp?: number;
 }
 
 interface BarObj extends Bar {
@@ -97,10 +98,10 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
     let barLocationX: number = 80;
     bars.forEach(bar => {
         barLocationX = barLocationX + 5;
-        const barHeight: number = ((bar.value - scaleOptions.start) / (scaleOptions.end - scaleOptions.start)) * 240; // 240 is the maximum vertical space for the bar
+        const barHeight: number = ((bar.voltage - scaleOptions.start) / (scaleOptions.end - scaleOptions.start)) * 240; // 240 is the maximum vertical space for the bar
         const barLocationY: number = 60 + (240 - barHeight);
         const cellStrokeX: number = barLocationX + (barWidth/2);
-        barsSets.push({id: bar.id, value: bar.value, width: barWidth, xLocation: barLocationX, yLocation: barLocationY ,height: barHeight, xStrokeLocation: cellStrokeX});
+        barsSets.push({id: bar.id, voltage: bar.voltage, width: barWidth, xLocation: barLocationX, yLocation: barLocationY ,height: barHeight, xStrokeLocation: cellStrokeX});
         barLocationX = barLocationX + barWidth;
     });
     
@@ -112,12 +113,12 @@ const useSummary = (bars: Array<Bar>): Summary => {
     let barHighestValue: number = 0; // default value should be supper low
     let barLowestValue: number = 100; // default value should be supper high
     bars.forEach(bar => {
-        barValueTotal = barValueTotal + bar.value;
-        if(bar.value < barLowestValue){
-            barLowestValue = bar.value;
+        barValueTotal = barValueTotal + bar.voltage;
+        if(bar.voltage < barLowestValue){
+            barLowestValue = bar.voltage;
         }
-        if(bar.value > barHighestValue) {
-            barHighestValue = bar.value;
+        if(bar.voltage > barHighestValue) {
+            barHighestValue = bar.voltage;
         }
     });
     const barValueAvg: string = (barValueTotal/bars.length).toFixed(2);
@@ -157,7 +158,7 @@ export default function BarChart(props: Props): ReactElement {
     );
     const bars = barDimensions.map((bar) =>
         <g>
-            <title>{`Cell: ${bar.id}, Volts: ${bar.value.toFixed(2)}`}</title>
+            <title>{`Cell: ${bar.id}, Volts: ${bar.voltage.toFixed(2)}`}</title>
             <rect rx="3" className={classes.bar} id={`bar${bar.id}`} height={bar.height} width={bar.width} y={bar.yLocation} x={bar.xLocation} stroke-width="0"/>
             <line stroke="#ffffff" stroke-linecap="null" stroke-linejoin="null" y2="305" x2={bar.xStrokeLocation} y1="300" x1={bar.xStrokeLocation} stroke-width="0.5" fill="none"/>
             <text text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10" y="315" x={bar.xStrokeLocation} stroke-width="0" stroke="#000" fill="#ffffff">
