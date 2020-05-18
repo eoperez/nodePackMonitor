@@ -63,6 +63,11 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             this.responseHandler(data); 
         });
 
+        //Debug when a socket connection is stablished
+        this.ioSocketServer.on('connection', (socket: SocketIO.Socket) => {
+            console.log("Client connected to battery monitor.");
+        });
+
     }
 
     portOpenCallback = (): void => {
@@ -113,13 +118,15 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         const response: IPacket = this.decode(buffer);
         switch (response.reg) {
             case this.REG_VOLTAGE:
-                // TODO: emit to socket type "voltage" {pack:ADDRESS, value: VALUE}
+                //emit to socket type "voltage" {pack:ADDRESS, value: VALUE}
+                this.ioSocketServer.sockets.emit('monitorVolt', {id: response.address, value: response.value});
                 console.log('Voltage', response.address, response.value);
                 // 2nd  request chain with current address now move to temp
                 this.getMonitorInfo(response.address, this.REG_TEMP);
                 break;
             case this.REG_TEMP:
-                // TODO: emit to socket type "temp" {pack:ADDRESS, value: VALUE}
+                // emit to socket type "temp" {pack:ADDRESS, value: VALUE}
+                this.ioSocketServer.sockets.emit('monitorVolt', {id: response.address, value: response.value});
                 console.log('Temp', response.address, response.value);
                 // move pointer to next monitor.
                 const nextMonitor = response.address + 1;
