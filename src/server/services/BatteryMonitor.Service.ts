@@ -120,11 +120,11 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         switch (response.reg) {
             case this.REG_VOLTAGE:
                 // Upsert cell record with the voltage
-                if (this.bankInfo.length > 0) {
+                if ( typeof this.bankInfo[response.address] === 'undefined') {
+                    this.bankInfo[response.address] = {id: response.address, voltage: response.value};
+                } else {
                     // persisting temp value 
                     this.bankInfo[response.address] = {id: response.address, voltage: response.value, temp: this.bankInfo[response.address].temp};
-                } else {
-                    this.bankInfo[response.address] = {id: response.address, voltage: response.value};
                 }
                 
                 console.log('Voltage', response.address, response.value);
