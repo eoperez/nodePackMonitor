@@ -44,6 +44,9 @@ interface Summary {
     avg: string;
     lowest: string;
     highest: string;
+    unbalanceMarkTopLoc: number;
+    unbalanceMarkButtLoc: number;
+    unbalanceAreaHeight: number;
 }
 
 // TODO: Move to configuration 
@@ -52,6 +55,12 @@ const rowSize: number = 20;
 const chartTitleEnds: number = 40;
 const barSpace: number = 5;
 const numberScale: number = (scaleOptions.end - scaleOptions.start)/ scaleOptions.interval;
+let barValueTotal: number = 0;
+let barHighestValue: number = 0; // default value should be supper low
+let barLowestValue: number = 100; // default value should be supper high
+let numberOfBars: number = 0; // default value should be 0 number of bars
+let unbalanceTop: number = 0;
+let unbalanceButt: number = 0;
 
 const useChartScale = () => {
     let rowScales: Array<ChartScale> = [];
@@ -96,6 +105,7 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
     const barWidth: number = (860 - (barSpace * bars.length)) / bars.length; // 860 is the available space between chart boundaries (vertical right x position - vertical left x position - 5px space to the right)
     const barsSets: Array<BarObj> = [];
     let barLocationX: number = 80;
+    numberOfBars = bars.length;
     bars.forEach(bar => {
         barLocationX = barLocationX + 5;
         const barHeight: number = ((bar.voltage - scaleOptions.start) / (scaleOptions.end - scaleOptions.start)) * 240; // 240 is the maximum vertical space for the bar
@@ -103,26 +113,30 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
         const cellStrokeX: number = barLocationX + (barWidth/2);
         barsSets.push({id: bar.id, voltage: bar.voltage, width: barWidth, xLocation: barLocationX, yLocation: barLocationY ,height: barHeight, xStrokeLocation: cellStrokeX});
         barLocationX = barLocationX + barWidth;
+        // Do the summary
+        barValueTotal = barValueTotal + bar.voltage;
+        if(bar.voltage < barLowestValue){
+            barLowestValue = bar.voltage;
+            unbalanceButt = barLocationY;
+        }
+        if(bar.voltage > barHighestValue) {
+            barHighestValue = bar.voltage;
+            unbalanceTop = barLocationY;
+        }
     });
     
     return barsSets
 }
 
-const useSummary = (bars: Array<Bar>): Summary => {
-    let barValueTotal: number = 0;
-    let barHighestValue: number = 0; // default value should be supper low
-    let barLowestValue: number = 100; // default value should be supper high
-    bars.forEach(bar => {
-        barValueTotal = barValueTotal + bar.voltage;
-        if(bar.voltage < barLowestValue){
-            barLowestValue = bar.voltage;
-        }
-        if(bar.voltage > barHighestValue) {
-            barHighestValue = bar.voltage;
-        }
-    });
-    const barValueAvg: string = (barValueTotal/bars.length).toFixed(2);
-    return {avg: barValueAvg, lowest: barLowestValue.toFixed(2), highest: barHighestValue.toFixed(2)};
+const useSummary = (): Summary => {
+    return {
+        avg: (barValueTotal/numberOfBars).toFixed(2), 
+        lowest: barLowestValue.toFixed(2), 
+        highest: barHighestValue.toFixed(2), 
+        unbalanceMarkButtLoc: unbalanceButt, 
+        unbalanceMarkTopLoc: unbalanceTop,
+        unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
+    };
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -144,7 +158,7 @@ export default function BarChart(props: Props): ReactElement {
     const rowScales = useChartScale();
     const rowBgs = useChartBoxBg();
     const barDimensions = useBarDimensions(props.bars);
-    const summary = useSummary(props.bars);
+    const summary = useSummary();
 
     const chartRowScaleLines = rowScales.map((row)=>
         <g>
@@ -178,9 +192,16 @@ export default function BarChart(props: Props): ReactElement {
                 <g>
                     {chartRowBgs}
                 </g>
+
+                <g id="unbalance area">
+                    <line fill="none" stroke="#39ff14" x1="80.00567" y1={summary.unbalanceMarkTopLoc} x2="944.99718" y2={summary.unbalanceMarkTopLoc} id="unBalanceGreen" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="3,2"/>
+                    <rect fill="#ff073a" x="80.00193" y="119.30234" width="864.82932" height={summary.unbalanceAreaHeight} id="svg_134" opacity="0.6" rx="1"/>
+                </g>
+
                 <g>
                     {chartRowScaleLines}
                 </g>
+
                 <g id="Series">
                     <line stroke="#ffffff" stroke-linecap="null" stroke-linejoin="null" id="verticalLeft" y2="305" x2="80" y1="55" x1="80" stroke-width="0.5" fill="none"/>
                     <line stroke="#ffffff" stroke-linecap="null" stroke-linejoin="null" id="verticalRight" y2="305" x2="945" y1="55" x1="945" stroke-width="0.5" fill="none"/>
@@ -203,6 +224,7 @@ export default function BarChart(props: Props): ReactElement {
                     <title>BarSet</title>
                     {bars}
                 </g>
+                <line fill="none" stroke="#ff073a" x1="80.00567" y1={summary.unbalanceMarkButtLoc} x2="944.99718" y2={summary.unbalanceMarkButtLoc} id="unBalanceRed" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="3,2"/>
             </svg>
         </Paper>
     )

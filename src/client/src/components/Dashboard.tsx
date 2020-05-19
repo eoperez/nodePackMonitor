@@ -24,13 +24,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function Dashboard({}: Props): ReactElement {
     const classes = useStyles();
-    const [response, setResponse] = useState([]);
+    const [bars, setBars] = useState([]);
 
     useEffect(() => {
       const socket = socketIOClient(ENDPOINT);
-      socket.on("bankInfo", (data: any) => {
-        console.log('bankInfo object:', JSON.stringify(data) );
-        setResponse(data);
+      socket.on("bankInfo", (barsInfo: any) => {
+        console.log('bankInfo object:', JSON.stringify(barsInfo) );
+        setBars(barsInfo);
       });
     }, []);
     return (
@@ -51,31 +51,7 @@ export default function Dashboard({}: Props): ReactElement {
           <Grid item xs={12}>
             <BarChart 
               title="Balance" 
-              bars={[
-                {id: 1, voltage: 3.91},
-                {id: 2, voltage: 3.93},
-                {id: 3, voltage: 3.91},
-                {id: 4, voltage: 3.92},
-                {id: 5, voltage: 3.94},
-                {id: 6, voltage: 3.91},
-                {id: 7, voltage: 3.90},
-                {id: 8, voltage: 3.93},
-                {id: 9, voltage: 3.91},
-                {id: 10, voltage: 3.92},
-                {id: 11, voltage: 3.92},
-                {id: 13, voltage: 3.93},
-                {id: 14, voltage: 3.94},
-                {id: 15, voltage: 3.93},
-                {id: 16, voltage: 3.93},
-                {id: 17, voltage: 3.93},
-                {id: 18, voltage: 3.92},
-                {id: 19, voltage: 3.91},
-                {id: 20, voltage: 3.92},
-                {id: 21, voltage: 3.92},
-                {id: 22, voltage: 3.93},
-                {id: 23, voltage: 3.91},
-                {id: 24, voltage: 3.90}
-              ]}
+              bars={bars}
             ></BarChart>
           </Grid>
           <Grid item xs={3}>
