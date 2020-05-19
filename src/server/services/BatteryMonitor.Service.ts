@@ -122,10 +122,10 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             case this.REG_VOLTAGE:
                 // Upsert cell record with the voltage
                 if ( typeof this.bankInfo[key] === 'undefined') {
-                    this.bankInfo[key] = {id: response.address, voltage: response.value};
+                    this.bankInfo[key] = {id: response.address, voltage: response.value/1000}; // dividing by 1000 to send volts instead of milliVolts
                 } else {
                     // persisting temp value 
-                    this.bankInfo[key] = {id: response.address, voltage: response.value, temp: this.bankInfo[key].temp};
+                    this.bankInfo[key] = {id: response.address, voltage: response.value/1000, temp: this.bankInfo[key].temp};
                 }
                 // 2nd  request chain with current address now move to temp
                 this.getMonitorInfo(response.address, this.REG_TEMP);
