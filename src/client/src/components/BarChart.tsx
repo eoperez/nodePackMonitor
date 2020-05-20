@@ -106,6 +106,7 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
     const barsSets: Array<BarObj> = [];
     let barLocationX: number = 80;
     numberOfBars = bars.length;
+    let prevBarValueTotal = 0;
     bars.forEach(bar => {
         barLocationX = barLocationX + 5;
         const barHeight: number = ((bar.voltage - scaleOptions.start) / (scaleOptions.end - scaleOptions.start)) * 240; // 240 is the maximum vertical space for the bar
@@ -114,7 +115,7 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
         barsSets.push({id: bar.id, voltage: bar.voltage, width: barWidth, xLocation: barLocationX, yLocation: barLocationY ,height: barHeight, xStrokeLocation: cellStrokeX});
         barLocationX = barLocationX + barWidth;
         // Do the summary
-        barValueTotal = barValueTotal + bar.voltage;
+        barValueTotal = prevBarValueTotal + bar.voltage;
         if(bar.voltage < barLowestValue){
             barLowestValue = bar.voltage;
             unbalanceButt = barLocationY;
@@ -123,6 +124,7 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
             barHighestValue = bar.voltage;
             unbalanceTop = barLocationY;
         }
+        prevBarValueTotal = barValueTotal;
     });
     
     return barsSets
@@ -130,7 +132,7 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
 
 const useSummary = (): Summary => {
     return {
-        avg: (barValueTotal/numberOfBars).toFixed(2), 
+        avg: (barValueTotal/2).toFixed(2), 
         lowest: barLowestValue.toFixed(2), 
         highest: barHighestValue.toFixed(2), 
         unbalanceMarkButtLoc: unbalanceButt, 
