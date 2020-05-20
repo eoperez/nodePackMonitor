@@ -114,6 +114,7 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
         barLocationX = barLocationX + barWidth;
         // Do the summary
         barValueTotal = prevBarValueTotal + bar.voltage;
+        console.log('barValueTotal: ', barValueTotal);
         if(bar.voltage < barLowestValue){
             barLowestValue = bar.voltage;
             unbalanceButt = barLocationY;
@@ -123,12 +124,14 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
             unbalanceTop = barLocationY;
         }
         prevBarValueTotal = barValueTotal;
+        console.log('prevBarValueTotal:', prevBarValueTotal);
     });
     
     return barsSets
 }
 
 const useSummary = (): Summary => {
+    console.log('useSummary::barValueTotal:', barValueTotal);
     return {
         avg: (barValueTotal/2).toFixed(2), 
         lowest: barLowestValue.toFixed(2), 

@@ -29,7 +29,7 @@ export default function Dashboard({}: Props): ReactElement {
     useEffect(() => {
       const socket = socketIOClient(ENDPOINT);
       socket.on("bankInfo", (barsInfo: any) => {
-        console.log('bankInfo object:', JSON.stringify(barsInfo) );
+        // console.log('bankInfo object:', JSON.stringify(barsInfo) );
         setBars(barsInfo);
       });
     }, []);
