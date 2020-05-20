@@ -114,7 +114,6 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
         barLocationX = barLocationX + barWidth;
         // Do the summary
         barsAvg = (prevbarsAvg + bar.voltage)/2;
-        console.log('barsAvg: ', barsAvg);
         if(bar.voltage < barLowestValue){
             barLowestValue = bar.voltage;
             unbalanceButt = barLocationY;
@@ -124,7 +123,6 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
             unbalanceTop = barLocationY;
         }
         prevbarsAvg = barsAvg;
-        console.log('prevbarsAvg:', prevbarsAvg);
     });
     
     return barsSets
