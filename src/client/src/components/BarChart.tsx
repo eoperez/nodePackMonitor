@@ -55,11 +55,14 @@ const rowSize: number = 20;
 const chartTitleEnds: number = 40;
 const barSpace: number = 5;
 const numberScale: number = (scaleOptions.end - scaleOptions.start)/ scaleOptions.interval;
-let barsAvg: number = 0;
-let barHighestValue: number = 0; // default value should be supper low
-let barLowestValue: number = 100; // default value should be supper high
-let unbalanceTop: number = 0;
-let unbalanceButt: number = 0;
+let globalSummary: Summary = {
+    avg: '',
+    lowest: '',
+    highest: '',
+    unbalanceMarkTopLoc: 0,
+    unbalanceMarkButtLoc: 0,
+    unbalanceAreaHeight: 0
+}
 
 const useChartScale = () => {
     let rowScales: Array<ChartScale> = [];
@@ -105,6 +108,9 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
     const barsSets: Array<BarObj> = [];
     let barLocationX: number = 80;
     let prevbarsAvg = 0;
+    let barLowestValue = 0;
+    let barHighestValue = 0;
+    let barsAvg = 0
     bars.forEach(bar => {
         barLocationX = barLocationX + 5;
         const barHeight: number = ((bar.voltage - scaleOptions.start) / (scaleOptions.end - scaleOptions.start)) * 240; // 240 is the maximum vertical space for the bar
@@ -116,13 +122,15 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
         barsAvg = (prevbarsAvg + bar.voltage)/2;
         if(bar.voltage < barLowestValue){
             barLowestValue = bar.voltage;
-            unbalanceButt = barLocationY;
+            globalSummary.unbalanceMarkButtLoc = barLocationY;
         }
         if(bar.voltage > barHighestValue) {
             barHighestValue = bar.voltage;
-            unbalanceTop = barLocationY;
+            globalSummary.unbalanceMarkTopLoc = barLocationY;
         }
         prevbarsAvg = barsAvg;
+        globalSummary.avg = barsAvg.toFixed(2);
+        globalSummary.unbalanceAreaHeight = (barHighestValue - barLowestValue)*240;
     });
     
     return barsSets
@@ -160,23 +168,9 @@ export default function BarChart(props: Props): ReactElement {
     const rowScales = useChartScale();
     const rowBgs = useChartBoxBg();
     const barDimensions = useBarDimensions(props.bars);
-    const [summary, setSummary] = useState<Summary>({
-        avg: '',
-        lowest: '',
-        highest: '',
-        unbalanceMarkTopLoc: 0,
-        unbalanceMarkButtLoc: 0,
-        unbalanceAreaHeight: 0
-    });
+    const [summary, setSummary] = useState<Summary>(globalSummary);
     useEffect(()=>{
-        setSummary({
-            avg: (barsAvg).toFixed(2), 
-            lowest: barLowestValue.toFixed(2), 
-            highest: barHighestValue.toFixed(2), 
-            unbalanceMarkButtLoc: unbalanceButt, 
-            unbalanceMarkTopLoc: unbalanceTop,
-            unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
-        });
+        setSummary(globalSummary);
         console.log('useEffect::summary:', summary);
     }, [props.bars]);
     // const summary = useSummary(props.bars);
