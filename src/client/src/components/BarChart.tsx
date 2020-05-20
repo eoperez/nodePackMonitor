@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import {Paper, makeStyles, Theme, createStyles} from '@material-ui/core'
 
 
@@ -130,18 +130,6 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
     return barsSets
 }
 
-const useSummary = (): Summary => {
-    console.log('useSummary::barsAvg:', barsAvg);
-    return {
-        avg: (barsAvg).toFixed(2), 
-        lowest: barLowestValue.toFixed(2), 
-        highest: barHighestValue.toFixed(2), 
-        unbalanceMarkButtLoc: unbalanceButt, 
-        unbalanceMarkTopLoc: unbalanceTop,
-        unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
-    };
-}
-
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         paper: {
@@ -161,8 +149,26 @@ export default function BarChart(props: Props): ReactElement {
     const rowScales = useChartScale();
     const rowBgs = useChartBoxBg();
     const barDimensions = useBarDimensions(props.bars);
-    const summary = useSummary();
-
+    const [summary, setSummary] = useState({
+            avg: '', 
+            lowest: '', 
+            highest: '', 
+            unbalanceMarkButtLoc: 0, 
+            unbalanceMarkTopLoc: 0,
+            unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
+        })
+    //const summary = useSummary();
+    useEffect(() => {
+        console.log('useSummary::barsAvg:', barsAvg);
+        setSummary({
+            avg: (barsAvg).toFixed(2), 
+            lowest: barLowestValue.toFixed(2), 
+            highest: barHighestValue.toFixed(2), 
+            unbalanceMarkButtLoc: unbalanceButt, 
+            unbalanceMarkTopLoc: unbalanceTop,
+            unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
+        });
+    }, [props.bars]);
     const chartRowScaleLines = rowScales.map((row)=>
         <g>
             <line stroke="#ffffff" stroke-linecap="null" stroke-linejoin="null" y2={row.strokeY} x2="950" y1={row.strokeY} x1="75" stroke-width="0.5" fill="none"/>
