@@ -55,7 +55,7 @@ const rowSize: number = 20;
 const chartTitleEnds: number = 40;
 const barSpace: number = 5;
 const numberScale: number = (scaleOptions.end - scaleOptions.start)/ scaleOptions.interval;
-let barValueTotal: number = 0;
+let barsAvg: number = 0;
 let barHighestValue: number = 0; // default value should be supper low
 let barLowestValue: number = 100; // default value should be supper high
 let unbalanceTop: number = 0;
@@ -104,7 +104,7 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
     const barWidth: number = (860 - (barSpace * bars.length)) / bars.length; // 860 is the available space between chart boundaries (vertical right x position - vertical left x position - 5px space to the right)
     const barsSets: Array<BarObj> = [];
     let barLocationX: number = 80;
-    let prevBarValueTotal = 0;
+    let prevbarsAvg = 0;
     bars.forEach(bar => {
         barLocationX = barLocationX + 5;
         const barHeight: number = ((bar.voltage - scaleOptions.start) / (scaleOptions.end - scaleOptions.start)) * 240; // 240 is the maximum vertical space for the bar
@@ -113,8 +113,8 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
         barsSets.push({id: bar.id, voltage: bar.voltage, width: barWidth, xLocation: barLocationX, yLocation: barLocationY ,height: barHeight, xStrokeLocation: cellStrokeX});
         barLocationX = barLocationX + barWidth;
         // Do the summary
-        barValueTotal = prevBarValueTotal + bar.voltage;
-        console.log('barValueTotal: ', barValueTotal);
+        barsAvg = (prevbarsAvg + bar.voltage)/2;
+        console.log('barsAvg: ', barsAvg);
         if(bar.voltage < barLowestValue){
             barLowestValue = bar.voltage;
             unbalanceButt = barLocationY;
@@ -123,17 +123,17 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
             barHighestValue = bar.voltage;
             unbalanceTop = barLocationY;
         }
-        prevBarValueTotal = barValueTotal;
-        console.log('prevBarValueTotal:', prevBarValueTotal);
+        prevbarsAvg = barsAvg;
+        console.log('prevbarsAvg:', prevbarsAvg);
     });
     
     return barsSets
 }
 
 const useSummary = (): Summary => {
-    console.log('useSummary::barValueTotal:', barValueTotal);
+    console.log('useSummary::barsAvg:', barsAvg);
     return {
-        avg: (barValueTotal/2).toFixed(2), 
+        avg: (barsAvg).toFixed(2), 
         lowest: barLowestValue.toFixed(2), 
         highest: barHighestValue.toFixed(2), 
         unbalanceMarkButtLoc: unbalanceButt, 
