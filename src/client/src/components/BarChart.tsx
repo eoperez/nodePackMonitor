@@ -58,7 +58,6 @@ const numberScale: number = (scaleOptions.end - scaleOptions.start)/ scaleOption
 let barValueTotal: number = 0;
 let barHighestValue: number = 0; // default value should be supper low
 let barLowestValue: number = 100; // default value should be supper high
-let numberOfBars: number = 0; // default value should be 0 number of bars
 let unbalanceTop: number = 0;
 let unbalanceButt: number = 0;
 
@@ -105,7 +104,6 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
     const barWidth: number = (860 - (barSpace * bars.length)) / bars.length; // 860 is the available space between chart boundaries (vertical right x position - vertical left x position - 5px space to the right)
     const barsSets: Array<BarObj> = [];
     let barLocationX: number = 80;
-    numberOfBars = bars.length;
     let prevBarValueTotal = 0;
     bars.forEach(bar => {
         barLocationX = barLocationX + 5;
