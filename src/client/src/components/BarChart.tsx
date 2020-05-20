@@ -113,6 +113,7 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
         barsSets.push({id: bar.id, voltage: bar.voltage, width: barWidth, xLocation: barLocationX, yLocation: barLocationY ,height: barHeight, xStrokeLocation: cellStrokeX});
         barLocationX = barLocationX + barWidth;
         // Do the summary
+        barsAvg = (prevbarsAvg + bar.voltage)/2;
         console.log('barsAvg: ', barsAvg);
         if(bar.voltage < barLowestValue){
             barLowestValue = bar.voltage;
@@ -123,10 +124,24 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
             unbalanceTop = barLocationY;
         }
         prevbarsAvg = barsAvg;
+        console.log('prevbarsAvg:', prevbarsAvg);
     });
     
     return barsSets
 }
+/* 
+const useSummary = (bars: Array<Bar>): Summary => {
+    console.log('useSummary::barsAvg:', barsAvg);
+    return {
+        avg: (barsAvg).toFixed(2), 
+        lowest: barLowestValue.toFixed(2), 
+        highest: barHighestValue.toFixed(2), 
+        unbalanceMarkButtLoc: unbalanceButt, 
+        unbalanceMarkTopLoc: unbalanceTop,
+        unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
+    };
+}
+*/
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -147,24 +162,15 @@ export default function BarChart(props: Props): ReactElement {
     const rowScales = useChartScale();
     const rowBgs = useChartBoxBg();
     const barDimensions = useBarDimensions(props.bars);
-    const [summary, setSummary] = useState({
-            avg: '', 
-            lowest: '', 
-            highest: '', 
-            unbalanceMarkButtLoc: 0, 
-            unbalanceMarkTopLoc: 0,
-            unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
-        })
-    //const summary = useSummary();
-    useEffect(() => {
-        console.log('useSummary::summary:', {
-            avg: (barsAvg).toFixed(2), 
-            lowest: barLowestValue.toFixed(2), 
-            highest: barHighestValue.toFixed(2), 
-            unbalanceMarkButtLoc: unbalanceButt, 
-            unbalanceMarkTopLoc: unbalanceTop,
-            unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
-        });
+    const [summary, setSummary] = useState<Summary>({
+        avg: '',
+        lowest: '',
+        highest: '',
+        unbalanceMarkTopLoc: 0,
+        unbalanceMarkButtLoc: 0,
+        unbalanceAreaHeight: 0
+    });
+    useEffect(()=>{
         setSummary({
             avg: (barsAvg).toFixed(2), 
             lowest: barLowestValue.toFixed(2), 
@@ -173,7 +179,10 @@ export default function BarChart(props: Props): ReactElement {
             unbalanceMarkTopLoc: unbalanceTop,
             unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
         });
+        console.log('useEffect::summary:', summary);
     }, [props.bars]);
+    // const summary = useSummary(props.bars);
+
     const chartRowScaleLines = rowScales.map((row)=>
         <g>
             <line stroke="#ffffff" stroke-linecap="null" stroke-linejoin="null" y2={row.strokeY} x2="950" y1={row.strokeY} x1="75" stroke-width="0.5" fill="none"/>
