@@ -113,7 +113,6 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
         barsSets.push({id: bar.id, voltage: bar.voltage, width: barWidth, xLocation: barLocationX, yLocation: barLocationY ,height: barHeight, xStrokeLocation: cellStrokeX});
         barLocationX = barLocationX + barWidth;
         // Do the summary
-        barsAvg = (prevbarsAvg + bar.voltage)/2;
         console.log('barsAvg: ', barsAvg);
         if(bar.voltage < barLowestValue){
             barLowestValue = bar.voltage;
@@ -124,7 +123,6 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
             unbalanceTop = barLocationY;
         }
         prevbarsAvg = barsAvg;
-        console.log('prevbarsAvg:', prevbarsAvg);
     });
     
     return barsSets
@@ -159,7 +157,14 @@ export default function BarChart(props: Props): ReactElement {
         })
     //const summary = useSummary();
     useEffect(() => {
-        console.log('useSummary::barsAvg:', barsAvg);
+        console.log('useSummary::summary:', {
+            avg: (barsAvg).toFixed(2), 
+            lowest: barLowestValue.toFixed(2), 
+            highest: barHighestValue.toFixed(2), 
+            unbalanceMarkButtLoc: unbalanceButt, 
+            unbalanceMarkTopLoc: unbalanceTop,
+            unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
+        });
         setSummary({
             avg: (barsAvg).toFixed(2), 
             lowest: barLowestValue.toFixed(2), 
