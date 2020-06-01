@@ -14,6 +14,8 @@ interface BarObj extends Bar {
     height: number;
     yLocation: number;
     xStrokeLocation: number;
+    tempIndiLocX?: number;
+    tempIndiLocY?: number;
 }
 
 interface Props {
@@ -37,6 +39,7 @@ interface ChartScale {
     id: number;
     strokeY: number;
     voltageScale: string;
+    tempScale?: string;
     scaleYLocation: number;
 }
 
@@ -50,7 +53,7 @@ interface Summary {
 }
 
 // TODO: Move to configuration 
-const scaleOptions = {start: 3.00, end: 4.25, interval: .10};
+const scaleOptions = {start: 3.00, end: 4.25, interval: .10, tStart: 60, tEnd: 140, tInterval: 5};
 const rowSize: number = 20;
 const chartTitleEnds: number = 40;
 const barSpace: number = 5;
@@ -68,6 +71,7 @@ const useChartScale = () => {
     let rowScales: Array<ChartScale> = [];
     let scaleY: number = chartTitleEnds;
     let scaleNum: number = scaleOptions.end;
+    let scaleTNum: number = scaleOptions.tEnd;
 
     for (let i: number = 0; i <= numberScale; i++) {
         scaleY = scaleY + rowSize;
@@ -75,8 +79,10 @@ const useChartScale = () => {
             id: i,
             strokeY: scaleY,
             voltageScale: scaleNum.toFixed(2),
+            tempScale: scaleTNum.toFixed(0),
             scaleYLocation: scaleY + 4
         });
+        scaleTNum = scaleTNum - scaleOptions.tInterval;
         scaleNum = scaleNum - scaleOptions.interval;
 
     }
@@ -108,7 +114,7 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
     const barsSets: Array<BarObj> = [];
     let barLocationX: number = 80;
     let prevbarsAvg = 0;
-    let barLowestValue = 0;
+    let barLowestValue = 100;
     let barHighestValue = 0;
     let barsAvg = 0
     bars.forEach(bar => {
@@ -130,24 +136,13 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
         }
         prevbarsAvg = barsAvg;
         globalSummary.avg = barsAvg.toFixed(2);
-        globalSummary.unbalanceAreaHeight = (barHighestValue - barLowestValue)*240;
+        globalSummary.lowest = barLowestValue.toFixed(2);
+        globalSummary.highest = barHighestValue.toFixed(2);
+        globalSummary.unbalanceAreaHeight = (barHighestValue - barLowestValue)*200;
     });
     
     return barsSets
 }
-/* 
-const useSummary = (bars: Array<Bar>): Summary => {
-    console.log('useSummary::barsAvg:', barsAvg);
-    return {
-        avg: (barsAvg).toFixed(2), 
-        lowest: barLowestValue.toFixed(2), 
-        highest: barHighestValue.toFixed(2), 
-        unbalanceMarkButtLoc: unbalanceButt, 
-        unbalanceMarkTopLoc: unbalanceTop,
-        unbalanceAreaHeight: (barHighestValue - barLowestValue)*240
-    };
-}
-*/
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -158,6 +153,9 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         bar: {
             fill: '#ffff56'
+        },
+        unbalanceArea: {
+            fill: theme.palette.text.secondary
         }
     })
 );
@@ -171,7 +169,6 @@ export default function BarChart(props: Props): ReactElement {
     const [summary, setSummary] = useState<Summary>(globalSummary);
     useEffect(()=>{
         setSummary(globalSummary);
-        console.log('useEffect::summary:', summary);
     }, [props.bars]);
     // const summary = useSummary(props.bars);
 
@@ -179,6 +176,7 @@ export default function BarChart(props: Props): ReactElement {
         <g>
             <line stroke="#ffffff" stroke-linecap="null" stroke-linejoin="null" y2={row.strokeY} x2="950" y1={row.strokeY} x1="75" stroke-width="0.5" fill="none"/>
             <text transform="matrix(1 0 0 1 0 0)" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="12" y={row.scaleYLocation} x="45.0002" stroke-width="0" stroke="#ffffff" fill="#999999">{row.voltageScale}</text>
+            <text transform="matrix(1 0 0 1 0 0)" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="10" y={row.scaleYLocation} x="955" stroke-width="0" stroke="#ffffff" fill="#999999">{row.tempScale}&#176; </text>
         </g>
     );
 
@@ -188,7 +186,8 @@ export default function BarChart(props: Props): ReactElement {
     const bars = barDimensions.map((bar) =>
         <g>
             <title>{`Cell: ${bar.id}, Volts: ${bar.voltage.toFixed(2)}`}</title>
-            <rect rx="3" className={classes.bar} id={`bar${bar.id}`} height={bar.height} width={bar.width} y={bar.yLocation} x={bar.xLocation} stroke-width="0"/>
+            <rect rx="3" className={classes.bar} id={`bar${bar.id}`} height={bar.height} width={bar.width} y={bar.yLocation} x={bar.xLocation} stroke-width="0">
+            </rect>
             <line stroke="#ffffff" stroke-linecap="null" stroke-linejoin="null" y2="305" x2={bar.xStrokeLocation} y1="300" x1={bar.xStrokeLocation} stroke-width="0.5" fill="none"/>
             <text text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10" y="315" x={bar.xStrokeLocation} stroke-width="0" stroke="#000" fill="#ffffff">
                 {bar.id}</text>
@@ -210,7 +209,7 @@ export default function BarChart(props: Props): ReactElement {
 
                 <g id="unbalance area">
                     <line fill="none" stroke="#39ff14" x1="80.00567" y1={summary.unbalanceMarkTopLoc} x2="944.99718" y2={summary.unbalanceMarkTopLoc} id="unBalanceGreen" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="3,2"/>
-                    <rect fill="#ff073a" x="80.00193" y="119.30234" width="864.82932" height={summary.unbalanceAreaHeight} id="svg_134" opacity="0.6" rx="1"/>
+                    <rect className={classes.unbalanceArea} fill="#ff073a" x="80.00193" y={summary.unbalanceMarkTopLoc} width="864.82932" height={summary.unbalanceAreaHeight} opacity="0.6" rx="1"/>
                 </g>
 
                 <g>
