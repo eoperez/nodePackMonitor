@@ -15,5 +15,6 @@ port.on('open', () => {
 });
 
 port.on('data', (data) => {
+    data=data.substring(1,data.length-2);
     console.log('Data:', data)
 })
