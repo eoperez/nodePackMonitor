@@ -196,7 +196,7 @@ export default function BarChart(props: Props): ReactElement {
 
     return (
         <Paper className={classes.paper}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 350" preserveAspectRatio="xMinYMin meet">
+            <svg width="85%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 350" preserveAspectRatio="xMinYMin meet">
                 <g>
                     <rect rx="5" x="-1" y="-1" width="100%" height="100%" id="canvas_background" fill="#191919"/>
                     <g id="canvasGrid" display="none">
