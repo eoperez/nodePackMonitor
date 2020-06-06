@@ -15,10 +15,12 @@ port.on('open', () => {
 });
 
 port.on('data', (data) => {
-    data=data.substring(1,data.length-2);
-    console.log('Data:', data);
-    const pipGPIGSValues = data.split(" ");
-    decodeGPIGS(pipGPIGSValues);
+    if (data.length==109 && data.substring(0,1)=="(") {
+        data=data.substring(1,data.length-2);
+        console.log('Data:', data);
+        const pipGPIGSValues = data.split(" ");
+        decodeGPIGS(pipGPIGSValues);
+    }
 })
 
 const decodeGPIGS = (arr)=> {
