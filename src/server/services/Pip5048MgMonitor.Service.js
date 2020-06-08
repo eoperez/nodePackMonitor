@@ -60,14 +60,14 @@ const decodeGPIGS = (arr)=> {
         GPIGSValue.inverter.chargingSccAcc = GPIGSValue.inverter.deviceStatus.substring(7,8);
     }
     // Battery calculated info
-    GPIGSValue.battery.powerOut = GPIGSValue.battery.voltage * GPIGSValue.battery.dischargeCurrent;
-    GPIGSValue.battery.powerIn = GPIGSValue.voltageFromScc * GPIGSValue.battery.chargingCurrent;
+    GPIGSValue.battery.powerOut = parseFloat(GPIGSValue.battery.voltage) * parseFloat(GPIGSValue.battery.dischargeCurrent);
+    GPIGSValue.battery.powerIn = parseFloat(GPIGSValue.voltageFromScc) * parseFloat(GPIGSValue.battery.chargingCurrent);
     // Consumption calculated info
-    GPIGSValue.consumption.current = GPIGSValue.consumption.activePower/GPIGSValue.consumption.voltage;
+    GPIGSValue.consumption.current = parseFloat(GPIGSValue.consumption.activePower)/parseFloat(GPIGSValue.consumption.voltage);
     // PV calculated info
-    GPIGSValue.pv.powerForLoads = GPIGSValue.pv.chargingPower - (GPIGSValue.pv.currentBattery * GPIGSValue.battery.voltageFromScc);
+    GPIGSValue.pv.powerForLoads = parseFloat(GPIGSValue.pv.chargingPower) - (parseFloat(GPIGSValue.pv.currentBattery) * parseFloat(GPIGSValue.battery.voltageFromScc));
     // Grid calculated info
-    GPIGSValue.grid.power = GPIGSValue.consumption.activePower - (GPIGSValue.battery.powerOut + GPIGSValue.pv.powerForLoads);
+    GPIGSValue.grid.power = parseFloat(GPIGSValue.consumption.activePower) - (GPIGSValue.battery.powerOut + GPIGSValue.pv.powerForLoads);
 
     console.log(GPIGSValue);
 }
