@@ -61,7 +61,7 @@ const decodeGPIGS = (arr)=> {
     }
     // Battery calculated info
     GPIGSValue.battery.powerOut = parseFloat(GPIGSValue.battery.voltage) * parseFloat(GPIGSValue.battery.dischargeCurrent);
-    GPIGSValue.battery.powerIn = parseFloat(GPIGSValue.voltageFromScc) * parseFloat(GPIGSValue.battery.chargingCurrent);
+    GPIGSValue.battery.powerIn = parseFloat(GPIGSValue.battery.voltageFromScc) * parseFloat(GPIGSValue.battery.chargingCurrent);
     // Consumption calculated info
     GPIGSValue.consumption.current = parseFloat(GPIGSValue.consumption.activePower)/parseFloat(GPIGSValue.consumption.voltage);
     // PV calculated info
