@@ -5,9 +5,13 @@ import { IPiPMonitorService, IPiPMonitorConfig, IQPIGSInfo } from "../interfaces
 export default class PiPMonitor implements IPiPMonitorService  {
     ioSocketServer: SocketIO.Server;
     QPIGSInfo: IQPIGSInfo;
+    maxPVPower: number;
+    maxPIPOutPower: number
 
     constructor(ioServer: SocketIO.Server){
         this.ioSocketServer = ioServer;
+        this.maxPVPower = 5000;
+        this.maxPIPOutPower = 5000;
         this.QPIGSInfo = {
             grid: {
                 voltage: '...',
@@ -55,6 +59,8 @@ export default class PiPMonitor implements IPiPMonitorService  {
         const QPIGS = [0X51,0X50,0X49,0X47,0X53,0XB7,0XA9,0X0D];
         const port = new SerialPort(config.commPort, {baudRate: 2400});
         const parser = port.pipe(new SerialPort.parsers.Readline({delimiter: '\r'}));
+        this.maxPIPOutPower = config.maxPIPOutPower;
+        this.maxPVPower = config.maxPVPower;
 
         port.on('open', () => {
             console.log('PIP Monitor CommPort Ready.');
@@ -118,9 +124,11 @@ export default class PiPMonitor implements IPiPMonitorService  {
         // Consumption calculated info
         this.QPIGSInfo.consumption.current = parseFloat(this.QPIGSInfo.consumption.activePower)/parseFloat(this.QPIGSInfo.consumption.voltage);
         // PV calculated info
+        this.QPIGSInfo.pv.productionPercent = parseFloat(this.QPIGSInfo.pv.chargingPower) / this.maxPVPower;
         this.QPIGSInfo.pv.powerForLoads = parseFloat(this.QPIGSInfo.pv.chargingPower) - (parseFloat(this.QPIGSInfo.pv.currentBattery) * parseFloat(this.QPIGSInfo.battery.voltageFromScc));
         // Grid calculated info
         this.QPIGSInfo.grid.power = parseFloat(this.QPIGSInfo.consumption.activePower) - (this.QPIGSInfo.battery.powerOut + this.QPIGSInfo.pv.powerForLoads);
+        this.QPIGSInfo.grid.loadPercent = this.QPIGSInfo.grid.power / this.maxPIPOutPower;
         console.log('Returning QPIGSInfo:', this.QPIGSInfo);
         return this.QPIGSInfo;
     }
