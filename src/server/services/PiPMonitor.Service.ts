@@ -61,12 +61,20 @@ export default class PiPMonitor implements IPiPMonitorService  {
             port.write(QPIGS);
         });
 
+        //Debug when a socket connection is stablished
+        this.ioSocketServer.on('connection', (socket: SocketIO.Socket) => {
+            console.log("Client connected to PIP monitor.");
+        });
+
         parser.on('data', (data) => {
             if (data.length == 109 && data.substring(0,1)=="(") {
                 data = data.substring(1, data.length-2);
                 console.log('Data:', data);
                 const inverterResponse: Array<string> = data.split(" ");
                 this.decodeQPIGS(inverterResponse);
+                //emit bank information using socket service.
+                console.log('emitting inverter info:', this.QPIGSInfo);
+                this.ioSocketServer.sockets.emit('inverter', this.QPIGSInfo);
             }
         });
     }
