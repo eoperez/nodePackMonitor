@@ -6,13 +6,17 @@ import { Server } from "http";
 import * as SocketIO from "socket.io";
 
 import {IBaterryMonitorService} from "./interfaces/IBaterryMonitorService.interface";
+import {IPiPMonitorService, IPiPMonitorConfig} from "./interfaces/IPiPMonitorService.Interface";
 import BatteriesMonitor from "./services/BatteryMonitor.Service"
+import PiPMonitor from "./services/PiPMonitor.Service";
 
 const app: Application = express();
 const router: Router = express.Router()
 const port: number = 5000;
 let availablePorts: SerialPort.PortInfo[] = [];
-const commPort: string = '/dev/ttyS0';
+const batteryMonitorCommPort: string = '/dev/ttyS0';
+const inverterMonitorCommPort: string = '/dev/ttyUSB0';
+
 
 SerialPort.list().then((commPorts: SerialPort.PortInfo[]) => {
     availablePorts = commPorts;
@@ -45,4 +49,7 @@ const server: Server = app.listen(port, () => {
 const io: SocketIO.Server = SocketIO(server);
 
 const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
-batteriesMonitor.init({commPort: commPort});
+batteriesMonitor.init({commPort: batteryMonitorCommPort});
+
+const pipMonitor: IPiPMonitorService = new PiPMonitor(io);
+pipMonitor.init({commPort: inverterMonitorCommPort});
