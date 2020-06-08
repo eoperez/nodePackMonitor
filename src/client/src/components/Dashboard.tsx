@@ -9,7 +9,7 @@ import BarChart from './BarChart'
 import GaugeTile from "./GaugeTile";
 import socketIOClient from "socket.io-client"
 
-const ENDPOINT = "http://192.168.0.6:5000"
+const ENDPOINT = "http://192.168.0.5:5000"
 
 interface Props {
 
