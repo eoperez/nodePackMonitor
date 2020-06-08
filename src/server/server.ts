@@ -5,7 +5,7 @@ import { join } from "path";
 import { Server } from "http";
 import * as SocketIO from "socket.io";
 
-import {IBaterryMonitorService} from "./interfaces/IIBaterryMonitorService.interface";
+import {IBaterryMonitorService} from "./interfaces/IBaterryMonitorService.interface";
 import BatteriesMonitor from "./services/BatteryMonitor.Service"
 
 const app: Application = express();
@@ -16,6 +16,7 @@ const commPort: string = '/dev/ttyS0';
 
 SerialPort.list().then((commPorts: SerialPort.PortInfo[]) => {
     availablePorts = commPorts;
+    console.log('CommPorts:', availablePorts);
 });
 
 // define route
