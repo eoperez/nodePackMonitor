@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Dashboard({}: Props): ReactElement {
     const classes = useStyles();
     const [bars, setBars] = useState([]);
+    const [inverter,setInverter] = useState({});
 
     useEffect(() => {
       const socket = socketIOClient(ENDPOINT);
@@ -44,7 +45,8 @@ export default function Dashboard({}: Props): ReactElement {
         setBars(barsInfo);
       });
       socket.on("inverter", (inverterInfo: any) => {
-        console.log('Inverter Info object:', JSON.stringify(inverterInfo) );
+        // console.log('Inverter Info object:', JSON.stringify(inverterInfo) );
+        setInverter(inverterInfo);
       });
     }, []);
     return (
