@@ -54,7 +54,7 @@ const decodeGPIGS = (arr)=> {
             chargingPower: arr[19]
         }
     }
-    if (GPIGSValue.deviceStatus.length==8) {
+    if (GPIGSValue.inverter.deviceStatus.length==8) {
         GPIGSValue.inverter.chargingScc = GPIGSValue.inverter.deviceStatus.substring(5,6);
         GPIGSValue.inverter.chargingAC = GPIGSValue.inverter.deviceStatus.substring(6,7);
         GPIGSValue.inverter.chargingSccAcc = GPIGSValue.inverter.deviceStatus.substring(7,8);
