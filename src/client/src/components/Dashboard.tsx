@@ -43,6 +43,9 @@ export default function Dashboard({}: Props): ReactElement {
         // console.log('bankInfo object:', JSON.stringify(barsInfo) );
         setBars(barsInfo);
       });
+      socket.on("inverter", (inverterInfo: any) => {
+        console.log('Inverter Info object:', JSON.stringify(inverterInfo) );
+      });
     }, []);
     return (
       <div className={classes.root}>
