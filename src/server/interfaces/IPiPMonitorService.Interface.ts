@@ -49,7 +49,6 @@ interface IPv {
     currentBattery: string;
     voltage_1: string;
     chargingPower: string;
-    diviveStatus: iDeviceStatus;
     powerForLoads: number;
     productionPercent: number;  // float from 0-1;
 }

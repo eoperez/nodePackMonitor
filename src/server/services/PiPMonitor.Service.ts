@@ -8,6 +8,47 @@ export default class PiPMonitor implements IPiPMonitorService  {
 
     constructor(ioServer: SocketIO.Server){
         this.ioSocketServer = ioServer;
+        this.QPIGSInfo = {
+            grid: {
+                voltage: '...',
+                frequency: '...',
+                power: 0,
+                loadPercent: 0
+            },
+            pv: {
+                currentBattery: '...',
+                voltage_1: '...',
+                chargingPower: '...',
+                powerForLoads: 0,
+                productionPercent: 0
+            },
+            consumption: {
+                voltage: '...',
+                frequency: '...',
+                powerVa: '...',
+                activePower: '...',
+                loadPercent: 0,
+                current: 0
+            },
+            battery: {
+                voltage: '...',
+                chargingCurrent: '...',
+                capacity: 0,
+                voltageFromScc: '...',
+                dischargeCurrent: '...',
+                powerOut: 0,
+                powerIn: 0
+            },
+            inverter: {
+                busVoltage: '...',
+                heatSinkTemperature: '...',
+                deviceStatus: {
+                    chargingAC: '',
+                    chargingSccAcc: '',
+                    chargingScc: ''
+                }
+            }
+        }
     }
     
     init = (config: IPiPMonitorConfig): void => {
