@@ -1,6 +1,6 @@
 import * as SocketIO from "socket.io";
 import * as SerialPort from 'serialport';
-import { IPacket, IBatteriesMonitorConfig, IBaterryMonitorService, ICellInfo } from "../interfaces/IIBaterryMonitorService.interface";
+import { IPacket, IBatteriesMonitorConfig, IBaterryMonitorService, ICellInfo } from "../interfaces/IBaterryMonitorService.interface";
 
 export default class BatteryMonitor implements IBaterryMonitorService {
     ioSocketServer: SocketIO.Server;

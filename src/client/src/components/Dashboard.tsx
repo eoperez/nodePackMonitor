@@ -49,10 +49,11 @@ export default function Dashboard({}: Props): ReactElement {
         <Grid container spacing={1}>
           <Grid item xs={3}>
             <Paper className={classes.paper}>
-               <GaugeTile id= "gridInfo" title="GRID" percentage={.5} 
+               <GaugeTile id= "gridInfo" title="GRID" percentage={.5}
                infoTiles={[
                  {primaryText: "250v", secondaryText: "Voltage"},
-                 {primaryText: "60hz", secondaryText: "Frequency"}
+                 {primaryText: "60hz", secondaryText: "Frequency"},
+                 {primaryText: "300w", secondaryText: "Power"}
                 ]} />
             </Paper>
           </Grid>
@@ -61,7 +62,9 @@ export default function Dashboard({}: Props): ReactElement {
               <GaugeTile id= "pvInfo" title="PV" percentage={.5} 
               infoTiles={[
                 {primaryText: "250v", secondaryText: "Voltage"},
-                {primaryText: "16a", secondaryText: "Current"}
+                {primaryText: "16a", secondaryText: "Battery Current"},
+                {primaryText: "200w", secondaryText: "Charging Power"},
+                {primaryText: "200w", secondaryText: "Power for Load"},
               ]} reverse={true}/>
 
             </Paper>
@@ -81,9 +84,10 @@ export default function Dashboard({}: Props): ReactElement {
             <Paper className={classes.paper}>
               <GaugeTile id="battery" title="Battery Bank" percentage={.5}
                 infoTiles={[
-                  {primaryText: "48v", secondaryText: "Bus Voltage"},
+                  {primaryText: "0w", secondaryText: "Power In"},
+                  {primaryText: "0a", secondaryText: "Charging Current"},
                   {primaryText: "56.7v", secondaryText: "Voltage"},
-                  {primaryText: "0a", secondaryText: "Current"}
+                  {primaryText: "0w", secondaryText: "Power Out"}
                 ]} reverse={true}/>
             </Paper>
           </Grid>

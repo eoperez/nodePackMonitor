@@ -44,7 +44,7 @@ export default function GaugeTile(props: Props): ReactElement {
                 <Grid item xs={12}>
                     <GaugeChart id={props.id}
                         nrOfLevels={6} arcPadding={0.05} cornerRadius={3} percent={props.percentage} marginInPercent={0.04}
-                        style={{ width: "70%", display: "inline-block" }} colors={colors}
+                        style={{ width: "70%", display: "inline-block" }} colors={colors} needleBaseColor="#6B6B6B" needleColor="#6B6B6B"
                     />
                     <Divider />
                 </Grid>
