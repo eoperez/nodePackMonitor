@@ -5,6 +5,8 @@ export interface IPiPMonitorService {
 
 export interface IPiPMonitorConfig {
     commPort: string;
+    maxPVPower: number;
+    maxPIPOutPower: number;
 }
 export interface IQPIGSInfo {
     grid: IGrid;
