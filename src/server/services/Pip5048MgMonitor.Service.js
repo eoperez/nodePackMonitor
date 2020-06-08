@@ -25,28 +25,49 @@ parser.on('data', (data) => {
 
 const decodeGPIGS = (arr)=> {
     const GPIGSValue = {
-       gridVoltage: arr[0],
-       gridFrequency: arr[1],
-       acOutputVoltage: arr[2],
-       acOutputFrequency: arr[3],
-       acOutputPowerVa: arr[4],
-       acOutputActivePower: arr[5],
-       outputLoadPercent: arr[6],
-       busVoltage: arr[7],
-       batteryVoltage: arr[8],
-       batteryCharging_current: arr[9],
-       batteryCapacity: arr[10],
-       inverterHeatSink_temperature: arr[11],
-       pvInputCurrent_for_battery: arr[12],
-       pvInputVoltage_1: arr[13],
-       batteryVoltageFrom_scc: arr[14],
-       batteryDischargeCurrent: arr[15],
-       deviceStatus: arr[16]
+        grid: {
+            voltage: arr[0],
+            frequency: arr[1]
+        },
+        consumption: {
+            voltage: arr[2],
+            frequency: arr[3],
+            powerVa: arr[4],
+            activePower: arr[5],
+            loadPercent: arr[6],
+        },
+        battery: {
+            voltage: arr[8],
+            chargingCurrent: arr[9],
+            capacity: arr[10],
+            voltageFromScc: arr[14],
+            dischargeCurrent: arr[15]
+        },
+        inverter: {
+            busVoltage: arr[7],
+            heatSinkTemperature: arr[11],
+            deviceStatus: arr[16]
+        },
+        pv: {
+            currentBattery: arr[12],
+            voltage_1: arr[13],
+            chargingPower: arr[19]
+        }
     }
     if (GPIGSValue.deviceStatus.length==8) {
-        GPIGSValue.chargingScc = GPIGSValue.deviceStatus.substring(5,6);
-        GPIGSValue.chargingAC = GPIGSValue.deviceStatus.substring(6,7);
-        GPIGSValue.chargingSccAcc = GPIGSValue.deviceStatus.substring(7,8);
+        GPIGSValue.inverter.chargingScc = GPIGSValue.inverter.deviceStatus.substring(5,6);
+        GPIGSValue.inverter.chargingAC = GPIGSValue.inverter.deviceStatus.substring(6,7);
+        GPIGSValue.inverter.chargingSccAcc = GPIGSValue.inverter.deviceStatus.substring(7,8);
     }
+    // Battery calculated info
+    GPIGSValue.battery.powerOut = GPIGSValue.battery.voltage * GPIGSValue.battery.dischargeCurrent;
+    GPIGSValue.battery.powerIn = GPIGSValue.voltageFromScc * GPIGSValue.battery.chargingCurrent;
+    // Consumption calculated info
+    GPIGSValue.consumption.current = GPIGSValue.consumption.activePower/GPIGSValue.consumption.voltage;
+    // PV calculated info
+    GPIGSValue.pv.powerForLoads = GPIGSValue.pv.chargingPower - (GPIGSValue.pv.currentBattery * GPIGSValue.battery.voltageFromScc);
+    // Grid calculated info
+    GPIGSValue.grid.power = GPIGSValue.consumption.activePower - (GPIGSValue.battery.powerOut + GPIGSValue.pv.powerForLoads);
+
     console.log(GPIGSValue);
 }
