@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cd src/client/ && npm run build && cd ../../ && npm run buildServer",
-    "buildServer": "./node_modules/.bin/webpack"
+    "buildServer": "./node_modules/.bin/webpack",
+    "install": "npm install && cd src/client/ && npm install && cd ../../"
   },
   "repository": {
     "type": "git",
