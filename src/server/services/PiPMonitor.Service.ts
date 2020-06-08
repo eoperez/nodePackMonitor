@@ -58,6 +58,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
 
         port.on('open', () => {
             console.log('PIP Monitor CommPort Ready.');
+            // for some reason PIP does not repond to first call, this should serve as wake up call
             port.write(QPIGS);
         });
 
@@ -65,6 +66,12 @@ export default class PiPMonitor implements IPiPMonitorService  {
         this.ioSocketServer.on('connection', (socket: SocketIO.Socket) => {
             console.log("Client connected to PIP monitor.");
         });
+        // Send intitial QPIGSInfo to avoid error in front end
+        this.ioSocketServer.sockets.emit('inverter', this.QPIGSInfo);
+
+        setInterval(() => {
+            port.write(QPIGS);
+        }, 2000);
 
         parser.on('data', (data) => {
             if (data.length == 109 && data.substring(0,1)=="(") {
