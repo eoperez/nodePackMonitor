@@ -52,4 +52,4 @@ const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
 batteriesMonitor.init({commPort: batteryMonitorCommPort});
 
 const pipMonitor: IPiPMonitorService = new PiPMonitor(io);
-pipMonitor.init({commPort: inverterMonitorCommPort});
+pipMonitor.init({commPort: inverterMonitorCommPort, maxPIPOutPower: 5000, maxPVPower: 5000});
