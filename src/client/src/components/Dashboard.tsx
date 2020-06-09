@@ -98,9 +98,9 @@ export default function Dashboard({}: Props): ReactElement {
             <Paper className={classes.paper}>
                <GaugeTile id= "gridInfo" title="GRID" percentage={inverter.grid.loadPercent}
                infoTiles={[
-                 {primaryText: inverter.grid.voltage + "V", secondaryText: "Voltage"},
-                 {primaryText: inverter.grid.frequency + "Hz", secondaryText: "Frequency"},
-                 {primaryText: inverter.grid.power + "W", secondaryText: "Power"}
+                 {primaryText: inverter.grid.voltage, secondaryText: "Voltage", unit: "V"},
+                 {primaryText: inverter.grid.frequency, secondaryText: "Frequency", unit: "Hz"},
+                 {primaryText: inverter.grid.power.toFixed(2), secondaryText: "Power", unit: "W"}
                 ]} />
             </Paper>
           </Grid>
@@ -108,10 +108,10 @@ export default function Dashboard({}: Props): ReactElement {
             <Paper className={classes.paper}>
               <GaugeTile id= "pvInfo" title="PV" percentage={inverter.pv.productionPercent} 
               infoTiles={[
-                {primaryText: inverter.pv.voltage_1 + "V", secondaryText: "Voltage"},
-                {primaryText: inverter.pv.currentBattery + "A", secondaryText: "Battery Current"},
-                {primaryText: inverter.pv.chargingPower + "W", secondaryText: "Charging Power"},
-                {primaryText: inverter.pv.powerForLoads + "W", secondaryText: "Power for Load"},
+                {primaryText: inverter.pv.voltage_1, secondaryText: "Voltage", unit: "V"},
+                {primaryText: inverter.pv.currentBattery, secondaryText: "Battery Current", unit: "A"},
+                {primaryText: inverter.pv.chargingPower, secondaryText: "Charging", unit: "W"},
+                {primaryText: inverter.pv.powerForLoads.toFixed(2), secondaryText: "Load", unit: "V"},
               ]} reverse={true}/>
 
             </Paper>
@@ -120,10 +120,10 @@ export default function Dashboard({}: Props): ReactElement {
             <Paper className={classes.paper}>
               <GaugeTile id="consumption" title="Consumption" percentage={inverter.consumption.loadPercent}
               infoTiles={[
-                {primaryText: inverter.consumption.voltage + "V", secondaryText: "Voltage"},
-                {primaryText: inverter.consumption.frequency + "Hz", secondaryText: "Frequency"},
-                {primaryText: inverter.consumption.powerVa + "Va", secondaryText: "Power"},
-                {primaryText: inverter.consumption.activePower + "W", secondaryText: "Active"}
+                {primaryText: inverter.consumption.voltage, secondaryText: "Voltage", unit: "V"},
+                {primaryText: inverter.consumption.frequency, secondaryText: "Frequency", unit: "Hz"},
+                {primaryText: inverter.consumption.powerVa, secondaryText: "Power", unit: "Va"},
+                {primaryText: inverter.consumption.activePower, secondaryText: "Active", unit: "W"}
               ]} />
             </Paper>
           </Grid>
@@ -131,10 +131,10 @@ export default function Dashboard({}: Props): ReactElement {
             <Paper className={classes.paper}>
               <GaugeTile id="battery" title="Battery Bank" percentage={inverter.battery.capacity}
                 infoTiles={[
-                  {primaryText: inverter.battery.powerIn + "W", secondaryText: "Power In"},
-                  {primaryText: inverter.battery.chargingCurrent + "A", secondaryText: "Charging Current"},
-                  {primaryText: inverter.battery.voltage + "V", secondaryText: "Voltage"},
-                  {primaryText: inverter.battery.powerOut + "W", secondaryText: "Power Out"}
+                  {primaryText: inverter.battery.powerIn.toFixed(2), secondaryText: "Power In", unit:"W"},
+                  {primaryText: inverter.battery.chargingCurrent, secondaryText: "Charging", unit: "A"},
+                  {primaryText: inverter.battery.voltage, secondaryText: "Voltage", unit: "V"},
+                  {primaryText: inverter.battery.powerOut.toFixed(2), secondaryText: "Power Out", unit: "W"}
                 ]} reverse={true}/>
             </Paper>
           </Grid>
