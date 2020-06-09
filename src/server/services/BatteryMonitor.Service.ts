@@ -74,7 +74,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         });
         
         // listener to check to restart the request if time elapsed is higher than expected.
-        setInterval(this.monitorResponseFallback, 3000);
+        // setInterval(this.monitorResponseFallback, 3000);
     }
 
     monitorResponseFallback = (): void => {
