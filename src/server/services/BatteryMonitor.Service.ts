@@ -70,18 +70,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         this.ioSocketServer.on('connection', (socket: SocketIO.Socket) => {
             console.log("Client connected to battery monitor.");
         });
-        
-        // listener to check to restart the request if time elapsed is higher than expected.
-        // setInterval(this.monitorResponseFallback, 3000);
-    }
 
-    monitorResponseFallback = (error: any) => {
-        if(error) {
-            console.log('error sending packet, check:', this.activeCall);
-        } else {
-            const sentDate = new Date();
-            console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`);
-        }
     }
     
     portOpenCallback = (): void => {
@@ -191,10 +180,16 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     }
 
     sendSerialMessage(buffer: Array<number>) {
-        let sent: boolean = false;
         const crc = this.crc8(buffer, this.PACKET_LENGTH);
         buffer.push(crc);
-        this.port.write(buffer, this.monitorResponseFallback);
+        this.port.write(buffer, (error) => {
+            if(error) {
+                console.log('error sending packet, check:', this.activeCall);
+            } else {
+                const sentDate = new Date();
+                console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`);
+            }
+        });
     }
 
     crc8(buffer: Array<number>, length: number) {
