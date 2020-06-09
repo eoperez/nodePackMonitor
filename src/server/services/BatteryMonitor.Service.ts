@@ -16,11 +16,9 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     buffer: Array<number>; // it should have array of integers
     port: SerialPort;
     bankInfo: Array<ICellInfo>;
-    sentDate: any;
     activeCall: IActiveCall;
 
     constructor(ioServer: SocketIO.Server) {
-        this.sentDate = '';
         // Sets instance of Socket.IO
         this.ioSocketServer = ioServer;
         // Defaults
@@ -78,12 +76,25 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     }
 
     monitorResponseFallback = (error: any) => {
-        this.sentDate = new Date();
-        console.log(`Packet sent: ${this.sentDate.getFullYear()}-${this.sentDate.getMonth()}-${this.sentDate.getDate()} ${this.sentDate.getHours()}:${this.sentDate.getMinutes()}:${this.sentDate.getMilliseconds()/1000}`);
+        if(error) {
+            console.log('error sending packet, check:', this.activeCall);
+        } else {
+            const sentDate = new Date();
+            console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`);
+            setInterval(() => {
+                console.log('Checking if a call restart is needed for:', this.activeCall);
+                /*
+                const now: Date = new Date();
+                const timeElapsed = (now.getTime() - sentDate.getTime()) / 1000;
+                console.log('Time elapsed since last call:', timeElapsed)
+                */
+            })
+        }
+        
         /*
         console.log('Checking if a call restart is needed for:', this.activeCall);
         const now: Date = new Date();
-        const timeElapsed = (now.getTime() - this.sentDate.getTime()) / 1000;
+        const timeElapsed = (now.getTime() - sentDate.getTime()) / 1000;
         console.log('Time elapsed since last call:', timeElapsed)
         */
     }
