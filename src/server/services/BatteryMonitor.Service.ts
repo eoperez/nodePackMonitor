@@ -83,12 +83,10 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`);
             setInterval(() => {
                 console.log('Checking if a call restart is needed for:', this.activeCall);
-                /*
                 const now: Date = new Date();
                 const timeElapsed = (now.getTime() - sentDate.getTime()) / 1000;
-                console.log('Time elapsed since last call:', timeElapsed)
-                */
-            })
+                console.log('Time elapsed since last call:', timeElapsed);
+            }, 3000);
         }
         
         /*
