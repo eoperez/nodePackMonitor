@@ -40,6 +40,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             write: true
         }; // by defult using broadcast address request. Value is ignored just using ramdom number for now
         this.bankInfo = [];
+        this.sentDate = new Date();
+        this.activeCall = {};
     }
     // triggers communication over serial port to send and collect sensor data
     init = (config: IBatteriesMonitorConfig): void => {

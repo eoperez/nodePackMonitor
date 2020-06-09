@@ -24,6 +24,6 @@ export interface ICellInfo {
 }
 
 export interface IActiveCall {
-    address: number;
-    REG: number;
+    address?: number;
+    REG?: number;
 }
