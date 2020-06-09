@@ -74,14 +74,16 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         });
         
         // listener to check to restart the request if time elapsed is higher than expected.
-        setInterval(()=> {
-            console.log('Checking if a call restart is needed for:', this.activeCall);
-            const now: Date = new Date();
-            const timeElapsed = (now.getTime() - this.sentDate.getTime()) / 1000;
-            console.log('Time elapsed since last call:', timeElapsed)
-        }, 3000);
+        setInterval(this.monitorResponseFallback, 3000);
     }
 
+    monitorResponseFallback = (): void => {
+        console.log('Checking if a call restart is needed for:', this.activeCall);
+        const now: Date = new Date();
+        const timeElapsed = (now.getTime() - this.sentDate.getTime()) / 1000;
+        console.log('Time elapsed since last call:', timeElapsed)
+    }
+    
     portOpenCallback = (): void => {
         console.log(`Port opened, listening using serial configuraiton`);
         //get monitor information
