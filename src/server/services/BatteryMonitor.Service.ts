@@ -198,7 +198,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             if (err) {
                 console.log(err);
             } else {
-                // console.log(`Packet sent: ${this.sentDate.getFullYear()}-${this.sentDate.getMonth()}-${this.sentDate.getDate()} ${this.sentDate.getHours()}:${this.sentDate.getMinutes()}:${this.sentDate.getMilliseconds()/1000}`);
+                console.log(`Packet sent: ${this.sentDate.getFullYear()}-${this.sentDate.getMonth()}-${this.sentDate.getDate()} ${this.sentDate.getHours()}:${this.sentDate.getMinutes()}:${this.sentDate.getMilliseconds()/1000}`);
             }
         });
     }
