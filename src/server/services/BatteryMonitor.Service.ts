@@ -77,11 +77,15 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         // setInterval(this.monitorResponseFallback, 3000);
     }
 
-    monitorResponseFallback = (): void => {
+    monitorResponseFallback = (error: any) => {
+        this.sentDate = new Date();
+        console.log(`Packet sent: ${this.sentDate.getFullYear()}-${this.sentDate.getMonth()}-${this.sentDate.getDate()} ${this.sentDate.getHours()}:${this.sentDate.getMinutes()}:${this.sentDate.getMilliseconds()/1000}`);
+        /*
         console.log('Checking if a call restart is needed for:', this.activeCall);
         const now: Date = new Date();
         const timeElapsed = (now.getTime() - this.sentDate.getTime()) / 1000;
         console.log('Time elapsed since last call:', timeElapsed)
+        */
     }
     
     portOpenCallback = (): void => {
@@ -194,17 +198,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         let sent: boolean = false;
         const crc = this.crc8(buffer, this.PACKET_LENGTH);
         buffer.push(crc);
-        this.port.write(buffer, function (err) {
-            if (err) {
-                console.log(err);
-            } else {
-                sent = true;
-            }
-        });
-        if (sent) {
-            this.sentDate = new Date();
-            console.log(`Packet sent: ${this.sentDate.getFullYear()}-${this.sentDate.getMonth()}-${this.sentDate.getDate()} ${this.sentDate.getHours()}:${this.sentDate.getMinutes()}:${this.sentDate.getMilliseconds()/1000}`);
-        }
+        this.port.write(buffer, this.monitorResponseFallback);
     }
 
     crc8(buffer: Array<number>, length: number) {
