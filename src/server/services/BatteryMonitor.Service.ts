@@ -16,11 +16,11 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     buffer: Array<number>; // it should have array of integers
     port: SerialPort;
     bankInfo: Array<ICellInfo>;
-    sentDate: Date;
+    sentDate: any;
     activeCall: IActiveCall;
 
     constructor(ioServer: SocketIO.Server) {
-        this.sentDate = new Date();
+        this.sentDate = '';
         // Sets instance of Socket.IO
         this.ioSocketServer = ioServer;
         // Defaults
