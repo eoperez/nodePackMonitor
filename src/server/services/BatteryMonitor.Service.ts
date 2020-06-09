@@ -79,7 +79,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             const now: Date = new Date();
             const timeElapsed = (now.getTime() - this.sentDate.getTime()) / 1000;
             console.log('Time elapsed since last call:', timeElapsed)
-        }, 500);
+        }, 3000);
     }
 
     portOpenCallback = (): void => {
