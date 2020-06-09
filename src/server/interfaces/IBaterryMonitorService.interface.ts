@@ -22,3 +22,8 @@ export interface ICellInfo {
     voltage: number;
     temp?: number;
 }
+
+export interface IActiveCall {
+    address: number;
+    REG: number;
+}

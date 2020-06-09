@@ -1,6 +1,6 @@
 import * as SocketIO from "socket.io";
 import * as SerialPort from 'serialport';
-import { IPacket, IBatteriesMonitorConfig, IBaterryMonitorService, ICellInfo } from "../interfaces/IBaterryMonitorService.interface";
+import { IPacket, IBatteriesMonitorConfig, IBaterryMonitorService, ICellInfo, IActiveCall } from "../interfaces/IBaterryMonitorService.interface";
 
 export default class BatteryMonitor implements IBaterryMonitorService {
     ioSocketServer: SocketIO.Server;
@@ -16,6 +16,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     buffer: Array<number>; // it should have array of integers
     port: SerialPort;
     bankInfo: Array<ICellInfo>;
+    sentDate: Date;
+    activeCall: IActiveCall;
 
     constructor(ioServer: SocketIO.Server) {
         // Sets instance of Socket.IO
@@ -68,7 +70,14 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         this.ioSocketServer.on('connection', (socket: SocketIO.Socket) => {
             console.log("Client connected to battery monitor.");
         });
-
+        
+        // listener to check to restart the request if time elapsed is higher than expected.
+        setInterval(()=> {
+            console.log('Checking if a call restart is needed for:', this.activeCall);
+            const now: Date = new Date();
+            const timeElapsed = (now.getTime() - this.sentDate.getTime()) / 1000;
+            console.log('Time elapsed since last call:', timeElapsed)
+        }, 500);
     }
 
     portOpenCallback = (): void => {
@@ -160,6 +169,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     }
 
     getMonitorInfo(monitorAddress: number, REG: number){
+        // Notify acctive call for watcher to check see if we need to restrart the call.
+        this.activeCall = {address: monitorAddress, REG: REG};
         this.packet = {
             address: monitorAddress, // Address of the monitor, use 0 for broadcast.
             reg: REG, // command registry: supported by monitor: address registration = 1 (0x1), Voltage request = 3 (0x3) and temperature request = 4 (0x4)
@@ -182,8 +193,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             if (err) {
                 console.log(err);
             } else {
-                const today: Date = new Date();
-                console.log(`Packet sent: ${today.getFullYear()}-${today.getMonth()}-${today.getDate()} ${today.getHours()}:${today.getMinutes()}:${today.getMilliseconds()/1000}`);
+                this.sentDate = new Date();
+                console.log(`Packet sent: ${this.sentDate.getFullYear()}-${this.sentDate.getMonth()}-${this.sentDate.getDate()} ${this.sentDate.getHours()}:${this.sentDate.getMinutes()}:${this.sentDate.getMilliseconds()/1000}`);
             }
         });
     }
