@@ -191,13 +191,13 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     }
 
     sendSerialMessage(buffer: Array<number>) {
+        this.sentDate = new Date();
         const crc = this.crc8(buffer, this.PACKET_LENGTH);
         buffer.push(crc);
         this.port.write(buffer, function (err) {
             if (err) {
                 console.log(err);
             } else {
-                this.sentDate = new Date();
                 console.log(`Packet sent: ${this.sentDate.getFullYear()}-${this.sentDate.getMonth()}-${this.sentDate.getDate()} ${this.sentDate.getHours()}:${this.sentDate.getMinutes()}:${this.sentDate.getMilliseconds()/1000}`);
             }
         });
