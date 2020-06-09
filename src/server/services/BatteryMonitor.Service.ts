@@ -79,12 +79,16 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         this.getMonitorInfo(this.ADDRESS_BROADCAST, this.REG_ADDRESS);
     }
 
-    healthCheck = (error: Error): void => {
+    healthCheck = (error?: Error): void => {
         if(error) {
             console.log('error sending packet, check:', this.activeCall);
         } else {
             const sentDate = new Date();
             console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`, this.activeCall);
+            const sentCall = this.activeCall;
+            if(sentCall == this.activeCall) {
+                console.log('is the same')
+            }
         }
     }
 
