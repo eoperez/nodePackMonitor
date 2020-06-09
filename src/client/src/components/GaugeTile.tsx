@@ -12,7 +12,7 @@ import GaugeChart from 'react-gauge-chart';
 interface IinfoTile {
     primaryText: string;
     secondaryText: string;
-
+    unit?: string;
 }
 
 interface Props {
@@ -26,7 +26,7 @@ interface Props {
 export default function GaugeTile(props: Props): ReactElement {
     const infoTiles = props.infoTiles.map((infoTile:IinfoTile) =>
         <Grid item>
-            <Typography variant='h6' color="secondary" style={{ fontSize: '1rem' }}>{infoTile.primaryText}</Typography>
+            <Typography variant='h6' color="secondary" style={{ fontSize: '1rem' }}>{infoTile.primaryText}<Typography variant="caption">{infoTile.unit}</Typography></Typography>
             <Typography variant='body2' style={{ fontSize: '.8rem' }}>{infoTile.secondaryText}</Typography>
         </Grid>
     );
