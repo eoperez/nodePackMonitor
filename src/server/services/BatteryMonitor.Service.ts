@@ -20,6 +20,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     activeCall: IActiveCall;
 
     constructor(ioServer: SocketIO.Server) {
+        this.sentDate = new Date();
         // Sets instance of Socket.IO
         this.ioSocketServer = ioServer;
         // Defaults
@@ -40,7 +41,6 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             write: true
         }; // by defult using broadcast address request. Value is ignored just using ramdom number for now
         this.bankInfo = [];
-        this.sentDate = new Date();
         this.activeCall = {};
     }
     // triggers communication over serial port to send and collect sensor data
@@ -191,7 +191,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     }
 
     sendSerialMessage(buffer: Array<number>) {
-        // this.sentDate = new Date();
+        this.sentDate = new Date();
         const crc = this.crc8(buffer, this.PACKET_LENGTH);
         buffer.push(crc);
         this.port.write(buffer, function (err) {
