@@ -3,7 +3,7 @@ import { MuiThemeProvider, CssBaseline, createMuiTheme, colors, Theme, ThemeProv
 import AppMenu from './components/AppMenu';
 import Dashboard from './components/Dashboard';
 
-let pageThem: Theme = createMuiTheme({
+let pageTheme: Theme = createMuiTheme({
   palette: {
     primary: colors.lightBlue,
     secondary: colors.yellow,
@@ -11,19 +11,27 @@ let pageThem: Theme = createMuiTheme({
   },
 });
 
-pageThem.typography.body2 = {
+pageTheme.typography.body2 = {
   fontFamily: 'Arial',
   fontSize: '.9rem', 
-  [pageThem.breakpoints.down('xs')]: {
+  [pageTheme.breakpoints.down('xs')]: {
     fontSize: '.5rem',
   },
-  [pageThem.breakpoints.up('sm')]: {
+  [pageTheme.breakpoints.up('sm')]: {
     fontSize: '.9rem'
+  },
+}
+pageTheme.typography.h6 = {
+  [pageTheme.breakpoints.down('xs')]: {
+    fontSize: '.68rem'
+  },
+  [pageTheme.breakpoints.up('sm')]: {
+    fontSize: '1.25rem'
   }
 }
 export default class App extends React.Component {
   render() {
-    return <MuiThemeProvider theme={pageThem}>
+    return <MuiThemeProvider theme={pageTheme}>
     <CssBaseline />
     <Dashboard></Dashboard>
     <AppMenu></AppMenu>
