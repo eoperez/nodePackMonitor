@@ -83,6 +83,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
        if(sentCall == this.activeCall){
             setTimeout((healthCheck = this.healthCheck, sendCallOriginal = sentCall) => {
                 healthCheck(sendCallOriginal);
+                console.log('is the same.');
             }, 0);
        }
     }
