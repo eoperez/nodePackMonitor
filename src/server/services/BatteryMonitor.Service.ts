@@ -78,21 +78,23 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         //get monitor information
         this.getMonitorInfo(this.ADDRESS_BROADCAST, this.REG_ADDRESS);
     }
-
+    // Callback of port write function. It should check if active call is hanging waiting for a reponse.
     healthCheck = (sentCall: IActiveCall, loopCount: number ): void => {
-       if(sentCall == this.activeCall){
-           loopCount++;
-           if(loopCount > 2000){
-            // this.getMonitorInfo(sentCall.address, sentCall.REG);
-            // console.log('Maximum loops reached. Requesting monitor info again:', sentCall);
-            console.log('loopcount over 2000:', loopCount);
-           } else {
-            console.log('loopcount:', loopCount);
-            setTimeout((healthCheck = this.healthCheck, sendCallOriginal = sentCall, currentLoopCount = loopCount) => {
-                healthCheck(sendCallOriginal, currentLoopCount);
-            }, 0);
-           }
-       }
+        // Checks if the active call is the same one as the the one sent using port write function.
+        if(sentCall == this.activeCall){
+            // increase the loopcount to capture number of tries.
+            loopCount++;
+            // we consider 2000 loops a hanging call. It will execute the call again.
+            if(loopCount > 2000){
+                console.log('Maximum loops reached. Requesting monitor info again:', sentCall);
+                this.getMonitorInfo(sentCall.address, sentCall.REG);
+            } else {
+                // otherwise we would loop in process to do a health check.
+                setTimeout((healthCheck = this.healthCheck, sendCallOriginal = sentCall, currentLoopCount = loopCount) => {
+                    healthCheck(sendCallOriginal, currentLoopCount);
+                }, 0);
+            }
+        }
     }
 
     debugAsBinary(number: number){
