@@ -85,6 +85,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 healthCheck(sendCallOriginal);
                 console.log('is the same.');
             }, 0);
+       } else {
+           console.log('not the same');
        }
     }
 
