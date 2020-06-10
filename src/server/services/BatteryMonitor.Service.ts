@@ -79,14 +79,19 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         this.getMonitorInfo(this.ADDRESS_BROADCAST, this.REG_ADDRESS);
     }
 
-    healthCheck = (sentCall: IActiveCall): void => {
+    healthCheck = (sentCall: IActiveCall, loopCount: number ): void => {
        if(sentCall == this.activeCall){
+           loopCount++;
+           if(loopCount > 2000){
+            // this.getMonitorInfo(sentCall.address, sentCall.REG);
+            // console.log('Maximum loops reached. Requesting monitor info again:', sentCall);
+            console.log('loopcount over 2000:', loopCount);
+           } else {
+            console.log('loopcount:', loopCount);
             setTimeout((healthCheck = this.healthCheck, sendCallOriginal = sentCall) => {
                 healthCheck(sendCallOriginal);
-                console.log('is the same.');
             }, 0);
-       } else {
-           console.log('not the same');
+           }
        }
     }
 
@@ -199,7 +204,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             } else {
                 const sentDate = new Date();
                 console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`, this.activeCall);
-                this.healthCheck(this.activeCall);
+                this.healthCheck(this.activeCall, 0);
             }
         });
     }
