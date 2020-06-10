@@ -79,13 +79,13 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         this.getMonitorInfo(this.ADDRESS_BROADCAST, this.REG_ADDRESS);
     }
 
-    healthCheck = (error?: Error): void => {
-        if(error) {
-            console.log('error sending packet, check:', this.activeCall);
-        } else {
-            const sentDate = new Date();
-            console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`, this.activeCall);
-        }
+    healthCheck = (sentCall: IActiveCall): void => {
+       if(sentCall == this.activeCall){
+           console.log('is the same');
+           this.healthCheck(sentCall);
+       } else {
+           console.log('not the same');
+       }
     }
 
     debugAsBinary(number: number){
@@ -191,7 +191,15 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     sendSerialMessage(buffer: Array<number>) {
         const crc = this.crc8(buffer, this.PACKET_LENGTH);
         buffer.push(crc);
-        this.port.write(buffer, this.healthCheck);
+        this.port.write(buffer, (error)=>{
+            if(error) {
+                console.log('error sending packet, check:', this.activeCall);
+            } else {
+                const sentDate = new Date();
+                console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`, this.activeCall);
+                this.healthCheck(this.activeCall);
+            }
+        });
     }
 
     crc8(buffer: Array<number>, length: number) {
