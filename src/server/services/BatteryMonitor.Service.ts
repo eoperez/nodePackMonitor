@@ -88,8 +88,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             console.log('loopcount over 2000:', loopCount);
            } else {
             console.log('loopcount:', loopCount);
-            setTimeout((healthCheck = this.healthCheck, sendCallOriginal = sentCall) => {
-                healthCheck(sendCallOriginal);
+            setTimeout((healthCheck = this.healthCheck, sendCallOriginal = sentCall, currentLoopCount = loopCount) => {
+                healthCheck(sendCallOriginal, currentLoopCount);
             }, 0);
            }
        }
