@@ -1,5 +1,6 @@
 import * as express from 'express'
 import * as SerialPort from 'serialport'
+import * as bodyParser from "body-parser";
 import { Application, Router, Request, Response} from 'express'
 import { join } from "path";
 import { Server } from "http";
@@ -29,6 +30,18 @@ const mainRoute = (req: Request, res: Response) => {
     res.render('index', {});
 }
 
+// serverinfo route
+const serverInfo = (req: Request, res: Response) => {
+    const isFirstTime = false;
+    res.json({
+        isFirstTime: isFirstTime,
+        ports: availablePorts
+    });
+}
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 // Sets assests
 app.use('/static', express.static(join(__dirname,'views/static')));
 
@@ -38,6 +51,7 @@ app.set('view engine', 'html');
 app.engine('html', require('ejs').__express);
 
 // Sets express route
+app.use('/serverInfo', router.get('/', serverInfo))
 app.use('/', router.get('/', mainRoute));
 
 // Inititate the server
