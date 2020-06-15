@@ -51,8 +51,8 @@ app.set('view engine', 'html');
 app.engine('html', require('ejs').__express);
 
 // Sets express route
-app.use('/serverInfo', router.get('/', serverInfo))
-app.use('/', router.get('/', mainRoute));
+app.get('/serverinfo', serverInfo);
+app.get('/', mainRoute);
 
 // Inititate the server
 const server: Server = app.listen(port, () => {
