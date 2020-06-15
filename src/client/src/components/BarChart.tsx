@@ -95,7 +95,7 @@ const useChartBoxBg = () => {
     let bgColor: string = '#333333';
     for (let i = 0; i <= numberScale-1; i++) {
         cordY = cordY + rowSize;
-        if(i%2 == 0){
+        if(i%2 === 0){
             bgColor = '#333333';
         } else {
             bgColor = '#000000';
@@ -172,19 +172,19 @@ export default function BarChart(props: Props): ReactElement {
     }, [props.bars]);
     // const summary = useSummary(props.bars);
 
-    const chartRowScaleLines = rowScales.map((row)=>
-        <g>
+    const chartRowScaleLines = rowScales.map((row, index)=>
+        <g key={index}>
             <line stroke="#ffffff" stroke-linecap="null" stroke-linejoin="null" y2={row.strokeY} x2="950" y1={row.strokeY} x1="75" stroke-width="0.5" fill="none"/>
             <text transform="matrix(1 0 0 1 0 0)" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="12" y={row.scaleYLocation} x="45.0002" stroke-width="0" stroke="#ffffff" fill="#999999">{row.voltageScale}</text>
             <text transform="matrix(1 0 0 1 0 0)" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="10" y={row.scaleYLocation} x="955" stroke-width="0" stroke="#ffffff" fill="#999999">{row.tempScale}&#176; </text>
         </g>
     );
 
-    const chartRowBgs= rowBgs.map((row)=>
-        <rect opacity="1" height="20" width="864" y={row.bgBoxY} x="80" strokeOpacity="null" strokeWidth="0" stroke="#000" fill={row.bgColor}/>
+    const chartRowBgs= rowBgs.map((row, index)=>
+        <rect key={index} opacity="1" height="20" width="864" y={row.bgBoxY} x="80" strokeOpacity="null" strokeWidth="0" stroke="#000" fill={row.bgColor}/>
     );
-    const bars = barDimensions.map((bar) =>
-        <g>
+    const bars = barDimensions.map((bar, index) =>
+        <g key={index}>
             <title>{`Cell: ${bar.id}, Volts: ${bar.voltage.toFixed(2)}`}</title>
             <rect rx="3" className={classes.bar} id={`bar${bar.id}`} height={bar.height} width={bar.width} y={bar.yLocation} x={bar.xLocation} stroke-width="0">
             </rect>

@@ -3,8 +3,7 @@ import {
     Grid,
     Typography,
     Hidden,
-    Divider,
-    colors
+    Divider
 } from '@material-ui/core'
 
 import GaugeChart from 'react-gauge-chart';
@@ -24,8 +23,8 @@ interface Props {
 }
 
 export default function GaugeTile(props: Props): ReactElement {
-    const infoTiles = props.infoTiles.map((infoTile:IinfoTile) =>
-        <Grid item>
+    const infoTiles = props.infoTiles.map((infoTile:IinfoTile, index: number) =>
+        <Grid item key={index}>
             <Typography variant='h6' color="secondary" style={{ fontSize: '1rem' }}>{infoTile.primaryText}<Typography variant="caption">{infoTile.unit}</Typography></Typography>
             <Typography variant='body2' style={{ fontSize: '.8rem' }}>{infoTile.secondaryText}</Typography>
         </Grid>

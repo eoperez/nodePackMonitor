@@ -27,15 +27,13 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: 'center',
       color: theme.palette.text.secondary,
     },
-    list: {
-    },
     listIconAvatar: {
       color: "white",
     }
   }),
 );
 
-export default function Dashboard({}: Props): ReactElement {
+export default function Dashboard(props: Props): ReactElement {
     const classes = useStyles();
     const [bars, setBars] = useState([]);
     const [inverter,setInverter] = useState({
