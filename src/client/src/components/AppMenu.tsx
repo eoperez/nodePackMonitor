@@ -1,11 +1,25 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useState, useEffect } from 'react'
 import { AppBar, BottomNavigation, BottomNavigationAction, makeStyles, Theme, createStyles, Divider } from '@material-ui/core'
 import { NetworkCheckSharp, SettingsBrightness, AccountTreeSharp  } from "@material-ui/icons";
+import axios from 'axios'
 import ConfigPeek from "./ConfigPeek";
 
 interface IActiveAction {
     selected?: string;
     isDrawerOpen: boolean;
+}
+
+interface IServerInfo {
+    isFirstTime: boolean;
+    ports?: Array<IPort>
+}
+interface IPort {
+    manufacturer?: string;
+    serialNumber?: string;
+    pnpId?: string;
+    vendorId?: string;
+    productId?: string;
+    path: string;
 }
 
 interface Props {}
@@ -30,6 +44,20 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function AppMenu(props: Props): ReactElement {
     const classes = useStyles();
     const [activeAction, setActiveAction] = useState<IActiveAction>({isDrawerOpen: false});
+    const [serverInfo, setServerInfo] = useState<IServerInfo>({isFirstTime: true});
+    
+    useEffect(() => {
+        const getServerInfo = async () => {
+            const results = await axios('http://192.168.0.5:5000/serverinfo');
+            setServerInfo(results.data);
+        }
+        getServerInfo();
+    },[]);
+
+    useEffect(() => {
+        console.log(serverInfo.ports);
+    });
+
     const navActions = (event: React.ChangeEvent<{}>, newValue: string): void => {
         if(newValue) {
             setActiveAction({selected: newValue, isDrawerOpen: true});
