@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-export default function AppMenu({ }: Props): ReactElement {
+export default function AppMenu(props: Props): ReactElement {
     const classes = useStyles();
     const [activeAction, setActiveAction] = useState<IActiveAction>({isDrawerOpen: false});
     const navActions = (event: React.ChangeEvent<{}>, newValue: string): void => {

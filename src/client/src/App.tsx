@@ -2,6 +2,10 @@ import React from 'react';
 import { MuiThemeProvider, CssBaseline, createMuiTheme, colors, Theme, ThemeProvider, responsiveFontSizes } from '@material-ui/core';
 import AppMenu from './components/AppMenu';
 import Dashboard from './components/Dashboard';
+interface serverInfo{
+  isFirstTime: boolean;
+  ports: Array<any>;
+}
 
 let pageTheme: Theme = createMuiTheme({
   palette: {
