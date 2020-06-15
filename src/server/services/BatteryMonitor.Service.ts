@@ -84,8 +84,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         if(sentCall == this.activeCall){
             // increase the loopcount to capture number of tries.
             loopCount++;
-            // we consider 2000 loops a hanging call. It will execute the call again.
-            if(loopCount > 2000){
+            // we consider 000 loops a hanging call. It will execute the call again.
+            if(loopCount > 4000){
                 console.log('Maximum loops reached. Requesting monitor info again:', sentCall);
                 this.getMonitorInfo(sentCall.address, sentCall.REG);
             } else {
