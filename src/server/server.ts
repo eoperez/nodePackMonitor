@@ -1,6 +1,7 @@
 import * as express from 'express'
 import * as SerialPort from 'serialport'
 import * as bodyParser from "body-parser";
+import * as cors from "cors";
 import { Application, Router, Request, Response} from 'express'
 import { join } from "path";
 import { Server } from "http";
@@ -39,6 +40,9 @@ const serverInfo = (req: Request, res: Response) => {
     });
 }
 
+// Allow CORS to make front end development easier.
+app.use(cors());
+// Enable parser for JSON requests.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -52,7 +56,7 @@ app.engine('html', require('ejs').__express);
 
 // Sets express route
 app.get('/serverinfo', serverInfo);
-app.get('/', mainRoute);
+router.get('/', mainRoute);
 
 // Inititate the server
 const server: Server = app.listen(port, () => {
