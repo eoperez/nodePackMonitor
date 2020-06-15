@@ -1,15 +1,13 @@
 import React, { ReactElement, useState, useEffect } from 'react'
+import axios from 'axios'
 import { makeStyles, 
     Theme, 
     createStyles, 
     Drawer, 
     Typography, 
-    Divider,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    FormHelperText} from '@material-ui/core'
+    Divider
+} from '@material-ui/core'
+import MonitorConfig from "./MonitorConfig";
 
 interface Props {
     isOpen: boolean;
@@ -22,6 +20,19 @@ interface IDrawer extends Props {
 
 }
 
+interface IServerInfo {
+    isFirstTime: boolean;
+    ports?: Array<IPort>
+}
+export interface IPort {
+    manufacturer?: string;
+    serialNumber?: string;
+    pnpId?: string;
+    vendorId?: string;
+    productId?: string;
+    path: string;
+}
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         drawerContainer: {
@@ -32,29 +43,22 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function ConfigPeek(props: Props): ReactElement {
     const classes = useStyles();
-
+    const [serverInfo, setServerInfo] = useState<IServerInfo>({isFirstTime: true});
     const [drawer, setDrawer] = useState<IDrawer>({isOpen: props.isOpen, drawerType: props.drawerType});
-
+    const getServerInfo = async () => {
+        const results = await axios('http://192.168.0.5:5000/serverinfo');
+        setServerInfo(results.data);
+    }
+    useEffect(() => {
+        getServerInfo();
+    }, []);
     useEffect(() => {
         const newDrawer: IDrawer = {...props};
         switch (props.drawerType) {
             case 'monitorConfig':
-                newDrawer.title = 'Monitors Configuration'
+                newDrawer.title = 'Monitors Configuration';
                 newDrawer.form = (
-                    <FormControl>
-                        <InputLabel id="demo-simple-select-autowidth-label">Inverter Port</InputLabel>
-                        <Select
-                        labelId="demo-simple-select-autowidth-label"
-                        id="demo-simple-select-autowidth"
-                        autoWidth
-                        >
-                            <MenuItem value=""></MenuItem>
-                            <MenuItem value={10}>Ten</MenuItem>
-                            <MenuItem value={20}>Twenty</MenuItem>
-                            <MenuItem value={30}>Thirty</MenuItem>
-                        </Select>
-                        <FormHelperText>Please select monitor communication Port.</FormHelperText>
-                    </FormControl>
+                    <MonitorConfig ports={serverInfo.ports}/>
                 );
                 break;
             case 'sysConfig':
@@ -67,7 +71,7 @@ export default function ConfigPeek(props: Props): ReactElement {
                 break;
         }
         setDrawer(newDrawer);
-    }, [props]);
+    }, [props, serverInfo]);
 
     const drawerHandler = (newIsOpenStatus: boolean) => (event: React.KeyboardEvent | React.MouseEvent) =>{
         const newDrawer: IDrawer = {isOpen: newIsOpenStatus}
