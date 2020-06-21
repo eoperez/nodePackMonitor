@@ -36,7 +36,9 @@ export interface IPort {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         drawerContainer: {
-            margin: 10
+            margin: theme.spacing(1),
+            height: '100%',
+            width: 300
         }
     })
 );
@@ -79,7 +81,7 @@ export default function ConfigPeek(props: Props): ReactElement {
     }
 
     return (
-        <Drawer anchor="top" open={drawer.isOpen} onClose={drawerHandler(false)}>
+        <Drawer anchor="left" open={drawer.isOpen} onClose={drawerHandler(false)}>
             <div className={classes.drawerContainer}>
                 <Typography variant="h4">{drawer.title}</Typography>
                 <Divider />
