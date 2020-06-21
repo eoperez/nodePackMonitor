@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme: Theme) =>
                 color: theme.palette.secondary.light
             }
         },
-        selected: {},
         appBar: {
             top: 'auto',
             bottom: 0,
