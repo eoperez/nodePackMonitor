@@ -1,10 +1,14 @@
-import React from 'react';
+import React, {ReactElement}from 'react';
 import { MuiThemeProvider, CssBaseline, createMuiTheme, colors, Theme} from '@material-ui/core';
+import {AppConfigurationContext, useAppConfigurationContext} from './store/AppConfigurationContext';
 import AppMenu from './components/AppMenu';
 import Dashboard from './components/Dashboard';
 interface serverInfo{
   isFirstTime: boolean;
   ports: Array<any>;
+}
+interface Props {
+
 }
 
 let pageTheme: Theme = createMuiTheme({
@@ -33,12 +37,18 @@ pageTheme.typography.h6 = {
     fontSize: '1.25rem'
   }
 }
-export default class App extends React.Component {
-  render() {
-    return <MuiThemeProvider theme={pageTheme}>
-    <CssBaseline />
-    <Dashboard></Dashboard>
-    <AppMenu></AppMenu>
-  </MuiThemeProvider>
-  }
+
+export default function App (props: Props): ReactElement {
+
+    const appConfigContext = useAppConfigurationContext();
+
+    return (
+      <MuiThemeProvider theme={pageTheme}>
+        <AppConfigurationContext.Provider value={appConfigContext}>
+          <CssBaseline />
+          <Dashboard></Dashboard>
+          <AppMenu></AppMenu>
+        </AppConfigurationContext.Provider>
+      </MuiThemeProvider>
+    )
 }
