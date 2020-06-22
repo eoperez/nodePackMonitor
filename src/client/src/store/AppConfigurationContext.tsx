@@ -7,22 +7,32 @@ export interface IAppConfigurationContext {
 
 export interface IAppConfiguration {
     monitorConfig: IMonitorConfig;
+    systemConfig: ISystemConfig;
 }
 
 export interface IMonitorConfig {
-    inverterMode: string;
     inverterPort: string;
     isBatteryMonitor: boolean;
     batteryMonitorPort?: string;
     batteriesSeries?: number;
 }
 
+export interface ISystemConfig {
+    inverterMode: string;
+    inverterPower: number;
+    pvModulesPower?: number;
+    batteriesSeries?: number;
+}
+
 export const defaultAppConfig: IAppConfiguration = {
     monitorConfig: {
-        inverterMode: 'M',
         inverterPort: 'none',
         isBatteryMonitor: false,
-        batteryMonitorPort: 'none',
+        batteryMonitorPort: 'none'
+    },
+    systemConfig: {
+        inverterMode: 'M',
+        inverterPower: 5000,
         batteriesSeries: 0
     }
 }
