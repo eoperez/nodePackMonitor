@@ -8,6 +8,7 @@ import { makeStyles,
     Divider
 } from '@material-ui/core'
 import MonitorConfig from "./MonitorConfig";
+import SystemConfig from "./SystemConfig"
 
 interface Props {
     isOpen: boolean;
@@ -39,6 +40,9 @@ const useStyles = makeStyles((theme: Theme) =>
             margin: theme.spacing(1),
             height: '100%',
             width: 300
+        },
+        divider: {
+            marginTop: 5
         }
     })
 );
@@ -65,6 +69,9 @@ export default function ConfigPeek(props: Props): ReactElement {
                 break;
             case 'sysConfig':
                 newDrawer.title = 'Solar System Information'
+                newDrawer.form = (
+                    <SystemConfig/>
+                );
                 break;
             case 'intConfig':
                 newDrawer.title = 'Integration Configuration'
@@ -84,7 +91,7 @@ export default function ConfigPeek(props: Props): ReactElement {
         <Drawer anchor="left" open={drawer.isOpen} onClose={drawerHandler(false)}>
             <div className={classes.drawerContainer}>
                 <Typography variant="h4">{drawer.title}</Typography>
-                <Divider />
+                <Divider className={classes.divider} />
                 {drawer.form}
             </div>
         </Drawer>
