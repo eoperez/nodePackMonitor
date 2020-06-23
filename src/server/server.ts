@@ -40,8 +40,9 @@ const mainRoute = (req: Request, res: Response) => {
 // serverinfo route
 const serverInfo = (req: Request, res: Response) => {
     res.json({
+        ports: availablePorts,
         isFirstTime: isFirstTime,
-        ports: availablePorts
+        reponseStatus: "True"
     });
 }
 
