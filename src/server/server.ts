@@ -15,8 +15,10 @@ import BatteriesMonitor from "./services/BatteryMonitor.Service"
 import PiPMonitor from "./services/PiPMonitor.Service";
 import DbService from "./services/DB.Service";
 
-const Db: IDbService = new DbService();
-const dbConnection: Sqlite3.Database = Db.getDbConnection();
+const dbService: IDbService = new DbService();
+const dbConnection: Sqlite3.Database = dbService.getDbConnection();
+
+const isFirstTime = dbService.getConfigTableExist();
 
 const app: Application = express();
 const router: Router = express.Router()
@@ -37,13 +39,6 @@ const mainRoute = (req: Request, res: Response) => {
 
 // serverinfo route
 const serverInfo = (req: Request, res: Response) => {
-    let isFirstTime = true;
-    // Checks if DB file exist then is not firstTime otherwise it is.
-    if(Db.getDbFileExist()){
-        isFirstTime = false;
-    } else {
-        isFirstTime = true;
-    }
     res.json({
         isFirstTime: isFirstTime,
         ports: availablePorts
@@ -70,7 +65,7 @@ app.get('/', mainRoute);
 
 // Inititate the server
 const server: Server = app.listen(port, () => {
-    console.log(`App is listening on port:${port}`)
+    console.log(`App is listening on port:${port}`);
 });
 
 // Initiate IO Server
