@@ -5,14 +5,9 @@ import * as Fs from "fs";
 
 export default class DbService implements IDbService{
     dbConnection: Sqlite3.Database;
-    isExistDb: boolean;
+    isConfigExist: boolean;
     constructor() {
         const dbLocation = Path.join(__dirname, 'monitoringApp.db');
-        if (Fs.existsSync(dbLocation)) {
-            this.isExistDb = true;
-        } else {
-            this.isExistDb = false;
-        }
         this.dbConnection = new Sqlite3.Database(dbLocation, (error: Error) =>{
             if (error) {
                 console.error(error.message);
@@ -20,13 +15,21 @@ export default class DbService implements IDbService{
                 console.log('Connected to database.');
             }
         });
+
+        this.dbConnection.get(`SELECT count(*) AS tableExist FROM sqlite_master WHERE type='table' AND name='configuration'`,(error: Error, row) => {
+            if(error){
+                console.error(error.message)
+            } else {
+                this.isConfigExist = !!row.tableExist;
+            }
+        })
     }
 
     getDbConnection = (): Sqlite3.Database => {
         return this.dbConnection;
     }
 
-    getDbFileExist = (): boolean => {
-        return this.isExistDb;
+    getConfigTableExist = (): boolean => {
+        return this.isConfigExist;
     }
 }
