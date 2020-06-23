@@ -6,11 +6,17 @@ import { Application, Router, Request, Response} from 'express'
 import { join } from "path";
 import { Server } from "http";
 import * as SocketIO from "socket.io";
+import * as Sqlite3 from "sqlite3";
 
+import { IDbService } from "./interfaces/IDbService.interface";
 import {IBaterryMonitorService} from "./interfaces/IBaterryMonitorService.interface";
 import {IPiPMonitorService, IPiPMonitorConfig} from "./interfaces/IPiPMonitorService.Interface";
 import BatteriesMonitor from "./services/BatteryMonitor.Service"
 import PiPMonitor from "./services/PiPMonitor.Service";
+import DbService from "./services/DB.Service";
+
+const Db: IDbService = new DbService();
+const dbConnection: Sqlite3.Database = Db.getDbConnection();
 
 const app: Application = express();
 const router: Router = express.Router()
@@ -19,10 +25,8 @@ let availablePorts: SerialPort.PortInfo[] = [];
 const batteryMonitorCommPort: string = '/dev/ttyS0';
 const inverterMonitorCommPort: string = '/dev/ttyUSB0';
 
-
 SerialPort.list().then((commPorts: SerialPort.PortInfo[]) => {
     availablePorts = commPorts;
-    console.log('CommPorts:', availablePorts);
 });
 
 // define route
@@ -33,7 +37,13 @@ const mainRoute = (req: Request, res: Response) => {
 
 // serverinfo route
 const serverInfo = (req: Request, res: Response) => {
-    const isFirstTime = false;
+    let isFirstTime = true;
+    // Checks if DB file exist then is not firstTime otherwise it is.
+    if(Db.getDbFileExist()){
+        isFirstTime = false;
+    } else {
+        isFirstTime = true;
+    }
     res.json({
         isFirstTime: isFirstTime,
         ports: availablePorts
