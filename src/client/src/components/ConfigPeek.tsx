@@ -60,7 +60,11 @@ export default function ConfigPeek(props: Props): ReactElement {
     }, []);
     useEffect(() => {
         const newDrawer: IDrawer = {...props};
-        switch (props.drawerType) {
+        if(serverInfo.isFirstTime){
+            newDrawer.isOpen = true;
+            newDrawer.drawerType = 'monitorConfig';
+        }
+        switch (newDrawer.drawerType) {
             case 'monitorConfig':
                 newDrawer.title = 'Monitors Configuration';
                 newDrawer.form = (
@@ -83,8 +87,11 @@ export default function ConfigPeek(props: Props): ReactElement {
     }, [props, serverInfo]);
 
     const drawerHandler = (newIsOpenStatus: boolean) => (event: React.KeyboardEvent | React.MouseEvent) =>{
-        const newDrawer: IDrawer = {isOpen: newIsOpenStatus}
-        setDrawer(newDrawer);
+        // force the drawer open if is still first time
+        if(!serverInfo.isFirstTime){
+            const newDrawer: IDrawer = {isOpen: newIsOpenStatus}
+            setDrawer(newDrawer);
+        }
     }
 
     return (
