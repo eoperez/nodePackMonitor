@@ -1,5 +1,5 @@
 import * as Sqlite3 from "sqlite3";
-import { IDbService  } from "../interfaces/IDbService.interface";
+import { IDbService, ICallback  } from "../interfaces/IDbService.interface";
 import * as Path from "path";
 import * as Fs from "fs";
 
@@ -16,20 +16,24 @@ export default class DbService implements IDbService{
             }
         });
 
-        this.dbConnection.get(`SELECT count(*) AS tableExist FROM sqlite_master WHERE type='table' AND name='configuration'`,(error: Error, row) => {
-            if(error){
-                console.error(error.message)
-            } else {
-                this.isConfigExist = !!row.tableExist;
-            }
-        })
+        
     }
 
     getDbConnection = (): Sqlite3.Database => {
         return this.dbConnection;
     }
 
-    getConfigTableExist = (): boolean => {
-        return this.isConfigExist;
+    getConfigurationExist = (callback: ICallback) =>{
+        this.dbConnection.get(`SELECT count(*) AS tableExist FROM sqlite_master WHERE type='table' AND name='configuration'`,(error: Error, row) => {
+            if(error){
+                callback(error);
+            } else {
+                if(!!row.tableExist) {
+                    callback(null, false);
+                } else {
+                    callback(null, true);
+                }
+            }
+        })
     }
 }

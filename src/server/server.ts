@@ -18,8 +18,6 @@ import DbService from "./services/DB.Service";
 const dbService: IDbService = new DbService();
 const dbConnection: Sqlite3.Database = dbService.getDbConnection();
 
-const isFirstTime = dbService.getConfigTableExist();
-
 const app: Application = express();
 const router: Router = express.Router()
 const port: number = 5000;
@@ -39,10 +37,20 @@ const mainRoute = (req: Request, res: Response) => {
 
 // serverinfo route
 const serverInfo = (req: Request, res: Response) => {
-    res.json({
-        ports: availablePorts,
-        isFirstTime: isFirstTime,
-        reponseStatus: "True"
+    dbService.getConfigurationExist((error: Error, results)=>{
+        if(error){
+            res.status(500);
+            res.json({
+                name: error.name,
+                error: error.message
+            })
+
+        } else {
+            res.json({
+                ports: availablePorts,
+                isFirstTime: results
+            });
+        }
     });
 }
 
