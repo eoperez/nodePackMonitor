@@ -14,7 +14,6 @@ export interface IMonitorConfig {
     inverterPort: string;
     isBatteryMonitor: boolean;
     batteryMonitorPort?: string;
-    batteriesSeries?: number;
 }
 
 export interface ISystemConfig {

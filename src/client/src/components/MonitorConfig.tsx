@@ -79,9 +79,6 @@ export default function MonitorConfig(props: Props): ReactElement {
                 case "batteryMonitorPort":
                     newAppConfig.monitorConfig.batteryMonitorPort = event.target.value;
                     break;
-                default:
-                    newAppConfig.monitorConfig.batteriesSeries = value;
-                    break;
             }
         }
         setCurrentAppConfig(newAppConfig);
