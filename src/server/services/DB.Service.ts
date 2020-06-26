@@ -1,7 +1,6 @@
 import * as Sqlite3 from "sqlite3";
-import { IDbService, ICallback  } from "../interfaces/IDbService.interface";
+import { IDbService, ICallback, IConfiguration  } from "../interfaces/IDbService.interface";
 import * as Path from "path";
-import * as Fs from "fs";
 
 export default class DbService implements IDbService{
     dbConnection: Sqlite3.Database;
@@ -15,25 +14,83 @@ export default class DbService implements IDbService{
                 console.log('Connected to database.');
             }
         });
-
-        
+        this.createConfigurationTable();
+        this.createDailyStatsTable();
     }
 
     getDbConnection = (): Sqlite3.Database => {
         return this.dbConnection;
     }
 
-    getConfigurationExist = (callback: ICallback) =>{
-        this.dbConnection.get(`SELECT count(*) AS tableExist FROM sqlite_master WHERE type='table' AND name='configuration'`,(error: Error, row) => {
+    getLastConfiguration = (callback: ICallback): void => {
+        const lastConfig = `SELECT * FROM table ORDER BY column DESC LIMIT 1;`;
+        this.dbConnection.get(lastConfig,(error: Error, results)=>{
+            if(error) {
+                callback(error);
+            } else {
+                callback(null, results);
+            }
+        });
+    }
+
+    saveConfiguration = (newConfig: IConfiguration, callback: ICallback): void =>{
+        this.dbConnection.run(`INSERT INTO configuration (
+            inverterPort,
+            isBatteryMonitor,
+            batteryMonitorPort,
+            inverterMode,
+            inverterPower,
+            pvModulesPower,
+            batteriesSeries
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,[
+            newConfig.monitorConfig.inverterPort,
+            newConfig.monitorConfig.isBatteryMonitor,
+            newConfig.monitorConfig.batteryMonitorPort,
+            newConfig.systemConfig.inverterMode,
+            newConfig.systemConfig.inverterPower,
+            newConfig.systemConfig.pvModulesPower,
+            newConfig.systemConfig.batteriesSeries
+        ]);
+    }
+
+    getConfigurationExist = (callback: ICallback): void =>{
+        // if exist check if it has at least 1 record
+        this.dbConnection.get('Select count(*) AS recordsCount from configuration', (error: Error, row) =>{
+            // handle error
             if(error){
                 callback(error);
             } else {
-                if(!!row.tableExist) {
-                    callback(null, false);
+                if(row.recordsCount > 0) {
+                    callback(null, false)
                 } else {
-                    callback(null, true);
+                    callback(null, true)
                 }
             }
-        })
+        });
     }
+
+    createConfigurationTable(): void {
+        const createConfigTbl = `CREATE TABLE IF NOT EXISTS configuration (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            inverterPort TEXT,
+            isBatteryMonitor INTEGER,
+            batteryMonitorPort TEXT,
+            inverterMode TEXT,
+            inverterPower INTEGER,
+            pvModulesPower INTEGER,
+            batteriesSeries INTEGER)`
+        this.dbConnection.run(createConfigTbl);
+    }
+
+    createDailyStatsTable(): void{
+        const createDailyStants = `CREATE TABLE IF NOT EXISTS dailyStats (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source TEXT,
+            measurement TEXT,
+            value INTEGER,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)`
+        this.dbConnection.run(createDailyStants);
+    }
+
 }
