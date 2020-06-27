@@ -23,7 +23,7 @@ export default class DbService implements IDbService{
     }
 
     getLastConfiguration = (callback: ICallback): void => {
-        const lastConfig = `SELECT * FROM table ORDER BY column DESC LIMIT 1;`;
+        const lastConfig = `SELECT * FROM configuration ORDER BY id DESC LIMIT 1;`;
         this.dbConnection.get(lastConfig,(error: Error, results)=>{
             if(error) {
                 callback(error);
@@ -51,7 +51,9 @@ export default class DbService implements IDbService{
             newConfig.systemConfig.inverterPower,
             newConfig.systemConfig.pvModulesPower,
             newConfig.systemConfig.batteriesSeries
-        ]);
+        ],(instance: Sqlite3.RunResult, error: Error)=>{
+            callback(error, instance);
+        });
     }
 
     getConfigurationExist = (callback: ICallback): void =>{
