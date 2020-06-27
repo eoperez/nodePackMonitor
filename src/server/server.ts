@@ -8,7 +8,7 @@ import { Server } from "http";
 import * as SocketIO from "socket.io";
 import * as Sqlite3 from "sqlite3";
 
-import { IDbService } from "./interfaces/IDbService.interface";
+import { IDbService, IConfiguration } from "./interfaces/IDbService.interface";
 import {IBaterryMonitorService} from "./interfaces/IBaterryMonitorService.interface";
 import {IPiPMonitorService, IPiPMonitorConfig} from "./interfaces/IPiPMonitorService.Interface";
 import BatteriesMonitor from "./services/BatteryMonitor.Service"
@@ -22,8 +22,6 @@ const app: Application = express();
 const router: Router = express.Router()
 const port: number = 5000;
 let availablePorts: SerialPort.PortInfo[] = [];
-const batteryMonitorCommPort: string = '/dev/ttyS0';
-const inverterMonitorCommPort: string = '/dev/ttyUSB0';
 
 SerialPort.list().then((commPorts: SerialPort.PortInfo[]) => {
     availablePorts = commPorts;
@@ -53,6 +51,35 @@ const serverInfo = (req: Request, res: Response) => {
         }
     });
 }
+ // get configuration
+ const getConfiguration = (req: Request, res: Response) => {
+     dbService.getLastConfiguration((error: Error, result) =>{
+        if(error){
+            res.status(500);
+            res.json({
+                name: error.name,
+                error: error.message
+            })
+
+        } else {
+            res.json(result);
+        }
+     })
+ }
+
+ // save configuration
+ const saveConfiguration = (req: Request, res: Response) => {
+     const newConfig: IConfiguration = req.body;
+     dbService.saveConfiguration(newConfig, (error: Error, result) => {
+        if(error){
+            res.sendStatus(500);
+        } else {
+            // Restart Monitors
+            monitorsInit();
+            res.sendStatus(200);
+        }
+     });
+ }
 
 // Allow CORS to make front end development easier.
 app.use(cors());
@@ -70,6 +97,8 @@ app.engine('html', require('ejs').__express);
 
 // Sets express route
 app.get('/serverinfo', serverInfo);
+app.get('/configuration', getConfiguration);
+app.post('/configuration', saveConfiguration);
 app.get('/', mainRoute);
 
 // Inititate the server
@@ -78,10 +107,29 @@ const server: Server = app.listen(port, () => {
 });
 
 // Initiate IO Server
-const io: SocketIO.Server = SocketIO(server);
+const monitorsInit = () => {
+    // We only initiatiate the monitor if they are configured.
+    dbService.getConfigurationExist((error: Error, results)=>{ 
+        if(error){
+            console.error(error);
+        } else {
+            const io: SocketIO.Server = SocketIO(server);
+            dbService.getLastConfiguration((error: Error, results)=>{
+                if(error) {
+                    console.error(error);
+                } else {
+                    // If Battery monitor is enabled then init monitor service
+                    if(!!results.isBatteryMonitor) {
+                        const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
+                        batteriesMonitor.init({commPort: results.batteryMonitorPort});
+                    }
+                    
+                    const pipMonitor: IPiPMonitorService = new PiPMonitor(io);
+                    pipMonitor.init({commPort: results.inverterPort, maxPIPOutPower: results.inverterPower, maxPVPower: results.pvModulesPower});
+                }
+            });
+        }
+    });
+}
 
-const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
-batteriesMonitor.init({commPort: batteryMonitorCommPort});
-
-const pipMonitor: IPiPMonitorService = new PiPMonitor(io);
-pipMonitor.init({commPort: inverterMonitorCommPort, maxPIPOutPower: 5000, maxPVPower: 5000});
+monitorsInit();
