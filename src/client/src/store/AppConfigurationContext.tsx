@@ -1,6 +1,5 @@
 import { createContext, useState, useCallback } from "react";
 import axios, { AxiosInstance } from "axios";
-import { response } from "express";
 
 // Interfaces
 export interface IAppConfigurationContext {
