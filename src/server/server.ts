@@ -113,10 +113,11 @@ const monitorsInit = () => {
         if(error){
             console.error(error);
         } else {
+            console.log("Exists results", !!results);
             const io: SocketIO.Server = SocketIO(server);
             dbService.getLastConfiguration((error: Error, results)=>{
                 if(error) {
-                    console.error(error.message);
+                    console.error(error);
                 } else {
                     // If Battery monitor is enabled then init monitor service
                     if(!!results.isBatteryMonitor) {
