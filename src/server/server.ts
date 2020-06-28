@@ -113,22 +113,25 @@ const monitorsInit = () => {
         if(error){
             console.error(error);
         } else {
-            console.log("Exists results", !!results);
-            const io: SocketIO.Server = SocketIO(server);
-            dbService.getLastConfiguration((error: Error, results)=>{
-                if(error) {
-                    console.error(error);
-                } else {
-                    // If Battery monitor is enabled then init monitor service
-                    if(!!results.isBatteryMonitor) {
-                        const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
-                        batteriesMonitor.init({commPort: results.batteryMonitorPort});
+            // Only if Configuration exists
+            if(!!results){
+                const io: SocketIO.Server = SocketIO(server);
+                dbService.getLastConfiguration((error: Error, results)=>{
+                    if(error) {
+                        console.error(error);
+                    } else {
+                        // If Battery monitor is enabled then init monitor service
+                        console.log('Results in getLastConfig', results);
+                        if(!!results.isBatteryMonitor) {
+                            const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
+                            batteriesMonitor.init({commPort: results.batteryMonitorPort});
+                        }
+                        
+                        const pipMonitor: IPiPMonitorService = new PiPMonitor(io);
+                        pipMonitor.init({commPort: results.inverterPort, maxPIPOutPower: results.inverterPower, maxPVPower: results.pvModulesPower});
                     }
-                    
-                    const pipMonitor: IPiPMonitorService = new PiPMonitor(io);
-                    pipMonitor.init({commPort: results.inverterPort, maxPIPOutPower: results.inverterPower, maxPVPower: results.pvModulesPower});
-                }
-            });
+                });
+            }
         }
     });
 }
