@@ -1,5 +1,5 @@
-import { createContext, useState, useCallback } from "react";
-import axios, { AxiosInstance } from "axios";
+import { createContext, useState, useCallback, useEffect } from "react";
+import axios from "axios";
 
 // Interfaces
 export interface IAppConfigurationContext {
@@ -23,17 +23,6 @@ export interface ISystemConfig {
     pvModulesPower?: number;
     batteriesSeries?: number;
 }
-
-export const getConfiguration = async () => {
-    const results = await axios('http://192.168.0.5:5000/configuration');
-    console.log('axios response:', results);
-}
-
-export const saveConfiguration = async (configuration: IAppConfiguration) => {
-    const results = await axios.post('http://192.168.0.5:5000/configuration', configuration);
-    console.log('axios save response', results);
-}
-
 export const defaultAppConfig: IAppConfiguration = {
     monitorConfig: {
         inverterPort: 'none',
@@ -43,6 +32,7 @@ export const defaultAppConfig: IAppConfiguration = {
     systemConfig: {
         inverterMode: 'M',
         inverterPower: 5000,
+        pvModulesPower: 5000,
         batteriesSeries: 0
     }
 }
@@ -55,11 +45,43 @@ export const AppConfigurationContext = createContext<IAppConfigurationContext>(d
 // Custom Hook
 export const useAppConfigurationContext = (): IAppConfigurationContext => {
     const [appConfiguration, setAppConfiguration] = useState<IAppConfiguration>(defaultAppConfig);
+    
+    useEffect(() => {
+        const getConfiguration = async () => {
+            const results = await axios('http://192.168.0.5:5000/configuration');
+            console.log('axios response:', results);
+            if (typeof results.data.inverterPort !== 'undefined') {
+                const AppConfigFromServer = {
+                    monitorConfig: {
+                        inverterPort: results.data.inverterPort,
+                        isBatteryMonitor: !!results.data.isBatteryMonitor,
+                        batteryMonitorPort: results.data.batteryMonitorPort,
+                    },
+                    systemConfig: {
+                        inverterMode: results.data.inverterMode,
+                        inverterPower: results.data.inverterPower,
+                        pvModulesPower: results.data.pvModulesPower,
+                        batteriesSeries: results.data.batteriesSeries
+                    }
+                };
+                setAppConfiguration(AppConfigFromServer);
+            }
+        }
+        getConfiguration();
+    }, []);
+
+    const saveConfiguration = async (configuration: IAppConfiguration) => {
+        const results = await axios.post('http://192.168.0.5:5000/configuration', configuration);
+        console.log('axios save response', results);
+    }
 
     const setCurrentAppConfigurationContext = useCallback((currentAppConfigContext: IAppConfiguration): void => {
-        saveConfiguration(currentAppConfigContext);
         setAppConfiguration(currentAppConfigContext);
-        console.log('in store:', currentAppConfigContext);
+        // Save if current and old configuration are different.
+        if(currentAppConfigContext !== appConfiguration){
+            saveConfiguration(currentAppConfigContext);
+        }
+        
     }, []);
 
     return {
