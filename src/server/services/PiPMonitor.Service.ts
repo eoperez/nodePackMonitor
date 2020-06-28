@@ -62,9 +62,6 @@ export default class PiPMonitor implements IPiPMonitorService  {
         this.maxPIPOutPower = config.maxPIPOutPower;
         this.maxPVPower = config.maxPVPower;
 
-        port.close();
-        port.open();
-
         port.on('open', () => {
             console.log('PIP Monitor CommPort Ready.');
             // for some reason PIP does not repond to first call, this should serve as wake up call
