@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function ConfigPeek(props: Props): ReactElement {
     const classes = useStyles();
-    const [serverInfo, setServerInfo] = useState<IServerInfo>({isFirstTime: true});
+    const [serverInfo, setServerInfo] = useState<IServerInfo>({isFirstTime: false});
     const [drawer, setDrawer] = useState<IDrawer>({isOpen: props.isOpen, drawerType: props.drawerType});
     const getServerInfo = async () => {
         const results = await axios('http://192.168.0.5:5000/serverinfo');
@@ -87,11 +87,8 @@ export default function ConfigPeek(props: Props): ReactElement {
     }, [props, serverInfo]);
 
     const drawerHandler = (newIsOpenStatus: boolean) => (event: React.KeyboardEvent | React.MouseEvent) =>{
-        // force the drawer open if is still first time
-        if(!serverInfo.isFirstTime){
-            const newDrawer: IDrawer = {isOpen: newIsOpenStatus}
-            setDrawer(newDrawer);
-        }
+        const newDrawer: IDrawer = {isOpen: newIsOpenStatus}
+        setDrawer(newDrawer);
     }
 
     return (
