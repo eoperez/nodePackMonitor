@@ -109,19 +109,18 @@ const server: Server = app.listen(port, () => {
 // Initiate IO Server
 const monitorsInit = () => {
     // We only initiatiate the monitor if they are configured.
-    dbService.getConfigurationExist((error: Error, results)=>{ 
+    dbService.getConfigurationExist((error: Error, isFirstTime)=>{ 
         if(error){
             console.error(error);
         } else {
             // Only if Configuration exists
-            if(!!results){
+            if(!isFirstTime){
                 const io: SocketIO.Server = SocketIO(server);
                 dbService.getLastConfiguration((error: Error, results)=>{
                     if(error) {
                         console.error(error);
                     } else {
                         // If Battery monitor is enabled then init monitor service
-                        console.log('Results in getLastConfig', results);
                         if(!!results.isBatteryMonitor) {
                             const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
                             batteriesMonitor.init({commPort: results.batteryMonitorPort});
