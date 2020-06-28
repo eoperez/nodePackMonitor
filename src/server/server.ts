@@ -82,7 +82,7 @@ const serverInfo = (req: Request, res: Response) => {
  }
 
 // Allow CORS to make front end development easier.
-app.use(cors());
+// app.use(cors());
 // Enable parser for JSON requests.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

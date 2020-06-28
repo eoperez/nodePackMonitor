@@ -1,5 +1,8 @@
 import { createContext, useState, useCallback } from "react";
+import axios, { AxiosInstance } from "axios";
+import { response } from "express";
 
+// Interfaces
 export interface IAppConfigurationContext {
     appConfiguration: IAppConfiguration;
     setCurrentAppConfigurationContext: (currentAppConfiguration: IAppConfiguration) => void;
@@ -15,12 +18,21 @@ export interface IMonitorConfig {
     isBatteryMonitor: boolean;
     batteryMonitorPort?: string;
 }
-
 export interface ISystemConfig {
     inverterMode: string;
     inverterPower: number;
     pvModulesPower?: number;
     batteriesSeries?: number;
+}
+
+export const api: AxiosInstance = axios.create({
+    baseURL: `http://192.168.0.5:5000/configuration/`
+});
+
+export const getConfiguration = async () => {
+    api.get('/').then((response) => {
+        console.log(response.data);
+    });
 }
 
 export const defaultAppConfig: IAppConfiguration = {
@@ -46,6 +58,7 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
     const [appConfiguration, setAppConfiguration] = useState<IAppConfiguration>(defaultAppConfig);
 
     const setCurrentAppConfigurationContext = useCallback((currentAppConfigContext: IAppConfiguration): void => {
+        getConfiguration();
         setAppConfiguration(currentAppConfigContext);
         console.log('in store:', currentAppConfigContext);
     }, []);
