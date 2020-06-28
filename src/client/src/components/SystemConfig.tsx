@@ -54,7 +54,7 @@ function packInBankValue(value: number) {
 export default function MonitorConfig(props: Props): ReactElement {
     const { setCurrentAppConfigurationContext, appConfiguration } = useContext<IAppConfigurationContext>(AppConfigurationContext);
     const [currentAppConfig, setCurrentAppConfig] = useState(appConfiguration);
-    const [isDisabled, setIsDisabled] = useState(appConfiguration.monitorConfig.isBatteryMonitor); // isBatteryMonitor
+    const isDisabled = appConfiguration.monitorConfig.isBatteryMonitor // isBatteryMonitor
     const [isSaved, setIsSaved] = useState(true);
 
     const classes = useStyles();
