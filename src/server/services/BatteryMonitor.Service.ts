@@ -43,6 +43,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     }
     // triggers communication over serial port to send and collect sensor data
     init = (config: IBatteriesMonitorConfig): void => {
+        this.commPort = config.commPort;
         this.port = new SerialPort(config.commPort, { baudRate: 9600 }); // generate Serial Port instance
         if (config.startAddress) {
             this.startAddress = config.startAddress;
@@ -87,6 +88,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             // we consider 000 loops a hanging call. It will execute the call again.
             if(loopCount > 4000){
                 console.log('Maximum loops reached. Requesting monitor info again:', sentCall);
+                this.port.close();
+                this.init({commPort: this.commPort, startAddress: this.startAddress})
             } else {
                 // otherwise we would loop in process to do a health check.
                 setTimeout((healthCheck = this.healthCheck, sendCallOriginal = sentCall, currentLoopCount = loopCount) => {
