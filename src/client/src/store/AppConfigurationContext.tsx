@@ -24,14 +24,14 @@ export interface ISystemConfig {
     batteriesSeries?: number;
 }
 
-export const api: AxiosInstance = axios.create({
-    baseURL: `http://192.168.0.5:5000/configuration/`
-});
-
 export const getConfiguration = async () => {
-    api.get('/').then((response) => {
-        console.log(response.data);
-    });
+    const results = await axios('http://192.168.0.5:5000/configuration');
+    console.log('axios response:', results);
+}
+
+export const saveConfiguration = async (configuration: IAppConfiguration) => {
+    const results = await axios.post('http://192.168.0.5:5000/configuration', configuration);
+    console.log('axios save response', results);
 }
 
 export const defaultAppConfig: IAppConfiguration = {
@@ -57,7 +57,7 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
     const [appConfiguration, setAppConfiguration] = useState<IAppConfiguration>(defaultAppConfig);
 
     const setCurrentAppConfigurationContext = useCallback((currentAppConfigContext: IAppConfiguration): void => {
-        getConfiguration();
+        saveConfiguration(currentAppConfigContext);
         setAppConfiguration(currentAppConfigContext);
         console.log('in store:', currentAppConfigContext);
     }, []);
