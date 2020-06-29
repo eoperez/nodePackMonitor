@@ -1,51 +1,55 @@
 import * as SocketIO from "socket.io";
 import * as SerialPort from 'serialport';
+
 import { IPiPMonitorService, IPiPMonitorConfig, IQPIGSInfo } from "../interfaces/IPiPMonitorService.Interface";
+import { IDbService } from "../interfaces/IDbService.interface";
 
 export default class PiPMonitor implements IPiPMonitorService  {
     ioSocketServer: SocketIO.Server;
     QPIGSInfo: IQPIGSInfo;
     maxPVPower: number;
-    maxPIPOutPower: number
+    maxPIPOutPower: number;
+    dbService: IDbService;
 
-    constructor(ioServer: SocketIO.Server){
+    constructor(ioServer: SocketIO.Server, dbService: IDbService){
         this.ioSocketServer = ioServer;
+        this.dbService = dbService;
         this.maxPVPower = 5000;
         this.maxPIPOutPower = 5000;
         this.QPIGSInfo = {
             grid: {
-                voltage: '...',
-                frequency: '...',
+                voltage: 0,
+                frequency: 0,
                 power: 0,
                 loadPercent: 0
             },
             pv: {
-                currentBattery: '...',
-                voltage_1: '...',
-                chargingPower: '...',
+                currentBattery: 0,
+                voltage_1: 0,
+                chargingPower: 0,
                 powerForLoads: 0,
                 productionPercent: 0
             },
             consumption: {
-                voltage: '...',
-                frequency: '...',
-                powerVa: '...',
-                activePower: '...',
+                voltage: 0,
+                frequency: 0,
+                powerVa: 0,
+                activePower: 0,
                 loadPercent: 0,
                 current: 0
             },
             battery: {
-                voltage: '...',
-                chargingCurrent: '...',
+                voltage: 0,
+                chargingCurrent: 0,
                 capacity: 0,
-                voltageFromScc: '...',
-                dischargeCurrent: '...',
+                voltageFromScc: 0,
+                dischargeCurrent: 0,
                 powerOut: 0,
                 powerIn: 0
             },
             inverter: {
-                busVoltage: '...',
-                heatSinkTemperature: '...',
+                busVoltage: 0,
+                heatSinkTemperature: 0,
                 deviceStatus: {
                     chargingAC: '',
                     chargingSccAcc: '',
@@ -96,26 +100,35 @@ export default class PiPMonitor implements IPiPMonitorService  {
         });
     }
 
+    handleDailyStatsCallback = (error: Error, results?: any): void =>{
+        if(error) {
+            console.error(error);
+        }
+        if(results) {
+            console.log(results);
+        }
+    }
+
     decodeQPIGS(inverterResponse: Array<string>): IQPIGSInfo {
         // Static info
         const deviceStatus = inverterResponse[16];
-        this.QPIGSInfo.grid.voltage = inverterResponse[0];
-        this.QPIGSInfo.grid.frequency = inverterResponse[1];
-        this.QPIGSInfo.consumption.voltage = inverterResponse[2];
-        this.QPIGSInfo.consumption.frequency = inverterResponse[3];
-        this.QPIGSInfo.consumption.powerVa = inverterResponse[4];
-        this.QPIGSInfo.consumption.activePower = inverterResponse[5];
+        this.QPIGSInfo.grid.voltage = parseInt(inverterResponse[0]);
+        this.QPIGSInfo.grid.frequency = parseInt(inverterResponse[1]);
+        this.QPIGSInfo.consumption.voltage = parseInt(inverterResponse[2]);
+        this.QPIGSInfo.consumption.frequency = parseInt(inverterResponse[3]);
+        this.QPIGSInfo.consumption.powerVa = parseInt(inverterResponse[4]);
+        this.QPIGSInfo.consumption.activePower = parseInt(inverterResponse[5]);
         this.QPIGSInfo.consumption.loadPercent = parseInt(inverterResponse[6])/100;
-        this.QPIGSInfo.battery.voltage = inverterResponse[8];
-        this.QPIGSInfo.battery.chargingCurrent = inverterResponse[9];
+        this.QPIGSInfo.battery.voltage = parseFloat(inverterResponse[8]);
+        this.QPIGSInfo.battery.chargingCurrent = parseFloat(inverterResponse[9]);
         this.QPIGSInfo.battery.capacity = parseInt(inverterResponse[10])/100;
-        this.QPIGSInfo.battery.voltageFromScc = inverterResponse[14];
-        this.QPIGSInfo.battery.dischargeCurrent = inverterResponse[15];
-        this.QPIGSInfo.inverter.busVoltage = inverterResponse[7];
-        this.QPIGSInfo.inverter.heatSinkTemperature = inverterResponse[11];
-        this.QPIGSInfo.pv.currentBattery = inverterResponse[12];
-        this.QPIGSInfo.pv.voltage_1 = inverterResponse[13];
-        this.QPIGSInfo.pv.chargingPower = inverterResponse[19];
+        this.QPIGSInfo.battery.voltageFromScc = parseFloat(inverterResponse[14]);
+        this.QPIGSInfo.battery.dischargeCurrent = parseFloat(inverterResponse[15]);
+        this.QPIGSInfo.inverter.busVoltage = parseFloat(inverterResponse[7]);
+        this.QPIGSInfo.inverter.heatSinkTemperature = parseFloat(inverterResponse[11]);
+        this.QPIGSInfo.pv.currentBattery = parseFloat(inverterResponse[12]);
+        this.QPIGSInfo.pv.voltage_1 = parseFloat(inverterResponse[13]);
+        this.QPIGSInfo.pv.chargingPower = parseInt(inverterResponse[19]);
         // Inverter calculated info
         if(deviceStatus.length == 8){
             this.QPIGSInfo.inverter.deviceStatus.chargingAC = deviceStatus.substring(5,6);
@@ -123,16 +136,22 @@ export default class PiPMonitor implements IPiPMonitorService  {
             this.QPIGSInfo.inverter.deviceStatus.chargingSccAcc = deviceStatus.substring(7,8);
         }
         // Battery calculated info
-        this.QPIGSInfo.battery.powerOut = parseFloat(this.QPIGSInfo.battery.voltage) * parseFloat(this.QPIGSInfo.battery.dischargeCurrent);
-        this.QPIGSInfo.battery.powerIn = parseFloat(this.QPIGSInfo.battery.voltageFromScc) * parseFloat(this.QPIGSInfo.battery.chargingCurrent);
+        this.QPIGSInfo.battery.powerOut = this.QPIGSInfo.battery.voltage * this.QPIGSInfo.battery.dischargeCurrent;
+        this.QPIGSInfo.battery.powerIn = this.QPIGSInfo.battery.voltageFromScc * this.QPIGSInfo.battery.chargingCurrent;
         // Consumption calculated info
-        this.QPIGSInfo.consumption.current = parseFloat(this.QPIGSInfo.consumption.activePower)/parseFloat(this.QPIGSInfo.consumption.voltage);
+        this.QPIGSInfo.consumption.current = this.QPIGSInfo.consumption.activePower/this.QPIGSInfo.consumption.voltage;
         // PV calculated info
-        this.QPIGSInfo.pv.productionPercent = parseFloat(this.QPIGSInfo.pv.chargingPower) / this.maxPVPower;
-        this.QPIGSInfo.pv.powerForLoads = parseFloat(this.QPIGSInfo.pv.chargingPower) - (parseFloat(this.QPIGSInfo.pv.currentBattery) * parseFloat(this.QPIGSInfo.battery.voltageFromScc));
+        this.QPIGSInfo.pv.productionPercent = this.QPIGSInfo.pv.chargingPower / this.maxPVPower;
+        this.QPIGSInfo.pv.powerForLoads = this.QPIGSInfo.pv.chargingPower - (this.QPIGSInfo.pv.currentBattery * this.QPIGSInfo.battery.voltageFromScc);
         // Grid calculated info
-        this.QPIGSInfo.grid.power = parseFloat(this.QPIGSInfo.consumption.activePower) - (this.QPIGSInfo.battery.powerOut + this.QPIGSInfo.pv.powerForLoads);
+        this.QPIGSInfo.grid.power = this.QPIGSInfo.consumption.activePower - (this.QPIGSInfo.battery.powerOut + this.QPIGSInfo.pv.powerForLoads);
         this.QPIGSInfo.grid.loadPercent = this.QPIGSInfo.grid.power / this.maxPIPOutPower;
+        // Daily Stats
+        this.dbService.recordDailyStat({source: 'grid', measurement: 'power', value: this.QPIGSInfo.grid.power}, this.handleDailyStatsCallback);
+        this.dbService.recordDailyStat({source: 'consumption', measurement: 'power', value: this.QPIGSInfo.consumption.powerVa}, this.handleDailyStatsCallback);
+        this.dbService.recordDailyStat({source: 'pv', measurement: 'chargingPower', value: this.QPIGSInfo.pv.chargingPower}, this.handleDailyStatsCallback);
+        this.dbService.recordDailyStat({source: 'pv', measurement: 'powerForLoads', value: this.QPIGSInfo.pv.powerForLoads}, this.handleDailyStatsCallback);
+        this.dbService.recordDailyStat({source: 'battery', measurement: 'powerOut', value: this.QPIGSInfo.battery.powerOut}, this.handleDailyStatsCallback);
         console.log('Returning QPIGSInfo:', this.QPIGSInfo);
         return this.QPIGSInfo;
     }
