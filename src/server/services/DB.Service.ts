@@ -59,7 +59,7 @@ export default class DbService implements IDbService{
         this.dbConnection.run(`INSERT INTO dailyStats (
             source,
             measurement,
-            value,
+            value
         )
         VALUES (?, ?, ?)`,[
             stat.source,
