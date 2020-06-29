@@ -1,4 +1,4 @@
-
+import { IDbService } from "./IDbService.interface";
 export interface IPiPMonitorService {
     init(config: IPiPMonitorConfig): void;
 }
@@ -16,41 +16,41 @@ export interface IQPIGSInfo {
     inverter: IInverter;
 }
 interface IGrid {
-    voltage: string;
-    frequency: string;
+    voltage: number;
+    frequency: number;
     power: number;
     loadPercent: number // float from 0-1;
 }
 
 interface IConsumption {
-    voltage: string;
-    frequency: string;
-    powerVa: string;
-    activePower: string;
+    voltage: number;
+    frequency: number;
+    powerVa: number;
+    activePower: number;
     loadPercent: number;  // float from 0-1;
     current: number;
 }
 
 interface IBattery {
-    voltage: string;
-    chargingCurrent: string;
+    voltage: number;
+    chargingCurrent: number;
     capacity: number; // float from 0-1
-    voltageFromScc: string;
-    dischargeCurrent: string;
+    voltageFromScc: number;
+    dischargeCurrent: number;
     powerOut: number;
     powerIn: number;
 }
 
 interface IInverter {
-    busVoltage: string;
-    heatSinkTemperature: string;
+    busVoltage: number;
+    heatSinkTemperature: number;
     deviceStatus: iDeviceStatus;
 }
 
 interface IPv {
-    currentBattery: string;
-    voltage_1: string;
-    chargingPower: string;
+    currentBattery: number
+    voltage_1: number;
+    chargingPower: number;
     powerForLoads: number;
     productionPercent: number;  // float from 0-1;
 }
