@@ -7,7 +7,6 @@ export default class PiPMonitor implements IPiPMonitorService  {
     QPIGSInfo: IQPIGSInfo;
     maxPVPower: number;
     maxPIPOutPower: number
-    port: SerialPort;
 
     constructor(ioServer: SocketIO.Server){
         this.ioSocketServer = ioServer;
@@ -58,9 +57,11 @@ export default class PiPMonitor implements IPiPMonitorService  {
     
     init = (config: IPiPMonitorConfig): void => {
         const QPIGS = [0X51,0X50,0X49,0X47,0X53,0XB7,0XA9,0X0D];
-        console.log('PIP Port', this.port);
-        this.port = new SerialPort(config.commPort, {baudRate: 2400});
-        const port = this.port;
+        const port = new SerialPort(config.commPort, {baudRate: 2400},(error: Error) => {
+            if(error){
+                console.warn(error);
+            }
+        });
         const parser = port.pipe(new SerialPort.parsers.Readline({delimiter: '\r'}));
         this.maxPIPOutPower = config.maxPIPOutPower;
         this.maxPVPower = config.maxPVPower;
