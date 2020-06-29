@@ -126,7 +126,7 @@ const monitorsInit = () => {
                             batteriesMonitor.init({commPort: results.batteryMonitorPort});
                         }
                         
-                        const pipMonitor: IPiPMonitorService = new PiPMonitor(io);
+                        const pipMonitor: IPiPMonitorService = new PiPMonitor(io, dbService);
                         pipMonitor.init({commPort: results.inverterPort, maxPIPOutPower: results.inverterPower, maxPVPower: results.pvModulesPower});
                     }
                 });
