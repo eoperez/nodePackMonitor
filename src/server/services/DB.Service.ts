@@ -56,7 +56,7 @@ export default class DbService implements IDbService{
         });
     }
     recordDailyStat = (stat: IDailyStats, callback: ICallback): void =>{
-        this.dbConnection.run(`INSERT INTO configuration (
+        this.dbConnection.run(`INSERT INTO dailyStats (
             source,
             measurement,
             value,
