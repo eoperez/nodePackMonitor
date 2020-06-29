@@ -55,8 +55,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
 
         // Catch any errors with the Serial
         this.port.on('error', function (err) {
-            console.error('Serial Error! ');
-            console.error(err);
+            console.error('Battery Monitor', err);
             // TODO: send a nice error instead of killing the process.
             // process.exit(1);
         });
