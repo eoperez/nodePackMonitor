@@ -5,6 +5,7 @@ export interface IDbService {
     getConfigurationExist(callback: ICallback): void;
     getLastConfiguration(callback: ICallback): void;
     saveConfiguration(configuration: IConfiguration, callback:ICallback): void
+    recordDailyStat(stat: IDailyStats, callback: ICallback): void;
 }
 
 export interface ICallback {
@@ -27,4 +28,10 @@ export interface ISystemConfig {
     inverterPower: number;
     pvModulesPower: number;
     batteriesSeries: number;
+}
+
+export interface IDailyStats {
+    source: string;
+    measurement: string;
+    value: number;
 }

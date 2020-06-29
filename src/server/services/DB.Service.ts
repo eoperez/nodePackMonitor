@@ -1,5 +1,5 @@
 import * as Sqlite3 from "sqlite3";
-import { IDbService, ICallback, IConfiguration  } from "../interfaces/IDbService.interface";
+import { IDbService, ICallback, IConfiguration, IDailyStats  } from "../interfaces/IDbService.interface";
 import * as Path from "path";
 
 export default class DbService implements IDbService{
@@ -51,6 +51,20 @@ export default class DbService implements IDbService{
             newConfig.systemConfig.inverterPower,
             newConfig.systemConfig.pvModulesPower,
             newConfig.systemConfig.batteriesSeries
+        ],(instance: Sqlite3.RunResult, error: Error)=>{
+            callback(error, instance);
+        });
+    }
+    recordDailyStat = (stat: IDailyStats, callback: ICallback): void =>{
+        this.dbConnection.run(`INSERT INTO configuration (
+            source,
+            measurement,
+            value,
+        )
+        VALUES (?, ?, ?)`,[
+            stat.source,
+            stat.measurement,
+            stat.value
         ],(instance: Sqlite3.RunResult, error: Error)=>{
             callback(error, instance);
         });
