@@ -1,12 +1,14 @@
-import React, { ReactElement, useState, useEffect } from 'react'
+import React, { ReactElement, useState, useEffect } from 'react';
 import {
+  colors,
   Grid,
   Paper, 
   makeStyles, 
   createStyles,
-  Theme} from '@material-ui/core'
+  Theme} from '@material-ui/core';
 import BarChart from './BarChart'
 import GaugeTile from "./GaugeTile";
+import SingleStat from "./SingleStat";
 import socketIOClient from "socket.io-client"
 
 const ENDPOINT = "http://192.168.0.5:5000"
@@ -142,17 +144,35 @@ export default function Dashboard(props: Props): ReactElement {
               bars={bars}
             ></BarChart>
           </Grid>
-          <Grid item xs={3}>
-            <Paper className={classes.paper}>xs=3</Paper>
+          <Grid item xs={2}>
+            <Paper className={classes.paper}>
+              <SingleStat title="Daily Grid Usage" value="25.6" units="Kwh" icon="business" color={colors.orange[900]} textColor={colors.grey[50]} />
+            </Paper>
           </Grid>
-          <Grid item xs={3}>
-            <Paper className={classes.paper}>xs=3</Paper>
+          <Grid item xs={2}>
+            <Paper className={classes.paper}>
+              <SingleStat title="Daily PV Production" value="25.6" units="Kwh" icon="wb_sunny" color={colors.grey[700]} textColor={colors.lime[500]}/>
+            </Paper>
           </Grid>
-          <Grid item xs={3}>
-            <Paper className={classes.paper}>xs=3</Paper>
+          <Grid item xs={2}>
+            <Paper className={classes.paper}>
+                <SingleStat title="Daily Power Usage" value="25.6" units="Kwh" icon="wb_incandescent" color={colors.red['A400']} textColor={colors.grey[300]}/>
+            </Paper>
           </Grid>
-          <Grid item xs={3}>
-            <Paper className={classes.paper}>xs=3</Paper>
+          <Grid item xs={2}>
+            <Paper className={classes.paper}>
+              <SingleStat title="Daily Battery Usage" value="25.6" units="Kwh" icon="battery_alert" color={colors.grey[700]} textColor={colors.yellow['A100']}/>
+            </Paper>
+          </Grid>
+          <Grid item xs={2}>
+            <Paper className={classes.paper}>
+              <SingleStat title="Max Usage Hour" value="25.6" units="Kwh" icon="power" color={colors.orange[300]} textColor={colors.grey[800]}/>
+            </Paper>
+          </Grid>
+          <Grid item xs={2}>
+            <Paper className={classes.paper}>
+              <SingleStat title="Max PV Hour" value="25.6" units="Kwh" icon="brightness_high" color={colors.grey[700]} textColor={colors.yellow[500]}/>
+            </Paper>
           </Grid>
         </Grid>
       </div>
