@@ -105,7 +105,7 @@ export default class DbService implements IDbService{
             source TEXT,
             measurement TEXT,
             value INTEGER,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)`
+            timestamp DATETIME DEFAULT (datetime('now','localtime')))`
         this.dbConnection.run(createDailyStants);
     }
 
