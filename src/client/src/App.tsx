@@ -11,7 +11,7 @@ interface Props {
 
 }
 
-let pageTheme: Theme = createMuiTheme({
+export let pageTheme: Theme = createMuiTheme({
   palette: {
     primary: colors.lightBlue,
     secondary: colors.yellow,
@@ -36,6 +36,28 @@ pageTheme.typography.h6 = {
   [pageTheme.breakpoints.up('sm')]: {
     fontSize: '1.25rem'
   }
+}
+pageTheme.typography.h5 = {
+  fontSize: '3rem',
+  [pageTheme.breakpoints.down('xs')]: {
+    fontSize: '1rem',
+  },
+  [pageTheme.breakpoints.up('sm')]: {
+    fontSize: '1.5rem'
+  },
+  [pageTheme.breakpoints.up('md')]: {
+    fontSize: '2rem'
+  }
+}
+pageTheme.typography.subtitle2 = {
+  fontFamily: 'Arial',
+  fontSize: '1rem', 
+  [pageTheme.breakpoints.down('xs')]: {
+    fontSize: '.5rem',
+  },
+  [pageTheme.breakpoints.up('sm')]: {
+    fontSize: '.9rem'
+  },
 }
 
 export default function App (props: Props): ReactElement {
