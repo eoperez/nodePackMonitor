@@ -1,5 +1,5 @@
 import * as Sqlite3 from "sqlite3";
-import { IDbService, ICallback, IConfiguration, IDailyStats  } from "../interfaces/IDbService.interface";
+import { IDbService, ICallback, IConfiguration, IDailyStats, IDeilyStatsResults  } from "../interfaces/IDbService.interface";
 import * as Path from "path";
 
 export default class DbService implements IDbService{
@@ -109,23 +109,55 @@ export default class DbService implements IDbService{
         this.dbConnection.run(createDailyStants);
     }
 
-    getDailyStat = (source: string, meassurament: string, callback: ICallback) => {
-        const queryDailyStats = `SELECT AVG(value) AS perHour, strftime('%H', datetime(timestamp, 'localtime')) AS hour 
-            FROM dailyStats 
-            WHERE source = '${source}' 
-            AND measurement = '${meassurament}' 
-            GROUP BY strftime('%H', datetime(timestamp, 'localtime'));`
+    getDailyStats = (callback: ICallback) => {
+        const queryDailyStats = `SELECT
+                strftime('%H', datetime(timestamp, 'localtime')) AS Hour,
+                source,
+                measurement,
+                AVG(value) AS avgValue 
+            from 
+                dailyStats 
+            GROUP BY
+                source,
+                measurement,
+                strftime('%H', datetime(timestamp, 'localtime'));`
         this.dbConnection.all(queryDailyStats,(error: Error, results: any) => {
             if(error){
                 console.error(error);
             }
             console.log(results);
-            let total: number = 0;
+            let dailyTotals: IDeilyStatsResults = {
+                grid: 0,
+                pv: 0,
+                powerUsage: 0,
+                batteryUsage: 0
+
+            }
             results.forEach((row: any) => {
-                total = row.perHour + total;
+                switch (row.measurement) {
+                    case 'power':
+                            // power has 2 sources comsumtion and grid, update the right one.
+                            if(row.source === 'grid') {
+                                // calculate daily usage
+                                dailyTotals.grid = (dailyTotals.grid + row.avgValue)/1000;
+                            } else {
+                                 // calculate daily usage
+                                 dailyTotals.powerUsage = (dailyTotals.powerUsage + row.avgValue)/1000;
+                            }
+                        break;
+                    case 'powerForLoads':
+                         // calculate daily usage
+                         dailyTotals.pv = (dailyTotals.pv + row.avgValue)/1000;
+                        break;
+                    case 'powerOut':
+                         // calculate daily usage
+                         dailyTotals.batteryUsage = (dailyTotals.batteryUsage + row.avgValue)/1000;
+                        break;
+                    default:
+                        break;
+                }
             });
-            callback(null, total);
+            callback(null, dailyTotals);
         })
     }
-
 }
