@@ -7,6 +7,7 @@ export interface IDbService {
     saveConfiguration(configuration: IConfiguration, callback:ICallback): void
     recordDailyStat(stat: IDailyStats, callback: ICallback): void;
     getDailyStats(callback: ICallback): void;
+    getPeakStats(callback: ICallback): void;
 }
 
 export interface ICallback {
@@ -42,4 +43,12 @@ export interface IDeilyStatsResults {
     pv: number;
     powerUsage: number;
     batteryUsage: number;
+}
+
+export interface IPeakStats {
+    batteryPowerOut: number;
+    usage: number;
+    grid: number;
+    pvProduction: number;
+    pvCharging: number;
 }

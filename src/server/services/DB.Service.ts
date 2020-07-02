@@ -1,5 +1,5 @@
 import * as Sqlite3 from "sqlite3";
-import { IDbService, ICallback, IConfiguration, IDailyStats, IDeilyStatsResults  } from "../interfaces/IDbService.interface";
+import { IDbService, ICallback, IConfiguration, IDailyStats, IDeilyStatsResults, IPeakStats  } from "../interfaces/IDbService.interface";
 import * as Path from "path";
 
 export default class DbService implements IDbService{
@@ -124,6 +124,7 @@ export default class DbService implements IDbService{
         this.dbConnection.all(queryDailyStats,(error: Error, results: any) => {
             if(error){
                 console.error(error);
+                callback(error);
             }
             let dailyTotals: IDeilyStatsResults = {
                 grid: 0,
@@ -164,5 +165,56 @@ export default class DbService implements IDbService{
                 }
             });
         })
+    }
+
+    getPeakStats = (callback: ICallback) => {
+        const peakStatsQuery = `SELECT 
+                source, 
+                measurement, 
+                MAX(value) AS maxValue 
+            FROM 
+                dailyStats 
+            GROUP BY
+                source, measurement;
+        
+        `;
+        this.dbConnection.all(peakStatsQuery,(error: Error, results: any) => {
+            if(error){
+                console.error(error);
+                callback(error)
+            }
+            let peakStats: IPeakStats = {
+                batteryPowerOut: 0,
+                usage: 0,
+                grid: 0,
+                pvProduction: 0,
+                pvCharging: 0
+            }
+            results.forEach((row: any, index: any, results: Array<any>) => {
+                switch (row.measurement) {
+                    case 'powerOut':
+                        peakStats.batteryPowerOut = row.maxValue;
+                        break;
+                    case 'power':
+                        if(row.source === 'grid'){
+                            peakStats.grid = row.maxValue;
+                        } else {
+                            peakStats.usage = row.maxValue;
+                        }
+                        break;
+                    case 'chargingPower':
+                        peakStats.pvCharging = row.maxValue;
+                        break;  
+                    case 'powerForLoads':
+                        peakStats.pvProduction = row.maxValue;
+                        break;
+                    default:
+                        break;
+                }
+                if(index === results.length-1){
+                    callback(null, peakStats);
+                }
+            });
+        });
     }
 }

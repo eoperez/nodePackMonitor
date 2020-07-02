@@ -90,7 +90,7 @@ export default function Dashboard(props: Props): ReactElement {
       pv: 0,
       powerUsage: 0,
       batteryUsage: 0
-    })
+    });
 
     useEffect(() => {
       const socket = socketIOClient(ENDPOINT);

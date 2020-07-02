@@ -102,7 +102,15 @@ export default class PiPMonitor implements IPiPMonitorService  {
                         console.error(error);
                     }
                     this.ioSocketServer.sockets.emit('dailyTotals', results);
-                }); 
+                });
+                // Get peak stats
+                this.dbService.getPeakStats((error: Error, results) =>{
+                    if(error){
+                        console.error(error);
+                    }
+                    console.log('Peak:', results)
+                    this.ioSocketServer.sockets.emit('peakStats', results);
+                });
             }
         });
     }
