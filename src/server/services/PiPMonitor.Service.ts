@@ -98,7 +98,10 @@ export default class PiPMonitor implements IPiPMonitorService  {
                 this.ioSocketServer.sockets.emit('inverter', this.QPIGSInfo);
                 //Get Daily Stats
                 this.dbService.getDailyStats((error: Error, results)=>{
-                    console.log('object:',results);
+                    if(error){
+                        console.error(error);
+                    }
+                    this.ioSocketServer.sockets.emit('dailyTotals', results);
                 }); 
             }
         });
@@ -107,9 +110,6 @@ export default class PiPMonitor implements IPiPMonitorService  {
     handleDailyStatsCallback = (error: Error, results?: any): void =>{
         if(error) {
             console.error(error);
-        }
-        if(results) {
-            console.log(results);
         }
     }
 
@@ -149,6 +149,10 @@ export default class PiPMonitor implements IPiPMonitorService  {
         this.QPIGSInfo.pv.powerForLoads = this.QPIGSInfo.pv.chargingPower - (this.QPIGSInfo.pv.currentBattery * this.QPIGSInfo.battery.voltageFromScc);
         // Grid calculated info
         this.QPIGSInfo.grid.power = this.QPIGSInfo.consumption.activePower - (this.QPIGSInfo.battery.powerOut + this.QPIGSInfo.pv.powerForLoads);
+        // don't allow negative values
+        if(this.QPIGSInfo.grid.power < 0){
+            this.QPIGSInfo.grid.power = 0;
+        }
         this.QPIGSInfo.grid.loadPercent = this.QPIGSInfo.grid.power / this.maxPIPOutPower;
         // Daily Stats
         this.dbService.recordDailyStat({source: 'grid', measurement: 'power', value: this.QPIGSInfo.grid.power}, this.handleDailyStatsCallback);
@@ -156,7 +160,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
         this.dbService.recordDailyStat({source: 'pv', measurement: 'chargingPower', value: this.QPIGSInfo.pv.chargingPower}, this.handleDailyStatsCallback);
         this.dbService.recordDailyStat({source: 'pv', measurement: 'powerForLoads', value: this.QPIGSInfo.pv.powerForLoads}, this.handleDailyStatsCallback);
         this.dbService.recordDailyStat({source: 'battery', measurement: 'powerOut', value: this.QPIGSInfo.battery.powerOut}, this.handleDailyStatsCallback);
-        console.log('Returning QPIGSInfo:', this.QPIGSInfo);
+        //console.log('Returning QPIGSInfo:', this.QPIGSInfo);
         return this.QPIGSInfo;
     }
 
