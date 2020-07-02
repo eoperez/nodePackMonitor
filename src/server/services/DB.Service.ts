@@ -133,7 +133,7 @@ export default class DbService implements IDbService{
                 batteryUsage: 0
 
             }
-            results.forEach((row: any) => {
+            results.forEach((row: any, index: any, results: Array<any>) => {
                 switch (row.measurement) {
                     case 'power':
                             // power has 2 sources comsumtion and grid, update the right one.
@@ -156,8 +156,10 @@ export default class DbService implements IDbService{
                     default:
                         break;
                 }
+                if(index === results.length-1){
+                    callback(null, dailyTotals);
+                }
             });
-            callback(null, dailyTotals);
         })
     }
 }
