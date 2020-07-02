@@ -17,6 +17,12 @@ interface Props {
 
 }
 
+export interface IDailyStats {
+  grid: number;
+  pv: number;
+  powerUsage: number;
+  batteryUsage: number;
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -78,7 +84,13 @@ export default function Dashboard(props: Props): ReactElement {
               chargingScc: ''
           }
       }
-  });
+    });
+    const [dailyStats, setDailyStats] = useState<IDailyStats>({
+      grid: 0,
+      pv: 0,
+      powerUsage: 0,
+      batteryUsage: 0
+    })
 
     useEffect(() => {
       const socket = socketIOClient(ENDPOINT);
@@ -89,6 +101,9 @@ export default function Dashboard(props: Props): ReactElement {
       socket.on("inverter", (inverterInfo: any) => {
         // console.log('Inverter Info object:', JSON.stringify(inverterInfo) );
         setInverter(inverterInfo);
+      });
+      socket.on("dailyTotals", (dailyStats: IDailyStats) => {
+        setDailyStats(dailyStats);
       });
     }, []);
     return (
@@ -146,22 +161,22 @@ export default function Dashboard(props: Props): ReactElement {
           </Grid>
           <Grid item xs={2}>
             <Paper className={classes.paper}>
-              <SingleStat title="Daily Grid Usage" value="25.6" units="Kwh" icon="business" color={colors.orange[900]} textColor={colors.grey[50]} />
+              <SingleStat title="Daily Grid Usage" value={dailyStats.grid.toFixed(2)} units="Kwh" icon="business" color={colors.orange[900]} textColor={colors.grey[50]} />
             </Paper>
           </Grid>
           <Grid item xs={2}>
             <Paper className={classes.paper}>
-              <SingleStat title="Daily PV Production" value="25.6" units="Kwh" icon="wb_sunny" color={colors.grey[700]} textColor={colors.lime[500]}/>
+              <SingleStat title="Daily PV Production" value={dailyStats.pv.toFixed(2)} units="Kwh" icon="wb_sunny" color={colors.grey[700]} textColor={colors.lime[500]}/>
             </Paper>
           </Grid>
           <Grid item xs={2}>
             <Paper className={classes.paper}>
-                <SingleStat title="Daily Power Usage" value="25.6" units="Kwh" icon="wb_incandescent" color={colors.red['A400']} textColor={colors.grey[300]}/>
+                <SingleStat title="Daily Power Usage" value={dailyStats.powerUsage.toFixed(2)} units="Kwh" icon="wb_incandescent" color={colors.red['A400']} textColor={colors.grey[300]}/>
             </Paper>
           </Grid>
           <Grid item xs={2}>
             <Paper className={classes.paper}>
-              <SingleStat title="Daily Battery Usage" value="25.6" units="Kwh" icon="battery_alert" color={colors.grey[700]} textColor={colors.yellow['A100']}/>
+              <SingleStat title="Daily Battery Usage" value={dailyStats.batteryUsage.toFixed(2)} units="Kwh" icon="battery_alert" color={colors.grey[700]} textColor={colors.yellow['A100']}/>
             </Paper>
           </Grid>
           <Grid item xs={2}>
