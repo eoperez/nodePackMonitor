@@ -125,7 +125,6 @@ export default class DbService implements IDbService{
             if(error){
                 console.error(error);
             }
-            console.log(results);
             let dailyTotals: IDeilyStatsResults = {
                 grid: 0,
                 pv: 0,
