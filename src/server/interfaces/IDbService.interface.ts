@@ -6,7 +6,7 @@ export interface IDbService {
     getLastConfiguration(callback: ICallback): void;
     saveConfiguration(configuration: IConfiguration, callback:ICallback): void
     recordDailyStat(stat: IDailyStats, callback: ICallback): void;
-    queryDailyStatsHours(source: string, meassurament: string, callback: ICallback): void;
+    getDailyStat(source: string, meassurament: string, callback: ICallback): void;
 }
 
 export interface ICallback {
