@@ -112,8 +112,8 @@ export default class DbService implements IDbService{
     getDailyStat = (source: string, meassurament: string, callback: ICallback) => {
         const queryDailyStats = `SELECT AVG(value) AS avgConsumtion, strftime('%H', datetime(timestamp, 'localtime')) AS time 
             FROM dailyStats 
-            WHERE source = 'power' 
-            AND measurement = 'power' 
+            WHERE source = '${source}' 
+            AND measurement = '${meassurament}' 
             GROUP BY strftime('%H', datetime(timestamp, 'localtime'));`
         this.dbConnection.all(queryDailyStats,(error: Error, results: any) => {
             console.log(results);

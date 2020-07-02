@@ -96,6 +96,10 @@ export default class PiPMonitor implements IPiPMonitorService  {
                 //emit bank information using socket service.
                 console.log('emitting inverter info:', this.QPIGSInfo);
                 this.ioSocketServer.sockets.emit('inverter', this.QPIGSInfo);
+                //Get Daily Stats
+                this.dbService.getDailyStat('pv', 'powerForLoads', (error: Error, results)=>{
+                    console.log(results)
+                }); 
             }
         });
     }
