@@ -157,6 +157,10 @@ export default class DbService implements IDbService{
                         break;
                 }
                 if(index === results.length-1){
+                    dailyTotals.grid = dailyTotals.grid/1000;
+                    dailyTotals.powerUsage = dailyTotals.powerUsage/1000;
+                    dailyTotals.pv = dailyTotals.pv/1000;
+                    dailyTotals.batteryUsage = dailyTotals.batteryUsage/1000;
                     callback(null, dailyTotals);
                 }
             });
