@@ -98,7 +98,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
                 this.ioSocketServer.sockets.emit('inverter', this.QPIGSInfo);
                 //Get Daily Stats
                 this.dbService.getDailyStat('pv', 'powerForLoads', (error: Error, results)=>{
-                    console.log(results)
+                    console.log('Total:',results/1000);
                 }); 
             }
         });

@@ -110,13 +110,21 @@ export default class DbService implements IDbService{
     }
 
     getDailyStat = (source: string, meassurament: string, callback: ICallback) => {
-        const queryDailyStats = `SELECT AVG(value) AS avgConsumtion, strftime('%H', datetime(timestamp, 'localtime')) AS time 
+        const queryDailyStats = `SELECT AVG(value) AS perHour, strftime('%H', datetime(timestamp, 'localtime')) AS hour 
             FROM dailyStats 
             WHERE source = '${source}' 
             AND measurement = '${meassurament}' 
             GROUP BY strftime('%H', datetime(timestamp, 'localtime'));`
         this.dbConnection.all(queryDailyStats,(error: Error, results: any) => {
+            if(error){
+                console.error(error);
+            }
             console.log(results);
+            let total: number = 0;
+            results.forEach((row: any) => {
+                total = parseInt(row.perHour) + total;
+            });
+            callback(null, total);
         })
     }
 
