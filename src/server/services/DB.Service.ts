@@ -122,7 +122,7 @@ export default class DbService implements IDbService{
             console.log(results);
             let total: number = 0;
             results.forEach((row: any) => {
-                total = parseInt(row.perHour) + total;
+                total = row.perHour + total;
             });
             callback(null, total);
         })
