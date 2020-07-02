@@ -139,19 +139,19 @@ export default class DbService implements IDbService{
                             // power has 2 sources comsumtion and grid, update the right one.
                             if(row.source === 'grid') {
                                 // calculate daily usage
-                                dailyTotals.grid = (dailyTotals.grid + row.avgValue)/1000;
+                                dailyTotals.grid = (dailyTotals.grid + row.avgValue);
                             } else {
                                  // calculate daily usage
-                                 dailyTotals.powerUsage = (dailyTotals.powerUsage + row.avgValue)/1000;
+                                 dailyTotals.powerUsage = (dailyTotals.powerUsage + row.avgValue);
                             }
                         break;
                     case 'powerForLoads':
                          // calculate daily usage
-                         dailyTotals.pv = (dailyTotals.pv + row.avgValue)/1000;
+                         dailyTotals.pv = (dailyTotals.pv + row.avgValue);
                         break;
                     case 'powerOut':
                          // calculate daily usage
-                         dailyTotals.batteryUsage = (dailyTotals.batteryUsage + row.avgValue)/1000;
+                         dailyTotals.batteryUsage = (dailyTotals.batteryUsage + row.avgValue);
                         break;
                     default:
                         break;
