@@ -11,8 +11,6 @@ import {
     Avatar
 } from '@material-ui/core';
 
-import { pageTheme } from "../App";
-
 interface Props {
     icon?: string;
     title?: string;

@@ -16,6 +16,13 @@ const ENDPOINT = "http://192.168.0.5:5000"
 interface Props {
 
 }
+interface IPeakStats {
+  batteryPowerOut: number;
+  usage: number;
+  grid: number;
+  pvProduction: number;
+  pvCharging: number;
+}
 
 export interface IDailyStats {
   grid: number;
@@ -91,7 +98,13 @@ export default function Dashboard(props: Props): ReactElement {
       powerUsage: 0,
       batteryUsage: 0
     });
-
+    const [peakStats, setPeakStats] = useState<IPeakStats>({
+      batteryPowerOut: 0,
+      usage: 0,
+      grid: 0,
+      pvProduction: 0,
+      pvCharging: 0
+    });
     useEffect(() => {
       const socket = socketIOClient(ENDPOINT);
       socket.on("bankInfo", (barsInfo: any) => {
@@ -104,6 +117,9 @@ export default function Dashboard(props: Props): ReactElement {
       });
       socket.on("dailyTotals", (dailyStats: IDailyStats) => {
         setDailyStats(dailyStats);
+      });
+      socket.on("peakStats", (peakStats: IPeakStats) => {
+        setPeakStats(peakStats);
       });
     }, []);
     return (
@@ -181,12 +197,12 @@ export default function Dashboard(props: Props): ReactElement {
           </Grid>
           <Grid item xs={2}>
             <Paper className={classes.paper}>
-              <SingleStat title="Max Usage Hour" value="25.6" units="Kwh" icon="power" color={colors.orange[300]} textColor={colors.grey[800]}/>
+              <SingleStat title="Peak Usage" value={peakStats.usage.toString()} units="w" icon="power" color={colors.orange[300]} textColor={colors.grey[800]}/>
             </Paper>
           </Grid>
           <Grid item xs={2}>
             <Paper className={classes.paper}>
-              <SingleStat title="Max PV Hour" value="25.6" units="Kwh" icon="brightness_high" color={colors.grey[700]} textColor={colors.yellow[500]}/>
+              <SingleStat title="Peak PV Output" value={peakStats.pvProduction.toString()} units="w" icon="brightness_high" color={colors.grey[700]} textColor={colors.yellow[500]}/>
             </Paper>
           </Grid>
         </Grid>
