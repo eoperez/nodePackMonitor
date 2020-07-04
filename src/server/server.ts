@@ -7,6 +7,7 @@ import { join } from "path";
 import { Server } from "http";
 import * as SocketIO from "socket.io";
 import * as Sqlite3 from "sqlite3";
+import * as Localtunnel from "localtunnel";
 
 import { IDbService, IConfiguration } from "./interfaces/IDbService.interface";
 import {IBaterryMonitorService} from "./interfaces/IBaterryMonitorService.interface";
@@ -105,6 +106,19 @@ app.get('/', mainRoute);
 const server: Server = app.listen(port, () => {
     console.log(`App is listening on port:${port}`);
 });
+
+// Inititate localtunnel
+(async () => {
+    const publicTunnel = await Localtunnel({ port: 3000 });
+  
+    // the assigned public url for your tunnel
+    // i.e. https://abcdefgjhij.localtunnel.me
+    console.log(publicTunnel.url);
+  
+    publicTunnel.on('close', () => {
+      // tunnels are closed
+    });
+})();
 
 // Initiate IO Server
 const monitorsInit = () => {
