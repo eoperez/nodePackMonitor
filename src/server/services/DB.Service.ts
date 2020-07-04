@@ -1,6 +1,7 @@
 import * as Sqlite3 from "sqlite3";
 import { IDbService, ICallback, IConfiguration, IDailyStats, IDeilyStatsResults, IPeakStats  } from "../interfaces/IDbService.interface";
 import * as Path from "path";
+import * as Schedule from "node-schedule";
 
 export default class DbService implements IDbService{
     dbConnection: Sqlite3.Database;
@@ -16,6 +17,9 @@ export default class DbService implements IDbService{
         });
         this.createConfigurationTable();
         this.createDailyStatsTable();
+        Schedule.scheduleJob('0 0 * * *',()=>{
+            this.deleteDailyStats();
+        })
     }
 
     getDbConnection = (): Sqlite3.Database => {
@@ -55,6 +59,7 @@ export default class DbService implements IDbService{
             callback(error, instance);
         });
     }
+
     recordDailyStat = (stat: IDailyStats, callback: ICallback): void =>{
         this.dbConnection.run(`INSERT INTO dailyStats (
             source,
@@ -215,6 +220,16 @@ export default class DbService implements IDbService{
                     callback(null, peakStats);
                 }
             });
+        });
+    }
+    deleteDailyStats() {
+        const deleteStat: string = `DELETE FROM dailyStats WHERE timestamp < date('now', 'start of day');`
+        this.dbConnection.run(deleteStat, (runResults: Sqlite3.RunResult, error: Error) =>{
+            if(error){
+                console.error(error);
+            } else {
+                console.log('Records deleted', runResults.changes);
+            }
         });
     }
 }
