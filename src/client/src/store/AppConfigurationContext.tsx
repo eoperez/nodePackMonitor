@@ -88,7 +88,7 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
                         batteriesSeries: results.data.batteriesSeries
                     },
                     integrationConfig: {
-                        isPublicEnabled: results.data.isPublicEnabled,
+                        isPublicEnabled: !!results.data.isPublicEnabled,
                         subdomain: results.data.subdomain,
                         influxHost: results.data.influxHost,
                         influxUser: results.data.influxUser,
@@ -110,6 +110,7 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
         setAppConfiguration(currentAppConfigContext);
         // Save if current and old configuration are different.
         if(currentAppConfigContext !== appConfiguration){
+            console.log('Existing Configuration:', appConfiguration, 'New Configuration:', currentAppConfigContext);
             saveConfiguration(currentAppConfigContext);
         }
         
