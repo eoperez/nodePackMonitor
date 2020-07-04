@@ -6,10 +6,10 @@ module.exports = {
     time: true,
     // for pm2-logrotate
     max_size: "3M",
-    retain: "all",
-    compress: true,
+    retain: 7,
+    compress: false,
     dateFormat: "YYYY-MM-DD_HH-mm-ss",
-    workerInterval: 10,
+    workerInterval: 30,
     rotateInterval: "0 0 0 * * ?",
     rotateModule: true
   }]
