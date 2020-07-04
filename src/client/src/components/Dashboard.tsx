@@ -140,7 +140,7 @@ export default function Dashboard(props: Props): ReactElement {
                 {primaryText: inverter.pv.voltage_1, secondaryText: "Voltage", unit: "V"},
                 {primaryText: inverter.pv.currentBattery, secondaryText: "Battery Current", unit: "A"},
                 {primaryText: inverter.pv.chargingPower, secondaryText: "Charging", unit: "W"},
-                {primaryText: inverter.pv.powerForLoads.toFixed(2), secondaryText: "Load", unit: "V"},
+                {primaryText: inverter.pv.powerForLoads.toFixed(2), secondaryText: "Load", unit: "W"},
               ]} reverse={true}/>
 
             </Paper>
@@ -180,7 +180,7 @@ export default function Dashboard(props: Props): ReactElement {
           </Grid>
           <Grid item xs={2}>
             <Paper className={classes.paper}>
-              <SingleStat title="Daily PV Production" value={dailyStats.pv.toFixed(2)} units="Kwh" icon="wb_sunny" color={colors.grey[700]} textColor={colors.lime[500]}/>
+              <SingleStat title="Daily PV" value={dailyStats.pv.toFixed(2)} units="Kwh" icon="wb_sunny" color={colors.grey[700]} textColor={colors.lime[500]}/>
             </Paper>
           </Grid>
           <Grid item xs={2}>
