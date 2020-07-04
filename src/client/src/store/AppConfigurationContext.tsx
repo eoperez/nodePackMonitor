@@ -49,7 +49,6 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
     useEffect(() => {
         const getConfiguration = async () => {
             const results = await axios('http://192.168.0.5:5000/configuration');
-            console.log('axios response:', results);
             if (typeof results.data.inverterPort !== 'undefined') {
                 const AppConfigFromServer = {
                     monitorConfig: {
@@ -72,7 +71,6 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
 
     const saveConfiguration = async (configuration: IAppConfiguration) => {
         const results = await axios.post('http://192.168.0.5:5000/configuration', configuration);
-        console.log('axios save response', results);
     }
 
     const setCurrentAppConfigurationContext = useCallback((currentAppConfigContext: IAppConfiguration): void => {

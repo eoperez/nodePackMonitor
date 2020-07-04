@@ -65,7 +65,6 @@ export default function MonitorConfig(props: Props): ReactElement {
     const handleInputChange = (event: React.ChangeEvent<any>, value?: any) => {
         let newAppConfig: IAppConfiguration = Object.assign({}, currentAppConfig);
         if(event.currentTarget.id === "save"){
-            console.log(event.currentTarget);
             setIsSaved(!isSaved);
         } else {
             switch (event.target.name) {

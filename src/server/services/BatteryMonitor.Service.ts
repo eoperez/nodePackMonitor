@@ -86,7 +86,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             loopCount++;
             // we consider 000 loops a hanging call. It will execute the call again.
             if(loopCount > 4000){
-                console.log('Maximum loops reached. Requesting monitor info again:', sentCall);
+                console.error('Maximum loops reached. Requesting monitor info again:', sentCall);
                 this.port.close();
                 this.init({commPort: this.commPort, startAddress: this.startAddress})
             } else {
@@ -176,7 +176,6 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 break;
         }
         //emit bank information using socket service.
-        console.log('emitting bank info:', this.bankInfo);
         this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
     }
 
@@ -203,7 +202,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         buffer.push(crc);
         this.port.write(buffer, (error)=>{
             if(error) {
-                console.log('error sending packet, check:', this.activeCall);
+                console.error('error sending packet, check:', this.activeCall);
             } else {
                 const sentDate = new Date();
                 console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`, this.activeCall);

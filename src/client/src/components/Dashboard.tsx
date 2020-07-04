@@ -108,11 +108,9 @@ export default function Dashboard(props: Props): ReactElement {
     useEffect(() => {
       const socket = socketIOClient(ENDPOINT);
       socket.on("bankInfo", (barsInfo: any) => {
-        // console.log('bankInfo object:', JSON.stringify(barsInfo) );
         setBars(barsInfo);
       });
       socket.on("inverter", (inverterInfo: any) => {
-        // console.log('Inverter Info object:', JSON.stringify(inverterInfo) );
         setInverter(inverterInfo);
       });
       socket.on("dailyTotals", (dailyStats: IDailyStats) => {

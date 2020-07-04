@@ -90,11 +90,8 @@ export default class PiPMonitor implements IPiPMonitorService  {
         parser.on('data', (data) => {
             if (data.length == 109 && data.substring(0,1)=="(") {
                 data = data.substring(1, data.length-2);
-                console.log('Data:', data);
                 const inverterResponse: Array<string> = data.split(" ");
                 this.decodeQPIGS(inverterResponse);
-                //emit bank information using socket service.
-                console.log('emitting inverter info:', this.QPIGSInfo);
                 this.ioSocketServer.sockets.emit('inverter', this.QPIGSInfo);
                 //Get Daily Stats
                 this.dbService.getDailyStats((error: Error, results)=>{
@@ -108,7 +105,6 @@ export default class PiPMonitor implements IPiPMonitorService  {
                     if(error){
                         console.error(error);
                     }
-                    console.log('Peak:', results)
                     this.ioSocketServer.sockets.emit('peakStats', results);
                 });
             }
