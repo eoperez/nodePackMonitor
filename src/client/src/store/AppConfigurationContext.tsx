@@ -10,8 +10,17 @@ export interface IAppConfigurationContext {
 export interface IAppConfiguration {
     monitorConfig: IMonitorConfig;
     systemConfig: ISystemConfig;
+    integrationConfig: IIntegrationConfiguration;
 }
 
+export interface IIntegrationConfiguration {
+    isPublicEnabled: boolean;
+    subdomain?: string;
+    influxHost?: string;
+    influxUser?: string;
+    influxPassword?: string;
+    influxDb?: string;
+}
 export interface IMonitorConfig {
     inverterPort: string;
     isBatteryMonitor: boolean;
@@ -34,6 +43,9 @@ export const defaultAppConfig: IAppConfiguration = {
         inverterPower: 5000,
         pvModulesPower: 5000,
         batteriesSeries: 0
+    },
+    integrationConfig: {
+        isPublicEnabled: false
     }
 }
 export const defaultAppConfigurationContext: IAppConfigurationContext = {
@@ -74,6 +86,14 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
                         inverterPower: results.data.inverterPower,
                         pvModulesPower: results.data.pvModulesPower,
                         batteriesSeries: results.data.batteriesSeries
+                    },
+                    integrationConfig: {
+                        isPublicEnabled: results.data.isPublicEnabled,
+                        subdomain: results.data.subdomain,
+                        influxHost: results.data.influxHost,
+                        influxUser: results.data.influxUser,
+                        influxPassword: results.data.influxPassword,
+                        influxDb: results.data.influxDb,
                     }
                 };
                 setAppConfiguration(AppConfigFromServer);
