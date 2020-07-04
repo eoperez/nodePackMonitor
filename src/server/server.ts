@@ -113,7 +113,7 @@ const publicAccessInit = async () => {
         {
             port: port,
             host: 'http://serverless.social',
-            subdomain: 'perezNieto'
+            subdomain: 'pereznieto'
         });
 
     console.log('URL', tunnel.url);
