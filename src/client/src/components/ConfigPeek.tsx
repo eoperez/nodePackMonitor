@@ -9,6 +9,7 @@ import { makeStyles,
 } from '@material-ui/core'
 import MonitorConfig from "./MonitorConfig";
 import SystemConfig from "./SystemConfig"
+import { ENDPOINT } from "../store/AppConfigurationContext";
 
 interface Props {
     isOpen: boolean;
@@ -52,7 +53,7 @@ export default function ConfigPeek(props: Props): ReactElement {
     const [serverInfo, setServerInfo] = useState<IServerInfo>({isFirstTime: false});
     const [drawer, setDrawer] = useState<IDrawer>({isOpen: props.isOpen, drawerType: props.drawerType});
     const getServerInfo = async () => {
-        const results = await axios('http://192.168.0.5:5000/serverinfo');
+        const results = await axios(`${ENDPOINT}serverinfo`);
         setServerInfo(results.data);
     }
     useEffect(() => {

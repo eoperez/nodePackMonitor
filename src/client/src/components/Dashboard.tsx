@@ -10,17 +10,7 @@ import BarChart from './BarChart'
 import GaugeTile from "./GaugeTile";
 import SingleStat from "./SingleStat";
 import socketIOClient from "socket.io-client"
-
-const getSocketServerEndPoint = () => {
-  const requestLocation = window.location.href;
-  if( requestLocation === 'http://localhost:3000/'){
-    return 'http://192.168.0.5:5000/'
-  } else {
-    // Remove trailing /
-    return requestLocation
-  }
-}
-const ENDPOINT = getSocketServerEndPoint();
+import { ENDPOINT } from "../store/AppConfigurationContext";
 console.log('ENDPOINT', ENDPOINT);
 
 interface Props {

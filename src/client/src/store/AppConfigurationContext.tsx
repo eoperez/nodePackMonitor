@@ -40,6 +40,19 @@ export const defaultAppConfigurationContext: IAppConfigurationContext = {
     appConfiguration: defaultAppConfig,
     setCurrentAppConfigurationContext: () => {}
 }
+
+export const getSocketServerEndPoint = () => {
+    const requestLocation = window.location.href;
+    if( requestLocation === 'http://localhost:3000/'){
+      return 'http://192.168.0.5:5000/'
+    } else {
+      // Remove trailing /
+      return requestLocation
+    }
+}
+
+export const ENDPOINT: string = getSocketServerEndPoint();
+
 export const AppConfigurationContext = createContext<IAppConfigurationContext>(defaultAppConfigurationContext);
 
 // Custom Hook
@@ -48,7 +61,7 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
     
     useEffect(() => {
         const getConfiguration = async () => {
-            const results = await axios('http://192.168.0.5:5000/configuration');
+            const results = await axios(`${ENDPOINT}configuration`);
             if (typeof results.data.inverterPort !== 'undefined') {
                 const AppConfigFromServer = {
                     monitorConfig: {
@@ -70,7 +83,7 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
     }, []);
 
     const saveConfiguration = async (configuration: IAppConfiguration) => {
-        const results = await axios.post('http://192.168.0.5:5000/configuration', configuration);
+        const results = await axios.post(`${ENDPOINT}configuration`, configuration);
     }
 
     const setCurrentAppConfigurationContext = useCallback((currentAppConfigContext: IAppConfiguration): void => {
