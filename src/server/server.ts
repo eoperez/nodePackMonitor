@@ -108,8 +108,21 @@ const server: Server = app.listen(port, () => {
 });
 
 // Inititate localtunnel
-const publicAccessInit = () => {
+const publicAccessInit = async () => {
+        const tunnel = await Localtunnel(
+            { 
+                port: port,
+                host: 'http://serverless.social'
+            });
+      
+        console.log('URL', tunnel.url);
+      
+        tunnel.on('close', () => {
+          console.warn('Localtunnel closed');
+        });
+    
 };
+
 
 publicAccessInit();
 
