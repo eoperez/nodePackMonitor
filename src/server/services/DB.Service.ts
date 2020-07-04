@@ -113,11 +113,11 @@ export default class DbService implements IDbService{
             inverterPower INTEGER,
             pvModulesPower INTEGER,
             batteriesSeries INTEGER,
-            isPublicEnabled: INTEGER,
-            subdomain: TEXT,
-            influxHost: TEXT,
-            influxUser: TEXT,
-            influxPassword: TEXT,
+            isPublicEnabled INTEGER,
+            subdomain TEXT,
+            influxHost TEXT,
+            influxUser TEXT,
+            influxPassword TEXT,
             influxDb TEXT)`
         this.dbConnection.run(createConfigTbl);
     }
