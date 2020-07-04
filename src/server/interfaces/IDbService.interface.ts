@@ -17,8 +17,16 @@ export interface ICallback {
 export interface IConfiguration {
     monitorConfig: IMonitorConfig;
     systemConfig: ISystemConfig;
+    integrationConfig: IIntegrationConfiguration;
 }
-
+export interface IIntegrationConfiguration {
+    isPublicEnabled: boolean;
+    subdomain?: string;
+    influxHost?: string;
+    influxUser?: string;
+    influxPassword?: string;
+    influxDb?: string;
+}
 export interface IMonitorConfig {
     inverterPort: string;
     isBatteryMonitor: boolean;

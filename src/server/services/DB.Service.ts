@@ -45,16 +45,28 @@ export default class DbService implements IDbService{
             inverterMode,
             inverterPower,
             pvModulesPower,
-            batteriesSeries
+            batteriesSeries,
+            isPublicEnabled,
+            subdomain,
+            influxHost,
+            influxUser,
+            influxPassword,
+            influxDb
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)`,[
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[
             newConfig.monitorConfig.inverterPort,
             newConfig.monitorConfig.isBatteryMonitor,
             newConfig.monitorConfig.batteryMonitorPort,
             newConfig.systemConfig.inverterMode,
             newConfig.systemConfig.inverterPower,
             newConfig.systemConfig.pvModulesPower,
-            newConfig.systemConfig.batteriesSeries
+            newConfig.systemConfig.batteriesSeries,
+            newConfig.integrationConfig.isPublicEnabled,
+            newConfig.integrationConfig.subdomain,
+            newConfig.integrationConfig.influxHost,
+            newConfig.integrationConfig.influxUser,
+            newConfig.integrationConfig.influxPassword,
+            newConfig.integrationConfig.influxDb
         ],(instance: Sqlite3.RunResult, error: Error)=>{
             callback(error, instance);
         });
@@ -100,7 +112,13 @@ export default class DbService implements IDbService{
             inverterMode TEXT,
             inverterPower INTEGER,
             pvModulesPower INTEGER,
-            batteriesSeries INTEGER)`
+            batteriesSeries INTEGER,
+            isPublicEnabled: INTEGER,
+            subdomain: TEXT,
+            influxHost: TEXT,
+            influxUser: TEXT,
+            influxPassword: TEXT,
+            influxDb TEXT)`
         this.dbConnection.run(createConfigTbl);
     }
 
