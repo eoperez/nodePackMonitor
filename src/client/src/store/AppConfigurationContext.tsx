@@ -75,7 +75,7 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
         const getConfiguration = async () => {
             const results = await axios(`${ENDPOINT}configuration`);
             if (typeof results.data.inverterPort !== 'undefined') {
-                const AppConfigFromServer = {
+                const AppConfigFromServer: IAppConfiguration = {
                     monitorConfig: {
                         inverterPort: results.data.inverterPort,
                         isBatteryMonitor: !!results.data.isBatteryMonitor,
@@ -88,14 +88,26 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
                         batteriesSeries: results.data.batteriesSeries
                     },
                     integrationConfig: {
-                        isPublicEnabled: !!results.data.isPublicEnabled,
-                        subdomain: results.data.subdomain,
-                        influxHost: results.data.influxHost,
-                        influxUser: results.data.influxUser,
-                        influxPassword: results.data.influxPassword,
-                        influxDb: results.data.influxDb,
+                        isPublicEnabled: !!results.data.isPublicEnabled
                     }
                 };
+                 // add optional configuration only if attribute exists
+                if(results.data.subdomain){
+                    AppConfigFromServer.integrationConfig.subdomain = results.data.subdomain;
+                }
+                if(results.data.influxHost){
+                    AppConfigFromServer.integrationConfig.influxHost = results.data.influxHost;
+                }
+                if(results.data.influxUser){
+                    AppConfigFromServer.integrationConfig.influxUser = results.data.influxUser;
+                }
+                if(results.data.influxPassword){
+                    AppConfigFromServer.integrationConfig.influxPassword = results.data.influxPassword;
+                }
+                if(results.data.influxDb){
+                    AppConfigFromServer.integrationConfig.influxDb = results.data.influxDb;
+                }
+                
                 setAppConfiguration(AppConfigFromServer);
             }
         }
@@ -103,17 +115,15 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
     }, []);
 
     const saveConfiguration = async (configuration: IAppConfiguration) => {
-        const results = await axios.post(`${ENDPOINT}configuration`, configuration);
+        // Save if current and old configuration are different.
+        if(configuration !== appConfiguration){
+            const results = await axios.post(`${ENDPOINT}configuration`, configuration);
+        }
     }
 
     const setCurrentAppConfigurationContext = useCallback((currentAppConfigContext: IAppConfiguration): void => {
         setAppConfiguration(currentAppConfigContext);
-        // Save if current and old configuration are different.
-        if(currentAppConfigContext !== appConfiguration){
-            console.log('Existing Configuration:', appConfiguration, 'New Configuration:', currentAppConfigContext);
-            saveConfiguration(currentAppConfigContext);
-        }
-        
+        saveConfiguration(currentAppConfigContext);    
     }, []);
 
     return {
