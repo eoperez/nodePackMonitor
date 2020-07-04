@@ -121,11 +121,7 @@ const publicAccessInit = async () => {
     tunnel.on('close', () => {
         console.warn('Localtunnel closed');
     });
-
 };
-
-
-publicAccessInit();
 
 // Initiate IO Server
 const monitorsInit = () => {
