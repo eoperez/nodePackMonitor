@@ -106,7 +106,7 @@ export default function Dashboard(props: Props): ReactElement {
       pvCharging: 0
     });
     useEffect(() => {
-      const socket = socketIOClient(ENDPOINT);
+      const socket = socketIOClient(ENDPOINT,{transports: ['websocket']});
       socket.on("bankInfo", (barsInfo: any) => {
         setBars(barsInfo);
       });
