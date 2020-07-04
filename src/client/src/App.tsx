@@ -43,9 +43,12 @@ pageTheme.typography.h5 = {
     fontSize: '1rem',
   },
   [pageTheme.breakpoints.up('sm')]: {
-    fontSize: '1.5rem'
+    fontSize: '1rem'
   },
   [pageTheme.breakpoints.up('md')]: {
+    fontSize: '1.5rem'
+  },
+  [pageTheme.breakpoints.up('lg')]: {
     fontSize: '2rem'
   }
 }
@@ -56,7 +59,10 @@ pageTheme.typography.subtitle2 = {
     fontSize: '.5rem',
   },
   [pageTheme.breakpoints.up('sm')]: {
-    fontSize: '.9rem'
+    fontSize: '.5rem'
+  },
+  [pageTheme.breakpoints.up('md')]: {
+    fontSize: '.8rem'
   },
 }
 
