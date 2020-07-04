@@ -145,7 +145,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
         }
         // Battery calculated info
         this.QPIGSInfo.battery.powerOut = this.QPIGSInfo.battery.voltage * this.QPIGSInfo.battery.dischargeCurrent;
-        this.QPIGSInfo.battery.powerIn = this.QPIGSInfo.battery.voltageFromScc * this.QPIGSInfo.battery.chargingCurrent;
+        this.QPIGSInfo.battery.powerIn = this.QPIGSInfo.battery.voltage * this.QPIGSInfo.battery.chargingCurrent;
         // Consumption calculated info
         this.QPIGSInfo.consumption.current = this.QPIGSInfo.consumption.activePower/this.QPIGSInfo.consumption.voltage;
         // PV calculated info
