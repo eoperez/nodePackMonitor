@@ -109,6 +109,14 @@ const server: Server = app.listen(port, () => {
 
 // Inititate localtunnel
 const publicAccessInit = () => {
+    const publicTunnel = Localtunnel({ port: port });
+    console.log('localTunnel:', publicTunnel);
+    publicTunnel.then((localTunnel) => {
+        console.log('URL', localTunnel.url);
+        localTunnel.on('error', (error: Error)=>{
+            console.error(error);
+        })
+    })
 };
 
 publicAccessInit();
