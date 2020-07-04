@@ -108,7 +108,7 @@ const server: Server = app.listen(port, () => {
 });
 
 // Inititate localtunnel
-(async () => {
+const publicAccessInit = async () => {
     const publicTunnel = await Localtunnel({ port: port });
   
     // the assigned public url for your tunnel
@@ -118,7 +118,9 @@ const server: Server = app.listen(port, () => {
     publicTunnel.on('close', () => {
       // tunnels are closed
     });
-})();
+};
+
+publicAccessInit();
 
 // Initiate IO Server
 const monitorsInit = () => {
