@@ -9,7 +9,9 @@ import { makeStyles,
 } from '@material-ui/core'
 import MonitorConfig from "./MonitorConfig";
 import SystemConfig from "./SystemConfig"
+import IntegrationConfig from "./IntegrationConfig";
 import { ENDPOINT } from "../store/AppConfigurationContext";
+
 
 interface Props {
     isOpen: boolean;
@@ -80,6 +82,9 @@ export default function ConfigPeek(props: Props): ReactElement {
                 break;
             case 'intConfig':
                 newDrawer.title = 'Integration Configuration'
+                newDrawer.form = (
+                    <IntegrationConfig />
+                );
                 break;
             default:
                 break;
