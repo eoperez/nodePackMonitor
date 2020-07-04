@@ -109,7 +109,7 @@ const server: Server = app.listen(port, () => {
 
 // Inititate localtunnel
 (async () => {
-    const publicTunnel = await Localtunnel({ port: 3000 });
+    const publicTunnel = await Localtunnel({ port: port });
   
     // the assigned public url for your tunnel
     // i.e. https://abcdefgjhij.localtunnel.me
