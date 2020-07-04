@@ -124,6 +124,8 @@ const publicAccessInit = async () => {
 };
 
 // Initiate IO Server
+const io: SocketIO.Server = SocketIO(server);
+// Method to initiate monitors
 const monitorsInit = () => {
     // We only initiatiate the monitor if they are configured.
     dbService.getConfigurationExist((error: Error, isFirstTime)=>{ 
@@ -132,7 +134,6 @@ const monitorsInit = () => {
         } else {
             // Only if Configuration exists
             if(!isFirstTime){
-                const io: SocketIO.Server = SocketIO(server);
                 dbService.getLastConfiguration((error: Error, results)=>{
                     if(error) {
                         console.error(error);
@@ -142,7 +143,6 @@ const monitorsInit = () => {
                             const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
                             batteriesMonitor.init({commPort: results.batteryMonitorPort});
                         }
-                        
                         const pipMonitor: IPiPMonitorService = new PiPMonitor(io, dbService);
                         pipMonitor.init({commPort: results.inverterPort, maxPIPOutPower: results.inverterPower, maxPVPower: results.pvModulesPower});
                     }
