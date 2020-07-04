@@ -205,7 +205,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 console.error('error sending packet, check:', this.activeCall);
             } else {
                 const sentDate = new Date();
-                console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`, this.activeCall);
+                // console.log(`Packet sent: ${sentDate.getFullYear()}-${sentDate.getMonth()}-${sentDate.getDate()} ${sentDate.getHours()}:${sentDate.getMinutes()}:${sentDate.getMilliseconds()/1000}`, this.activeCall);
                 this.healthCheck(this.activeCall, 0);
             }
         });
