@@ -108,17 +108,8 @@ const server: Server = app.listen(port, () => {
 });
 
 // Inititate localtunnel
-const publicAccessInit = async () => {
-    const publicTunnel = await Localtunnel({ port: port });
-    console.log('localTunnel:', publicTunnel);
-  
-    // the assigned public url for your tunnel
-    // i.e. https://abcdefgjhij.localtunnel.me
-    console.log(publicTunnel.url);
-  
-    publicTunnel.on('close', () => {
-      // tunnels are closed
-    });
+const publicAccessInit = () => {
+    console.log('code for local tunnel')
 };
 
 publicAccessInit();
