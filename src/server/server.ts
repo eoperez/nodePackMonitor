@@ -163,7 +163,7 @@ const publicAccessInit = async (subdomain?: string, mustOpen?: boolean) => {
         tunnel = await Localtunnel(tunnelConfig);
         console.log('URL', tunnel.url);
     }
-    
+    console.log(tunnel.on);
     tunnel.on('close', () => {
         console.warn('Localtunnel closed');
     });
