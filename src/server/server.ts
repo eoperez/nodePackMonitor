@@ -134,7 +134,13 @@ const monitorsInit = () => {
                         if(!!results.isBatteryMonitor) {
                             batteriesMonitor.init({commPort: results.batteryMonitorPort});
                         }
+                        // start PIP monitor
                         pipMonitor.init({commPort: results.inverterPort, maxPIPOutPower: results.inverterPower, maxPVPower: results.pvModulesPower});
+                        // Init public
+                        // If isPublic enable request a new publicTunnel
+                        if(results.isPublicEnabled){
+                            publicAccessInit(results.subdomain);
+                        }
                     }
                 });
             }
