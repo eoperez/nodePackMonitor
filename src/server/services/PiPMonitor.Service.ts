@@ -70,7 +70,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
                     console.error('Error closing battery monitor port:', error);
                 })
             }
-
+            this.commPort = config.commPort;
             this.port = new SerialPort(config.commPort, {baudRate: 2400},(error: Error) => {
                 if(error){
                     console.error('PIP Monitor error:', error);
