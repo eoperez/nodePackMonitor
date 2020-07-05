@@ -135,7 +135,7 @@ const monitorsInit = () => {
                             publicAccessInit(results.subdomain);
                         } else {
                             // creating a tunnel with a ramdom subdomain and closing it.
-                            publicAccessInit('',true);
+                            publicAccessInit('',false);
                         }
                     }
                 });
@@ -146,25 +146,24 @@ const monitorsInit = () => {
 
 // Initiate localtunnel
 let tunnel: any = {};
-const publicAccessInit = async (subdomain?: string, mustClose?: boolean) => {
-    console.log('tunnel', tunnel);
-    let tunnelConfig = {
-        port: port,
-        host: 'http://serverless.social',
-        subdomain: ''
-    }
-    if((typeof subdomain != 'undefined') || subdomain !== ''){
-       tunnelConfig = {
+const publicAccessInit = async (subdomain?: string, mustOpen?: boolean) => {
+    if(mustOpen){
+        let tunnelConfig = {
             port: port,
             host: 'http://serverless.social',
-            subdomain: subdomain
+            subdomain: ''
         }
+        if((typeof subdomain != 'undefined') || subdomain !== ''){
+           tunnelConfig = {
+                port: port,
+                host: 'http://serverless.social',
+                subdomain: subdomain
+            }
+        }
+        tunnel = await Localtunnel(tunnelConfig);
+        console.log('URL', tunnel.url);
     }
-    tunnel = await Localtunnel(tunnelConfig);
-    console.log('URL', tunnel.url);
-    if(mustClose){
-        tunnel.close();
-    }
+    
     tunnel.on('close', () => {
         console.warn('Localtunnel closed');
     });
