@@ -77,6 +77,10 @@ const serverInfo = (req: Request, res: Response) => {
         } else {
             // Restart Monitors
             monitorsInit();
+            // If isPublic enable request a new publicTunnel
+            if(newConfig.integrationConfig.isPublicEnabled){
+                publicAccessInit(newConfig.integrationConfig.subdomain);
+            }
             res.sendStatus(200);
         }
      });
@@ -108,16 +112,16 @@ const server: Server = app.listen(port, () => {
 });
 
 // Inititate localtunnel
-const publicAccessInit = async () => {
+const publicAccessInit = async (subdomain?: string) => {
+    console.log('subdomain:', subdomain);
     const tunnel = await Localtunnel(
         {
             port: port,
             host: 'http://serverless.social',
             subdomain: 'pereznieto'
         });
-
+    
     console.log('URL', tunnel.url);
-
     tunnel.on('close', () => {
         console.warn('Localtunnel closed');
     });
