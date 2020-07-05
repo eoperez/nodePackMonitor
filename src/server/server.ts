@@ -145,7 +145,9 @@ const monitorsInit = () => {
 }
 
 // Initiate localtunnel
+let tunnel: any = {};
 const publicAccessInit = async (subdomain?: string, mustClose?: boolean) => {
+    console.log('tunnel', tunnel);
     let tunnelConfig = {
         port: port,
         host: 'http://serverless.social',
@@ -158,7 +160,7 @@ const publicAccessInit = async (subdomain?: string, mustClose?: boolean) => {
             subdomain: subdomain
         }
     }
-    const tunnel = await Localtunnel(tunnelConfig);
+    tunnel = await Localtunnel(tunnelConfig);
     console.log('URL', tunnel.url);
     if(mustClose){
         tunnel.close();
