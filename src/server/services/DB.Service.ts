@@ -1,11 +1,13 @@
 import * as Sqlite3 from "sqlite3";
-import { IDbService, ICallback, IConfiguration, IDailyStats, IDeilyStatsResults, IPeakStats  } from "../interfaces/IDbService.interface";
+import { IDbService, ICallback, IConfiguration, IDailyStats, IDeilyStatsResults, IPeakStats, IInfluxDbConfig  } from "../interfaces/IDbService.interface";
 import * as Path from "path";
 import * as Schedule from "node-schedule";
+import * as Influx from "influx";
 
 export default class DbService implements IDbService{
     dbConnection: Sqlite3.Database;
     isConfigExist: boolean;
+    influxConnection: Influx.InfluxDB;
     constructor() {
         const dbLocation = Path.join(__dirname, 'monitoringApp.db');
         this.dbConnection = new Sqlite3.Database(dbLocation, (error: Error) =>{
@@ -19,7 +21,60 @@ export default class DbService implements IDbService{
         this.createDailyStatsTable();
         Schedule.scheduleJob('0 0 * * *',()=>{
             this.deleteDailyStats();
-        })
+        });
+    }
+
+    setInfluxDb = (config: IInfluxDbConfig): void => {
+        if(config.host && (typeof config != 'undefined')){
+            const hostParts: Array<string> = config.host.split(':');
+            config.host = hostParts[0];
+            const port = hostParts[1];
+            
+            let influxOptions: Influx.ISingleHostConfig = {};
+            // Stablish connection using caculated port or default
+            if(port && (typeof port != 'undefined')){
+                influxOptions.port = parseInt(port);
+            } else {
+                influxOptions.port = 8086;
+            }
+
+            influxOptions.host = config.host;
+            // Use given db name or defult
+            if(config.db){
+                influxOptions.database = config.db;
+            } else {
+                influxOptions.database = 'SolarMonitoring';
+            }
+            if(config.user){
+                influxOptions.username = config.user;
+            }
+            if(config.pwd){
+                influxOptions.password = config.pwd;
+            }
+            influxOptions.schema = [
+                {
+                  measurement: 'batteryBank',
+                  fields: { voltage: Influx.FieldType.FLOAT},
+                  tags: ['cell']
+                },
+                {
+                    measurement: 'inverterStats',
+                    fields: {value: Influx.FieldType.FLOAT},
+                    tags: ['source','measurement']
+                }
+            ];
+            // Generate the connection.
+            this.influxConnection = new Influx.InfluxDB(influxOptions);
+            // Check if DB Exists if not create a new one
+            this.influxConnection.getDatabaseNames().then((dataBasesName) =>{
+                if(!dataBasesName.includes(config.db)){
+                    return this.influxConnection.createDatabase(config.db);
+                }
+            });
+        } else {
+            console.error('Influx host is required, config:', config);
+        }
+        
     }
 
     getDbConnection = (): Sqlite3.Database => {
@@ -240,6 +295,7 @@ export default class DbService implements IDbService{
             });
         });
     }
+
     deleteDailyStats() {
         const deleteStat: string = `DELETE FROM dailyStats WHERE timestamp < date('now', 'start of day');`
         this.dbConnection.run(deleteStat, (runResults: Sqlite3.RunResult, error: Error) =>{

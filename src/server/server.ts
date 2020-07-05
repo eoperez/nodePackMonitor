@@ -9,7 +9,7 @@ import * as SocketIO from "socket.io";
 import * as Sqlite3 from "sqlite3";
 import * as Localtunnel from "localtunnel";
 
-import { IDbService, IConfiguration } from "./interfaces/IDbService.interface";
+import { IDbService, IConfiguration, IInfluxDbConfig } from "./interfaces/IDbService.interface";
 import {IBaterryMonitorService} from "./interfaces/IBaterryMonitorService.interface";
 import {IPiPMonitorService, IPiPMonitorConfig} from "./interfaces/IPiPMonitorService.Interface";
 import BatteriesMonitor from "./services/BatteryMonitor.Service"
@@ -132,6 +132,16 @@ const monitorsInit = () => {
                         pipMonitor.init({commPort: results.inverterPort, maxPIPOutPower: results.inverterPower, maxPVPower: results.pvModulesPower});
                         // If isPublic enable request a new publicTunnel
                         publicAccessInit(results.subdomain, !!results.isPublicEnabled);
+                        // If Influx host configured
+                        if(results.influxHost && (typeof results.influxHost != 'undefined'){
+                            const influxConfig: IInfluxDbConfig = {
+                                host: results.influxHost,
+                                user: results.influxUser,
+                                pwd: results.influxPassword,
+                                db: results.influxDb
+                            }
+                            dbService.setInfluxDb(influxConfig);
+                        }
                     }
                 });
             }

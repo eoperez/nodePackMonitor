@@ -8,8 +8,15 @@ export interface IDbService {
     recordDailyStat(stat: IDailyStats, callback: ICallback): void;
     getDailyStats(callback: ICallback): void;
     getPeakStats(callback: ICallback): void;
+    setInfluxDb(config: IInfluxDbConfig): void;
 }
 
+export interface IInfluxDbConfig {
+    host: string;
+    user?: string;
+    pwd?: string;
+    db?: string;
+}
 export interface ICallback {
     (error: Error, results?: any): void;
 } 
