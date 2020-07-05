@@ -153,7 +153,7 @@ const publicAccessInit = async (subdomain?: string) => {
        tunnelConfig = {
             port: port,
             host: 'http://serverless.social',
-            subdomain: 'pereznieto'
+            subdomain: subdomain
         }
     }
     const tunnel = await Localtunnel(tunnelConfig);
