@@ -70,7 +70,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         this.ioSocketServer.on('connection', (socket: SocketIO.Socket) => {
             console.log("Client connected to battery monitor.");
         });
-
+        
     }
     
     portOpenCallback = (): void => {

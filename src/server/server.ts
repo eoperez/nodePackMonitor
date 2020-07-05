@@ -125,6 +125,8 @@ const publicAccessInit = async () => {
 
 // Initiate IO Server
 const io: SocketIO.Server = SocketIO(server);
+const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
+const pipMonitor: IPiPMonitorService = new PiPMonitor(io, dbService);
 // Method to initiate monitors
 const monitorsInit = () => {
     // We only initiatiate the monitor if they are configured.
@@ -140,10 +142,8 @@ const monitorsInit = () => {
                     } else {
                         // If Battery monitor is enabled then init monitor service
                         if(!!results.isBatteryMonitor) {
-                            const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
                             batteriesMonitor.init({commPort: results.batteryMonitorPort});
                         }
-                        const pipMonitor: IPiPMonitorService = new PiPMonitor(io, dbService);
                         pipMonitor.init({commPort: results.inverterPort, maxPIPOutPower: results.inverterPower, maxPVPower: results.pvModulesPower});
                     }
                 });
