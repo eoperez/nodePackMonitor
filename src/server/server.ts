@@ -111,27 +111,7 @@ const server: Server = app.listen(port, () => {
     console.log(`App is listening on port:${port}`);
 });
 
-// Initiate localtunnel
-const publicAccessInit = async (subdomain?: string) => {
-    let tunnelConfig = {
-        port: port,
-        host: 'http://serverless.social',
-        subdomain: ''
-    }
-    if((typeof subdomain != 'undefined') || subdomain !== ''){
-       tunnelConfig = {
-            port: port,
-            host: 'http://serverless.social',
-            subdomain: 'pereznieto'
-        }
-    }
-    const tunnel = await Localtunnel(tunnelConfig);
-    
-    console.log('URL', tunnel.url);
-    tunnel.on('close', () => {
-        console.warn('Localtunnel closed');
-    });
-};
+
 
 // Initiate IO Server
 const io: SocketIO.Server = SocketIO(server);
@@ -161,5 +141,27 @@ const monitorsInit = () => {
         }
     });
 }
+
+// Initiate localtunnel
+const publicAccessInit = async (subdomain?: string) => {
+    let tunnelConfig = {
+        port: port,
+        host: 'http://serverless.social',
+        subdomain: ''
+    }
+    if((typeof subdomain != 'undefined') || subdomain !== ''){
+       tunnelConfig = {
+            port: port,
+            host: 'http://serverless.social',
+            subdomain: 'pereznieto'
+        }
+    }
+    const tunnel = await Localtunnel(tunnelConfig);
+    
+    console.log('URL', tunnel.url);
+    tunnel.on('close', () => {
+        console.warn('Localtunnel closed');
+    });
+};
 
 monitorsInit();
