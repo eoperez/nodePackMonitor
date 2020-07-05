@@ -43,44 +43,32 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     }
     // triggers communication over serial port to send and collect sensor data
     init = (config: IBatteriesMonitorConfig): void => {
-        console.log('port', this.port);
-        // check if port is set to stablish a new port or update.
-        if (typeof this.port === 'undefined') {
+        // need to open the port only if there if is first time or if the port changed.
+        if (typeof this.port === 'undefined' || (this.commPort !== config.commPort)) {
             this.commPort = config.commPort;
             this.port = new SerialPort(config.commPort, { baudRate: 9600 }); // generate Serial Port instance
-        } else {
-            // close ports to avoid conflicts if the port is the same.
-            
-            this.commPort = config.commPort;
-        }
-
-        // will initiate only if there is a change on ports:
-        if(this.commPort == config.commPort){
-            
-        }
-
-        if (config.startAddress) {
-            this.startAddress = config.startAddress;
+            if (config.startAddress) {
+                this.startAddress = config.startAddress;
+            }
             // Reading only 5 bytes, a Packet includes all data within those 5 bytes.
             const parser: SerialPort.parsers.ByteLength = this.port.pipe(new SerialPort.parsers.ByteLength({ length: 5 }));
-
+    
             this.port.on('open', this.portOpenCallback);
-
+    
             // Catch any errors with the Serial
             this.port.on('error', function (err) {
                 console.error('Battery Monitor', err);
                 // TODO: send a nice error instead of killing the process.
                 // process.exit(1);
             });
-
+    
             // Listen to serial port for incoming data 
             parser.on('data', (data)=>{
                 // Handle the response
                 this.responseHandler(data); 
             });
+        } 
 
-        }
-        
         //Debug when a socket connection is stablished
         this.ioSocketServer.on('connection', (socket: SocketIO.Socket) => {
             console.log("Client connected to battery monitor.");
