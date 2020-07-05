@@ -77,10 +77,6 @@ const serverInfo = (req: Request, res: Response) => {
         } else {
             // Restart Monitors
             monitorsInit();
-            // If isPublic enable request a new publicTunnel
-            if(newConfig.integrationConfig.isPublicEnabled){
-                publicAccessInit(newConfig.integrationConfig.subdomain);
-            }
             res.sendStatus(200);
         }
      });
@@ -111,8 +107,6 @@ const server: Server = app.listen(port, () => {
     console.log(`App is listening on port:${port}`);
 });
 
-
-
 // Initiate IO Server
 const io: SocketIO.Server = SocketIO(server);
 const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
@@ -136,7 +130,6 @@ const monitorsInit = () => {
                         }
                         // start PIP monitor
                         pipMonitor.init({commPort: results.inverterPort, maxPIPOutPower: results.inverterPower, maxPVPower: results.pvModulesPower});
-                        // Init public
                         // If isPublic enable request a new publicTunnel
                         if(results.isPublicEnabled){
                             publicAccessInit(results.subdomain);
