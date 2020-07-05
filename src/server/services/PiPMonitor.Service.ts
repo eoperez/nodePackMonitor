@@ -10,6 +10,8 @@ export default class PiPMonitor implements IPiPMonitorService  {
     maxPVPower: number;
     maxPIPOutPower: number;
     dbService: IDbService;
+    commPort: string;
+    port: SerialPort;
 
     constructor(ioServer: SocketIO.Server, dbService: IDbService){
         this.ioSocketServer = ioServer;
@@ -61,19 +63,29 @@ export default class PiPMonitor implements IPiPMonitorService  {
     
     init = (config: IPiPMonitorConfig): void => {
         const QPIGS = [0X51,0X50,0X49,0X47,0X53,0XB7,0XA9,0X0D];
-        const port = new SerialPort(config.commPort, {baudRate: 2400},(error: Error) => {
-            if(error){
-                console.warn(error);
+        // if is firstime (this.commPort undefined) or if incoming config port is different then we open the new port.
+        if((typeof this.commPort === 'undefined') || (this.commPort != config.commPort)){
+            if(typeof this.commPort !== 'undefined'){
+                this.port.close((error: Error) => {
+                    console.error('Error closing battery monitor port:', error);
+                })
             }
-        });
-        const parser = port.pipe(new SerialPort.parsers.Readline({delimiter: '\r'}));
+
+            this.port = new SerialPort(config.commPort, {baudRate: 2400},(error: Error) => {
+                if(error){
+                    console.warn(error);
+                }
+            });
+            
+        }
+        const parser = this.port.pipe(new SerialPort.parsers.Readline({delimiter: '\r'}));
         this.maxPIPOutPower = config.maxPIPOutPower;
         this.maxPVPower = config.maxPVPower;
 
-        port.on('open', () => {
+        this.port.on('open', () => {
             console.log('PIP Monitor CommPort Ready.');
             // for some reason PIP does not repond to first call, this should serve as wake up call
-            port.write(QPIGS);
+            this.port.write(QPIGS);
         });
 
         //Debug when a socket connection is stablished
@@ -84,7 +96,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
         this.ioSocketServer.sockets.emit('inverter', this.QPIGSInfo);
 
         setInterval(() => {
-            port.write(QPIGS);
+            this.port.write(QPIGS);
         }, 2000);
 
         parser.on('data', (data) => {
