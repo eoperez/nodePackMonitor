@@ -133,7 +133,7 @@ const monitorsInit = () => {
                         // If isPublic enable request a new publicTunnel
                         publicAccessInit(results.subdomain, !!results.isPublicEnabled);
                         // If Influx host configured
-                        if(results.influxHost && (typeof results.influxHost != 'undefined'){
+                        if(results.influxHost && (typeof results.influxHost != 'undefined')){
                             const influxConfig: IInfluxDbConfig = {
                                 host: results.influxHost,
                                 user: results.influxUser,
