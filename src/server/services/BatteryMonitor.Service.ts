@@ -45,7 +45,12 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     init = (config: IBatteriesMonitorConfig): void => {
         // need to open the port only if there if is first time or if the port changed.
         if (typeof this.port === 'undefined' || (this.commPort !== config.commPort)) {
-            console.log('this.commPort:', this.commPort, 'commPort', config.commPort)
+            // check if the current port is defined we are going to force it closure.
+            if(typeof this.commPort !== 'undefined'){
+                this.port.close((error: Error) => {
+                    console.error('Error closing battery monitor port:', error);
+                })
+            }
             this.commPort = config.commPort;
             this.port = new SerialPort(config.commPort, { baudRate: 9600 }); // generate Serial Port instance
             if (config.startAddress) {
