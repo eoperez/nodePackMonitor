@@ -66,8 +66,9 @@ export default class DbService implements IDbService{
             // Generate the connection.
             this.influxConnection = new Influx.InfluxDB(influxOptions);
             // Check if DB Exists if not create a new one
-            this.influxConnection.getDatabaseNames().then((dataBasesName) =>{
-                if(!dataBasesName.includes(config.db)){
+            this.influxConnection.getDatabaseNames().then((dataBasesNames) =>{
+                console.log('Connected to influx, databases found:', dataBasesNames);
+                if(!dataBasesNames.includes(config.db)){
                     return this.influxConnection.createDatabase(config.db);
                 }
             });
