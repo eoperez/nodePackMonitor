@@ -111,15 +111,21 @@ const server: Server = app.listen(port, () => {
     console.log(`App is listening on port:${port}`);
 });
 
-// Inititate localtunnel
+// Initiate localtunnel
 const publicAccessInit = async (subdomain?: string) => {
-    console.log('subdomain:', subdomain);
-    const tunnel = await Localtunnel(
-        {
+    let tunnelConfig = {
+        port: port,
+        host: 'http://serverless.social',
+        subdomain: ''
+    }
+    if((typeof subdomain != 'undefined') || subdomain !== ''){
+       tunnelConfig = {
             port: port,
             host: 'http://serverless.social',
             subdomain: 'pereznieto'
-        });
+        }
+    }
+    const tunnel = await Localtunnel(tunnelConfig);
     
     console.log('URL', tunnel.url);
     tunnel.on('close', () => {
