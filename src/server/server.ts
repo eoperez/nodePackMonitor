@@ -133,6 +133,9 @@ const monitorsInit = () => {
                         // If isPublic enable request a new publicTunnel
                         if(results.isPublicEnabled){
                             publicAccessInit(results.subdomain);
+                        } else {
+                            // creating a tunnel with a ramdom subdomain and closing it.
+                            publicAccessInit('',true);
                         }
                     }
                 });
@@ -142,7 +145,7 @@ const monitorsInit = () => {
 }
 
 // Initiate localtunnel
-const publicAccessInit = async (subdomain?: string) => {
+const publicAccessInit = async (subdomain?: string, mustClose?: boolean) => {
     let tunnelConfig = {
         port: port,
         host: 'http://serverless.social',
@@ -156,8 +159,10 @@ const publicAccessInit = async (subdomain?: string) => {
         }
     }
     const tunnel = await Localtunnel(tunnelConfig);
-    
     console.log('URL', tunnel.url);
+    if(mustClose){
+        tunnel.close();
+    }
     tunnel.on('close', () => {
         console.warn('Localtunnel closed');
     });
