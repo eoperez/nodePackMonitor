@@ -43,6 +43,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     }
     // triggers communication over serial port to send and collect sensor data
     init = (config: IBatteriesMonitorConfig): void => {
+        console.log('port', this.port);
         this.commPort = config.commPort;
         this.port = new SerialPort(config.commPort, { baudRate: 9600 }); // generate Serial Port instance
         if (config.startAddress) {
