@@ -9,12 +9,8 @@ import {
     FormHelperText,
     Button,
     FormControlLabel,
-    FormLabel,
-    Slider,
     Checkbox,
-    Input,
-    InputAdornment,
-    RadioGroup
+    Input
 } from '@material-ui/core'
 
 import {AppConfigurationContext, IAppConfiguration, IAppConfigurationContext} from "../store/AppConfigurationContext"
