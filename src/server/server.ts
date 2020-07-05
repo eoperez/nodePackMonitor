@@ -131,12 +131,7 @@ const monitorsInit = () => {
                         // start PIP monitor
                         pipMonitor.init({commPort: results.inverterPort, maxPIPOutPower: results.inverterPower, maxPVPower: results.pvModulesPower});
                         // If isPublic enable request a new publicTunnel
-                        if(results.isPublicEnabled){
-                            publicAccessInit(results.subdomain);
-                        } else {
-                            // creating a tunnel with a ramdom subdomain and closing it.
-                            publicAccessInit('',false);
-                        }
+                        publicAccessInit(results.subdomain, !!results.isPublicEnabled);
                     }
                 });
             }
@@ -147,6 +142,7 @@ const monitorsInit = () => {
 // Initiate localtunnel
 let tunnel: any = {};
 const publicAccessInit = async (subdomain?: string, mustOpen?: boolean) => {
+    // check if mustOpen.
     if(mustOpen){
         let tunnelConfig = {
             port: port,
@@ -162,11 +158,15 @@ const publicAccessInit = async (subdomain?: string, mustOpen?: boolean) => {
         }
         tunnel = await Localtunnel(tunnelConfig);
         console.log('URL', tunnel.url);
+        tunnel.on('close', () => {
+            console.warn('Localtunnel closed');
+        });
+    } else {
+        // this means we must close if tunnel exist
+        if(typeof tunnel.close !== 'undefined'){
+            tunnel.close();
+        }
     }
-    console.log(tunnel.on);
-    tunnel.on('close', () => {
-        console.warn('Localtunnel closed');
-    });
 };
 
 monitorsInit();
