@@ -73,7 +73,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
 
             this.port = new SerialPort(config.commPort, {baudRate: 2400},(error: Error) => {
                 if(error){
-                    console.warn(error);
+                    console.error('PIP Monitor error:', error);
                 }
             });
             
