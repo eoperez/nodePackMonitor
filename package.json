@@ -10,7 +10,7 @@
     "installPm2": "sudo npm install pm2 -g && pm2 install pm2-logrotate",
     "installAll": "npm install && cd src/client/ && npm install && cd ../../ && npm run installPm2",
     "start": "pm2 start ecosystem.config.js",
-    "setup": "npm run installAll && npm run build && npm run installPm2 && npm run start"
+    "setup": "npm run installAll && npm run build && npm run start"
   },
   "repository": {
     "type": "git",
