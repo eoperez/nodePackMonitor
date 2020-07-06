@@ -91,7 +91,9 @@ export default class DbService implements IDbService{
     }
 
     pushInfluxBatteryInfo = (cellInfo: ICellInfo): void => {
-        console.log('cellInfo:', cellInfo);
+        if(typeof cellInfo !== 'undefined'){
+            this.sendInfluxBatteryInfo(cellInfo.id, cellInfo.voltage, cellInfo.temp)
+        }
     }
 
     sendInfluxInverterStats = (source: string, measurement: string, value: number) => {
