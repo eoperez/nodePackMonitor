@@ -96,7 +96,6 @@ export default class DbService implements IDbService{
 
     sendInfluxInverterStats = (source: string, measurement: string, value: number) => {
         if(typeof this.influxConnection != 'undefined'){
-            console.log('Sending data to influx, inverterStats:');
             this.influxConnection.writePoints([
                 {
                   measurement: 'inverterStats',
