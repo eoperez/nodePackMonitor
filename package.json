@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cd src/client/ && npm run build && cd ../../ && npm run buildServer",
     "buildServer": "./node_modules/.bin/webpack",
-    "installAll": "npm install && cd src/client/ && npm install && cd ../../"
+    "installPm2": "sudo npm install pm2 -g && pm2 install pm2-logrotate",
+    "installAll": "npm install && cd src/client/ && npm install && cd ../../ && npm run installPm2",
+    "start": "pm2 start ecosystem.config.js"
   },
   "repository": {
     "type": "git",
