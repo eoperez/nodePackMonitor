@@ -83,7 +83,9 @@ export default class DbService implements IDbService{
     pushInfluxInverterStats = (QPIGS: IQPIGSInfo) :void => {
         for (let [source, measurementObj] of Object.entries(QPIGS)) {
             for (let [measurement, value] of Object.entries(measurementObj)) {
-                console.log(`Source: ${source}, Measurement: ${measurement}, Value: ${value}`);
+                if(typeof value === 'number'){
+                    this.sendInfluxInverterStats(source, measurement, value);
+                }
             }
         }
     }
