@@ -1,6 +1,7 @@
 import * as SocketIO from "socket.io";
 import * as SerialPort from 'serialport';
 import { IPacket, IBatteriesMonitorConfig, IBaterryMonitorService, ICellInfo, IActiveCall } from "../interfaces/IBaterryMonitorService.interface";
+import { IDbService } from "../interfaces/IDbService.interface";
 
 export default class BatteryMonitor implements IBaterryMonitorService {
     ioSocketServer: SocketIO.Server;
@@ -17,10 +18,13 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     port: SerialPort;
     bankInfo: Array<ICellInfo>;
     activeCall: IActiveCall;
+    dbServices: IDbService;
 
-    constructor(ioServer: SocketIO.Server) {
+    constructor(ioServer: SocketIO.Server, dbServices: IDbService) {
         // Sets instance of Socket.IO
         this.ioSocketServer = ioServer;
+        // Db Services
+        this.dbServices = dbServices;
         // Defaults
         this.startAddress = 1; // Defaulting to 1
         this.numberPacks = 0; // By default we have no cell/packs to monitor
@@ -184,6 +188,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 console.log('Serial package data bad formatted.', buffer);
                 break;
         }
+        this.dbServices.pushInfluxBatteryInfo(this.bankInfo[key]);
         //emit bank information using socket service.
         this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
     }

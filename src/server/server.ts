@@ -109,7 +109,7 @@ const server: Server = app.listen(port, () => {
 
 // Initiate IO Server
 const io: SocketIO.Server = SocketIO(server);
-const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io);
+const batteriesMonitor: IBaterryMonitorService = new BatteriesMonitor(io,dbService);
 const pipMonitor: IPiPMonitorService = new PiPMonitor(io, dbService);
 // Method to initiate monitors
 const monitorsInit = () => {
