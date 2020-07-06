@@ -1,4 +1,6 @@
 import * as Sqlite3 from "sqlite3";
+import { IQPIGSInfo } from "./IPiPMonitorService.Interface";
+import { ICellInfo } from "./IBaterryMonitorService.interface";
 
 export interface IDbService {
     getDbConnection(): Sqlite3.Database;
@@ -9,6 +11,10 @@ export interface IDbService {
     getDailyStats(callback: ICallback): void;
     getPeakStats(callback: ICallback): void;
     setInfluxDb(config: IInfluxDbConfig): void;
+    sendInfluxBatteryInfo(cell: number, volts: number, temp: number): void;
+    sendInfluxInverterStats(source: string, measurement: string, value: number): void;
+    pushInfluxInverterStats(QPIGS: IQPIGSInfo): void;
+    pushInfluxBatteryInfo(cellInfo: ICellInfo): void;
 }
 
 export interface IInfluxDbConfig {

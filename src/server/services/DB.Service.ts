@@ -3,6 +3,8 @@ import { IDbService, ICallback, IConfiguration, IDailyStats, IDeilyStatsResults,
 import * as Path from "path";
 import * as Schedule from "node-schedule";
 import * as Influx from "influx";
+import { IQPIGSInfo } from "../interfaces/IPiPMonitorService.Interface";
+import { ICellInfo } from "../interfaces/IBaterryMonitorService.interface";
 
 export default class DbService implements IDbService{
     dbConnection: Sqlite3.Database;
@@ -54,7 +56,7 @@ export default class DbService implements IDbService{
             influxOptions.schema = [
                 {
                   measurement: 'batteryBank',
-                  fields: { voltage: Influx.FieldType.FLOAT},
+                  fields: { voltage: Influx.FieldType.FLOAT, temp: Influx.FieldType.FLOAT},
                   tags: ['cell']
                 },
                 {
@@ -77,6 +79,62 @@ export default class DbService implements IDbService{
             console.error('Influx host is required, config:', config);
         }
         
+    }
+    pushInfluxInverterStats = (QPIGS: IQPIGSInfo) :void => {
+        for (let [key, value] of Object.entries(QPIGS)) {
+            console.log(key, value);
+        }
+    }
+
+    pushInfluxBatteryInfo = (cellInfo: ICellInfo): void => {
+
+    }
+
+    sendInfluxInverterStats = (source: string, measurement: string, value: number) => {
+        if(typeof this.influxConnection != 'undefined'){
+            console.log('Sending data to influx, inverterStats:');
+            this.influxConnection.writePoints([
+                {
+                  measurement: 'inverterStats',
+                  tags: {
+                    source: source,
+                    measurement: measurement
+                  },
+                  fields: { 
+                      value: value
+                  }
+                }
+              ], {
+                database: 'SolarMonitoring',
+                precision: 's',
+              })
+              .catch(error => {
+                console.error(`Error inverter stats information data to InfluxDB, error: ${error}`)
+              });
+        }
+    }
+
+    sendInfluxBatteryInfo = (cell: number, volts: number, temp: number) => {
+        if(typeof this.influxConnection != 'undefined'){
+            console.log('Sending data to influx, batteryBank:', cell, volts, temp);
+            this.influxConnection.writePoints([
+                {
+                  measurement: 'batteryBank',
+                  tags: {
+                    cell: cell.toString()
+                  },
+                  fields: { 
+                      voltage: volts, 
+                      temp: temp}
+                }
+              ], {
+                database: 'SolarMonitoring',
+                precision: 's',
+              })
+              .catch(error => {
+                console.error(`Error battery bank information data to InfluxDB, error: ${error}`)
+              });
+        }
     }
 
     getDbConnection = (): Sqlite3.Database => {

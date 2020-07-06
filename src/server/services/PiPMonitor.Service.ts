@@ -177,7 +177,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
         this.dbService.recordDailyStat({source: 'pv', measurement: 'powerForLoads', value: this.QPIGSInfo.pv.powerForLoads}, this.handleDailyStatsCallback);
         this.dbService.recordDailyStat({source: 'battery', measurement: 'powerOut', value: this.QPIGSInfo.battery.powerOut}, this.handleDailyStatsCallback);
         //console.log('Returning QPIGSInfo:', this.QPIGSInfo);
+        this.dbService.pushInfluxInverterStats(this.QPIGSInfo);
         return this.QPIGSInfo;
     }
-
 }
