@@ -121,7 +121,6 @@ export default class DbService implements IDbService{
 
     sendInfluxBatteryInfo = (cell: number, volts: number, temp: number) => {
         if(typeof this.influxConnection != 'undefined'){
-            console.log('Sending data to influx, batteryBank:', cell, volts, temp);
             this.influxConnection.writePoints([
                 {
                   measurement: 'batteryBank',
