@@ -3,6 +3,12 @@ export interface IPiPMonitorService {
     init(config: IPiPMonitorConfig): void;
 }
 
+export interface PIPChartInfo {
+    pv: Array<[number, number]>;
+    grid: Array<[number, number]>;
+    battery: Array<[number, number]>;
+    load: Array<[number, number]>;
+}
 export interface IPiPMonitorConfig {
     commPort: string;
     maxPVPower: number;

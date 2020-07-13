@@ -1,7 +1,7 @@
 import * as SocketIO from "socket.io";
 import * as SerialPort from 'serialport';
 
-import { IPiPMonitorService, IPiPMonitorConfig, IQPIGSInfo } from "../interfaces/IPiPMonitorService.Interface";
+import { IPiPMonitorService, IPiPMonitorConfig, IQPIGSInfo, PIPChartInfo } from "../interfaces/IPiPMonitorService.Interface";
 import { IDbService } from "../interfaces/IDbService.interface";
 
 export default class PiPMonitor implements IPiPMonitorService  {
@@ -12,6 +12,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
     dbService: IDbService;
     commPort: string;
     port: SerialPort;
+    pipChartInfo: PIPChartInfo;
 
     constructor(ioServer: SocketIO.Server, dbService: IDbService){
         this.ioSocketServer = ioServer;
@@ -59,6 +60,12 @@ export default class PiPMonitor implements IPiPMonitorService  {
                 }
             }
         }
+        this.pipChartInfo = {
+            pv: [[Date.now(),0]],
+            grid: [[Date.now(),0]],
+            battery: [[Date.now(),0]],
+            load: [[Date.now(),0]]
+        }
     }
     
     init = (config: IPiPMonitorConfig): void => {
@@ -105,6 +112,13 @@ export default class PiPMonitor implements IPiPMonitorService  {
                 const inverterResponse: Array<string> = data.split(" ");
                 this.decodeQPIGS(inverterResponse);
                 this.ioSocketServer.sockets.emit('inverter', this.QPIGSInfo);
+                this.ioSocketServer.sockets.emit('inverterChart', {
+                    pv: this.pipChartInfo.pv.slice(0, 1800),
+                    grid: this.pipChartInfo.grid.slice(0, 1800),
+                    battery: this.pipChartInfo.battery.slice(0,1800),
+                    load: this.pipChartInfo.load.slice(0, 1800)
+                });
+
                 //Get Daily Stats
                 this.dbService.getDailyStats((error: Error, results)=>{
                     if(error){
@@ -119,6 +133,8 @@ export default class PiPMonitor implements IPiPMonitorService  {
                     }
                     this.ioSocketServer.sockets.emit('peakStats', results);
                 });
+            } else {
+                console.error('Failing expected data length or staring string. PIP serial data:', data);
             }
         });
     }
@@ -131,6 +147,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
 
     decodeQPIGS(inverterResponse: Array<string>): IQPIGSInfo {
         // Static info
+        const decodeTime: number = Date.now();
         const deviceStatus = inverterResponse[16];
         this.QPIGSInfo.grid.voltage = parseInt(inverterResponse[0]);
         this.QPIGSInfo.grid.frequency = parseInt(inverterResponse[1]);
@@ -170,6 +187,11 @@ export default class PiPMonitor implements IPiPMonitorService  {
             this.QPIGSInfo.grid.power = 0;
         }
         this.QPIGSInfo.grid.loadPercent = this.QPIGSInfo.grid.power / this.maxPIPOutPower;
+        // Push values
+        this.pipChartInfo.pv.unshift([decodeTime, this.QPIGSInfo.pv.powerForLoads]);
+        this.pipChartInfo.grid.unshift([decodeTime, this.QPIGSInfo.grid.power]);
+        this.pipChartInfo.battery.unshift([decodeTime, this.QPIGSInfo.battery.powerOut]);
+        this.pipChartInfo.load.unshift([decodeTime, this.QPIGSInfo.consumption.powerVa]);
         // Daily Stats
         this.dbService.recordDailyStat({source: 'grid', measurement: 'power', value: this.QPIGSInfo.grid.power}, this.handleDailyStatsCallback);
         this.dbService.recordDailyStat({source: 'consumption', measurement: 'power', value: this.QPIGSInfo.consumption.powerVa}, this.handleDailyStatsCallback);
