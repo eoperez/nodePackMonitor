@@ -134,7 +134,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
                     this.ioSocketServer.sockets.emit('peakStats', results);
                 });
             } else {
-                console.error('Failing expected data length or staring string. PIP serial data:', data);
+                // console.error('Failing expected data length or staring string. PIP serial data:', data);
             }
         });
     }
