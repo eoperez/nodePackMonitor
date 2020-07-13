@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useState, useEffect, useContext } from 'react';
 import {
   colors,
   Grid,
@@ -11,6 +11,9 @@ import GaugeTile from "./GaugeTile";
 import SingleStat from "./SingleStat";
 import socketIOClient from "socket.io-client"
 import { ENDPOINT } from "../store/AppConfigurationContext";
+import {AppConfigurationContext, IAppConfiguration, IAppConfigurationContext} from "../store/AppConfigurationContext"
+import Chart from "react-apexcharts"
+
 console.log('ENDPOINT', ENDPOINT);
 
 interface Props {
@@ -50,6 +53,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function Dashboard(props: Props): ReactElement {
     const classes = useStyles();
+    const { setCurrentAppConfigurationContext, appConfiguration } = useContext<IAppConfigurationContext>(AppConfigurationContext);
+
     const [bars, setBars] = useState([]);
     const [inverter,setInverter] = useState({
       grid: {
@@ -107,19 +112,45 @@ export default function Dashboard(props: Props): ReactElement {
     });
     useEffect(() => {
       const socket = socketIOClient(ENDPOINT);
-      socket.on("bankInfo", (barsInfo: any) => {
-        setBars(barsInfo);
-      });
       socket.on("inverter", (inverterInfo: any) => {
         setInverter(inverterInfo);
       });
+      
       socket.on("dailyTotals", (dailyStats: IDailyStats) => {
         setDailyStats(dailyStats);
       });
       socket.on("peakStats", (peakStats: IPeakStats) => {
         setPeakStats(peakStats);
       });
+      if(appConfiguration.monitorConfig.isBatteryMonitor){
+        socket.on("bankInfo", (barsInfo: any) => {
+          setBars(barsInfo);
+        });
+      } else {
+        console.log('getting in here');
+      }
     }, []);
+
+    const inverterChartOptions = {
+      options: {
+        chart: {
+          id: "inverterInfo"
+        },
+        xaxis: {
+          categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
+        }
+      },
+      series: [
+        {
+          name: "Load",
+          data: [30, 40, 45, 50, 49, 60, 70, 91]
+        },
+        {
+          name: "PV Power",
+          data: [35, 45, 50, 55, 60, 65, 75, 40]
+        }
+      ]
+    };
     return (
       <div className={classes.root}>
         <Grid container spacing={1}>
@@ -168,10 +199,12 @@ export default function Dashboard(props: Props): ReactElement {
             </Paper>
           </Grid>
           <Grid item xs={12}>
-            <BarChart
-              title="Balance"
-              bars={bars}
-            ></BarChart>
+          <Paper className={classes.paper}>
+            {appConfiguration.monitorConfig.isBatteryMonitor
+              ? <BarChart title="Balance" bars={bars} />
+              : <Chart options={inverterChartOptions.options} series={inverterChartOptions.series} type="area" width="100%" height={400} />
+            }
+          </Paper>
           </Grid>
           <Grid item xs={2}>
             <Paper className={classes.paper}>
