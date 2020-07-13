@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from 'react'
-import {Paper, makeStyles, Theme, createStyles} from '@material-ui/core'
+import {makeStyles, Theme, createStyles} from '@material-ui/core'
 
 
 export interface Bar {
@@ -146,11 +146,6 @@ const useBarDimensions = (bars: Array<Bar>): Array<BarObj> => {
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-        paper: {
-            textAlign: 'center',
-            padding: 10,
-            margin: 'auto'
-        },
         bar: {
             fill: '#ffff56'
         },
@@ -195,7 +190,6 @@ export default function BarChart(props: Props): ReactElement {
     );
 
     return (
-        <Paper className={classes.paper}>
             <svg width="85%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 350" preserveAspectRatio="xMinYMin meet">
                 <g>
                     <rect rx="5" x="-1" y="-1" width="100%" height="100%" id="canvas_background" fill="#191919"/>
@@ -240,6 +234,5 @@ export default function BarChart(props: Props): ReactElement {
                 </g>
                 <line fill="none" stroke="#ff073a" x1="80.00567" y1={summary.unbalanceMarkButtLoc} x2="944.99718" y2={summary.unbalanceMarkButtLoc} id="unBalanceRed" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="3,2"/>
             </svg>
-        </Paper>
     )
 } 
