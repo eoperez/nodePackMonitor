@@ -23,7 +23,7 @@
     "monitor"
   ],
   "author": "Edwin Perez",
-  "license": "MIT",
+  "license": "GPLv3",
   "bugs": {
     "url": "https://github.com/eoperez/nodePackMonitor/issues"
   },
