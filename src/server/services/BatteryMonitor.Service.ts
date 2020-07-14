@@ -100,7 +100,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             if(loopCount > 4000){
                 console.error('Maximum loops reached. Requesting monitor info again:', sentCall);
                 this.port.close();
-                this.init({commPort: this.commPort, startAddress: this.startAddress})
+                process.exit(1);
             } else {
                 // otherwise we would loop in process to do a health check.
                 setTimeout((healthCheck = this.healthCheck, sendCallOriginal = sentCall, currentLoopCount = loopCount) => {
