@@ -82,6 +82,12 @@ const serverInfo = (req: Request, res: Response) => {
      });
  }
 
+ // Reload server
+ const reloadProcess = (req: Request, res: Response) => {
+    console.log('Server reload');
+    process.exit(1);
+ }
+
 // Allow CORS to make front end development easier.
 app.use(cors());
 // Enable parser for JSON requests.
@@ -100,6 +106,7 @@ app.engine('html', require('ejs').__express);
 app.get('/serverinfo', serverInfo);
 app.get('/configuration', getConfiguration);
 app.post('/configuration', saveConfiguration);
+app.post('/reload', reloadProcess);
 app.get('/', mainRoute);
 
 // Inititate the server
