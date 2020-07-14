@@ -85,7 +85,7 @@ const serverInfo = (req: Request, res: Response) => {
  // Reload server
  const reloadProcess = (req: Request, res: Response) => {
     console.log('Server reload');
-    process.exit(1);
+    process.exit(22);
  }
 
 // Allow CORS to make front end development easier.
