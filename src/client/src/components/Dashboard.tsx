@@ -54,6 +54,10 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Dashboard(props: Props): ReactElement {
     const classes = useStyles();
     const { setCurrentAppConfigurationContext, appConfiguration } = useContext<IAppConfigurationContext>(AppConfigurationContext);
+    const [pvData, setPvData] = useState([]);
+    const [gridData, setGridData] = useState([]);
+    const [batteryData, setBatteryData] = useState([]);
+    const [loadData, setLoadData] = useState([]);
 
     const [bars, setBars] = useState([]);
     const [inverter,setInverter] = useState({
@@ -127,27 +131,122 @@ export default function Dashboard(props: Props): ReactElement {
           setBars(barsInfo);
         });
       } else {
-        console.log('getting in here');
+        socket.on("inverterChart", (chartData: any) => {
+          setPvData(chartData.pv);
+          setGridData(chartData.grid);
+          setBatteryData(chartData.battery);
+          setLoadData(chartData.load);
+        });
       }
     }, []);
-
     const inverterChartOptions = {
       options: {
         chart: {
-          id: "inverterInfo"
+          id: "inverterInfo",
+          width: '100%',
+          toolbar: {
+            show: false
+          }
+        },
+        title: {
+          text: 'Inverter Power',
+          align: 'left',
+          margin: 10,
+          offsetX: 0,
+          offsetY: 0,
+          floating: true,
+          style: {
+            fontSize:  '14px',
+            fontWeight:  'bold',
+            color:  '#f8fbf4'
+          },
+      },
+        colors: ['#FF9933','#cddc39','#faed27','#ff1744'],
+        legend: {
+          show: true,
+          horizontalAlign: 'center', 
+          fontSize: '14px',
+          fontFamily: 'Helvetica, Arial',
+          fontWeight: 400,
+          labels: {
+              useSeriesColors: true
+          },
+          itemMargin: {
+            horizontal: 20,
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          width: 1
+        },
+        yaxis: {
+          show: true,
+          labels: {
+            show: true,
+            align: 'right',
+            minWidth: 0,
+            maxWidth: 160,
+            style: {
+                colors: 'white',
+            },
+            formatter: (value: any) => { return value.toFixed(0) + 'w' },
+          }
         },
         xaxis: {
-          categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
+          tooltip: {
+            formatter: function(timestamp: number, opts: any) {
+              const time = new Date(timestamp);
+              return `Today @ - ${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
+            }
+          },
+          style: {
+            colors: 'white' 
+          },
+          type: 'datetime',
+          labels: {
+            show: false,
+            format: 'HH:mm'
+          }
+        },
+        tooltip: {
+          theme: 'dark',
+          followCursor: false,
+          style: {
+            fontSize: '12px',
+            backgroundColor: 'lightblue'
+          },
+
+        },
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shade: 'dark',
+            type: "vertical",
+            shadeIntensity: .8,
+            inverseColors: false,
+            opacityFrom: 1,
+            opacityTo: 0.4
+          }
         }
       },
       series: [
         {
           name: "Load",
-          data: [30, 40, 45, 50, 49, 60, 70, 91]
+          data: loadData
         },
         {
-          name: "PV Power",
-          data: [35, 45, 50, 55, 60, 65, 75, 40]
+          name: "PV",
+          data: pvData
+        },
+        {
+          name: "Battery",
+          data: batteryData
+        },
+        {
+          name: "Grid",
+          data: gridData
         }
       ]
     };
@@ -202,7 +301,7 @@ export default function Dashboard(props: Props): ReactElement {
           <Paper className={classes.paper}>
             {appConfiguration.monitorConfig.isBatteryMonitor
               ? <BarChart title="Balance" bars={bars} />
-              : <Chart options={inverterChartOptions.options} series={inverterChartOptions.series} type="area" width="100%" height={400} />
+              : <div style={{maxHeight: 400, height: 400, overflow: 'hidden'}}> <Chart options={inverterChartOptions.options} series={inverterChartOptions.series} type="area" height='90%' /></div>
             }
           </Paper>
           </Grid>
