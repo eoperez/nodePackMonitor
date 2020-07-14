@@ -113,10 +113,10 @@ export default class PiPMonitor implements IPiPMonitorService  {
                 this.decodeQPIGS(inverterResponse);
                 this.ioSocketServer.sockets.emit('inverter', this.QPIGSInfo);
                 this.ioSocketServer.sockets.emit('inverterChart', {
-                    pv: this.pipChartInfo.pv.slice(0, 1800),
-                    grid: this.pipChartInfo.grid.slice(0, 1800),
-                    battery: this.pipChartInfo.battery.slice(0,1800),
-                    load: this.pipChartInfo.load.slice(0, 1800)
+                    pv: this.pipChartInfo.pv.slice(0, 600),
+                    grid: this.pipChartInfo.grid.slice(0, 600),
+                    battery: this.pipChartInfo.battery.slice(0,600),
+                    load: this.pipChartInfo.load.slice(0, 600)
                 });
 
                 //Get Daily Stats
