@@ -114,12 +114,13 @@ export default function Dashboard(props: Props): ReactElement {
       pvProduction: 0,
       pvCharging: 0
     });
-    const socket = socketIOClient(ENDPOINT);
+    
     useEffect(() => {
+      console.log('Connecting to server:', ENDPOINT);
+      const socket = socketIOClient(ENDPOINT);
       socket.on("inverter", (inverterInfo: any) => {
         setInverter(inverterInfo);
       });
-      
       socket.on("dailyTotals", (dailyStats: IDailyStats) => {
         setDailyStats(dailyStats);
       });
