@@ -118,6 +118,9 @@ export const useAppConfigurationContext = (): IAppConfigurationContext => {
         // Save if current and old configuration are different.
         if(configuration !== appConfiguration){
             const results = await axios.post(`${ENDPOINT}configuration`, configuration);
+            if(!(results.status === 200)){
+                console.error('Error saving configuration:',results.data);
+            }
         }
     }
 
