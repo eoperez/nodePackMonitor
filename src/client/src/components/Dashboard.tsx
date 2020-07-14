@@ -114,8 +114,8 @@ export default function Dashboard(props: Props): ReactElement {
       pvProduction: 0,
       pvCharging: 0
     });
+    const socket = socketIOClient(ENDPOINT);
     useEffect(() => {
-      const socket = socketIOClient(ENDPOINT);
       socket.on("inverter", (inverterInfo: any) => {
         setInverter(inverterInfo);
       });
@@ -126,19 +126,17 @@ export default function Dashboard(props: Props): ReactElement {
       socket.on("peakStats", (peakStats: IPeakStats) => {
         setPeakStats(peakStats);
       });
-      if(appConfiguration.monitorConfig.isBatteryMonitor){
-        socket.on("bankInfo", (barsInfo: any) => {
-          setBars(barsInfo);
-        });
-      } else {
-        socket.on("inverterChart", (chartData: any) => {
-          setPvData(chartData.pv);
-          setGridData(chartData.grid);
-          setBatteryData(chartData.battery);
-          setLoadData(chartData.load);
-        });
-      }
+      socket.on("bankInfo", (barsInfo: any) => {
+        setBars(barsInfo);
+      });
+      socket.on("inverterChart", (chartData: any) => {
+        setPvData(chartData.pv);
+        setGridData(chartData.grid);
+        setBatteryData(chartData.battery);
+        setLoadData(chartData.load);
+      });
     }, []);
+
     const inverterChartOptions = {
       options: {
         chart: {
