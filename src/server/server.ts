@@ -12,12 +12,15 @@ import * as Localtunnel from "localtunnel";
 import { IDbService, IConfiguration, IInfluxDbConfig } from "./interfaces/IDbService.interface";
 import {IBaterryMonitorService} from "./interfaces/IBaterryMonitorService.interface";
 import {IPiPMonitorService, IPiPMonitorConfig} from "./interfaces/IPiPMonitorService.Interface";
+import { IPm2Service } from "./interfaces/IPM2Service.interface";
 import BatteriesMonitor from "./services/BatteryMonitor.Service"
 import PiPMonitor from "./services/PiPMonitor.Service";
 import DbService from "./services/DB.Service";
+import Pm2Service from "./services/PM2.Service";
 
 const dbService: IDbService = new DbService();
 const dbConnection: Sqlite3.Database = dbService.getDbConnection();
+const pM2Service: IPm2Service = new Pm2Service();
 
 const app: Application = express();
 const router: Router = express.Router()
@@ -85,7 +88,8 @@ const serverInfo = (req: Request, res: Response) => {
  // Reload server
  const reloadProcess = (req: Request, res: Response) => {
     console.log('Server reload');
-    process.abort();
+    pM2Service.managerList();
+    //process.abort();
  }
 
 // Allow CORS to make front end development easier.
