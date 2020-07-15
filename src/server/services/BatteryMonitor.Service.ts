@@ -2,6 +2,8 @@ import * as SocketIO from "socket.io";
 import * as SerialPort from 'serialport';
 import { IPacket, IBatteriesMonitorConfig, IBaterryMonitorService, ICellInfo, IActiveCall } from "../interfaces/IBaterryMonitorService.interface";
 import { IDbService } from "../interfaces/IDbService.interface";
+import { IPm2Service } from "../interfaces/IPM2Service.interface";
+import Pm2Service from "../services/PM2.Service";
 
 export default class BatteryMonitor implements IBaterryMonitorService {
     ioSocketServer: SocketIO.Server;
@@ -19,6 +21,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     bankInfo: Array<ICellInfo>;
     activeCall: IActiveCall;
     dbServices: IDbService;
+    pm2Service: IPm2Service;
 
     constructor(ioServer: SocketIO.Server, dbServices: IDbService) {
         // Sets instance of Socket.IO
@@ -44,6 +47,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
         }; // by defult using broadcast address request. Value is ignored just using ramdom number for now
         this.bankInfo = [];
         this.activeCall = {};
+        this.pm2Service = new Pm2Service();
     }
     // triggers communication over serial port to send and collect sensor data
     init = (config: IBatteriesMonitorConfig): void => {
@@ -101,7 +105,8 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 console.error('Maximum loops reached. Requesting monitor info again:', sentCall);
                 this.port.close();
                 loopCount = 0;
-                this.init({commPort: this.commPort, startAddress: this.startAddress})
+                this.pm2Service.managerReload();
+                // this.init({commPort: this.commPort, startAddress: this.startAddress})
             } else {
                 // otherwise we would loop in process to do a health check.
                 setTimeout((healthCheck = this.healthCheck, sendCallOriginal = sentCall, currentLoopCount = loopCount) => {
