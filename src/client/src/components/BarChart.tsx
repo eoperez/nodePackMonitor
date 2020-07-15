@@ -190,12 +190,13 @@ export default function BarChart(props: Props): ReactElement {
     );
 
     return (
-            <svg width="85%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 350" preserveAspectRatio="xMinYMin meet">
+            <svg width="85%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 325" preserveAspectRatio="xMinYMin meet">
                 <g>
                     <rect rx="5" x="-1" y="-1" width="100%" height="100%" id="canvas_background" fill="#191919"/>
                     <g id="canvasGrid" display="none">
                         <rect rx="5" id="svg_1" width="100%" height="100%" x="0" y="0" strokeWidth="0" fill="url(#gridpattern)"/>
                     </g>
+                    <text text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="12" id="chartTitle" y="40" x="30" stroke-width="0" stroke="#000" fill="#ffffff">Battery Balance</text>
                 </g>
                 <g>
                     {chartRowBgs}
