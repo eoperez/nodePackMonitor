@@ -5,13 +5,15 @@ import {
   Paper, 
   makeStyles, 
   createStyles,
+  Fab,
   Theme} from '@material-ui/core';
+import { Equalizer, Timeline } from "@material-ui/icons";
 import BarChart from './BarChart'
 import GaugeTile from "./GaugeTile";
 import SingleStat from "./SingleStat";
 import socketIOClient from "socket.io-client"
 import { ENDPOINT } from "../store/AppConfigurationContext";
-import {AppConfigurationContext, IAppConfiguration, IAppConfigurationContext} from "../store/AppConfigurationContext"
+import {AppConfigurationContext, IAppConfigurationContext} from "../store/AppConfigurationContext"
 import Chart from "react-apexcharts"
 
 console.log('ENDPOINT', ENDPOINT);
@@ -47,6 +49,11 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     listIconAvatar: {
       color: "white",
+    },
+    fab: {
+      position: 'absolute',
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
     }
   }),
 );
@@ -58,6 +65,7 @@ export default function Dashboard(props: Props): ReactElement {
     const [gridData, setGridData] = useState([]);
     const [batteryData, setBatteryData] = useState([]);
     const [loadData, setLoadData] = useState([]);
+    const [visibleChart, setVisibleChart] = useState({chart: 'battery', icon: (<Equalizer color="action" />)});
 
     const [bars, setBars] = useState([]);
     const [inverter,setInverter] = useState({
@@ -114,7 +122,6 @@ export default function Dashboard(props: Props): ReactElement {
       pvProduction: 0,
       pvCharging: 0
     });
-    
     useEffect(() => {
       console.log('Connecting to server:', ENDPOINT);
       const socket = socketIOClient(ENDPOINT);
@@ -138,6 +145,23 @@ export default function Dashboard(props: Props): ReactElement {
       });
     }, []);
 
+    useEffect(() => {
+      console.log(appConfiguration.monitorConfig.isBatteryMonitor);
+      if(appConfiguration.monitorConfig.isBatteryMonitor){
+        setVisibleChart({chart: 'battery', icon: ((<Timeline color="action" />))});
+      } else {
+        setVisibleChart({chart: 'inverter', icon: ((<Equalizer color="action" />))});
+      }
+    }, [appConfiguration]);
+
+    const handleChartToggle = () => {
+      if(visibleChart.chart === 'battery'){
+        setVisibleChart({chart: 'inverter', icon: ((<Equalizer color="action" />))});
+      } else {
+        setVisibleChart({chart: 'battery', icon: ((<Timeline color="action" />))});
+      }
+    }
+
     const inverterChartOptions = {
       options: {
         chart: {
@@ -145,7 +169,8 @@ export default function Dashboard(props: Props): ReactElement {
           width: '100%',
           toolbar: {
             show: false
-          }
+          },
+          background: '#191919'
         },
         title: {
           text: 'Inverter Power',
@@ -160,7 +185,7 @@ export default function Dashboard(props: Props): ReactElement {
             color:  '#f8fbf4'
           },
       },
-        colors: ['#FF9933','#cddc39','#faed27','#ff1744'],
+        colors: ['#FF9933','#cddc39','#fbeee4','#ff1744'],
         legend: {
           show: true,
           horizontalAlign: 'center', 
@@ -172,13 +197,14 @@ export default function Dashboard(props: Props): ReactElement {
           },
           itemMargin: {
             horizontal: 20,
+            vertical: 20
           }
         },
         dataLabels: {
           enabled: false
         },
         stroke: {
-          width: 1
+          width: 1.5
         },
         yaxis: {
           show: true,
@@ -224,9 +250,9 @@ export default function Dashboard(props: Props): ReactElement {
             shade: 'dark',
             type: "vertical",
             shadeIntensity: .8,
-            inverseColors: false,
-            opacityFrom: 1,
-            opacityTo: 0.4
+            inverseColors: true,
+            opacityFrom: .8,
+            opacityTo: 0.2
           }
         }
       },
@@ -297,11 +323,14 @@ export default function Dashboard(props: Props): ReactElement {
             </Paper>
           </Grid>
           <Grid item xs={12}>
-          <Paper className={classes.paper}>
-            {appConfiguration.monitorConfig.isBatteryMonitor
+          <Paper className={classes.paper} style={{backgroundColor: '#191919'}}>
+            <div style={{position: 'relative'}}>
+            { (appConfiguration.monitorConfig.isBatteryMonitor && (visibleChart.chart === 'battery'))
               ? <BarChart title="Balance" bars={bars} />
-              : <div style={{maxHeight: 400, height: 400, overflow: 'hidden'}}> <Chart options={inverterChartOptions.options} series={inverterChartOptions.series} type="area" height='90%' /></div>
+              : <div style={{maxHeight: 450, height: 450, overflow: 'hidden'}}> <Chart options={inverterChartOptions.options} series={inverterChartOptions.series} type="area" height='95%' /></div>
             }
+            <Fab className={classes.fab} color="primary" onClick={handleChartToggle}> {visibleChart.icon} </Fab>
+            </div>
           </Paper>
           </Grid>
           <Grid item xs={2}>
