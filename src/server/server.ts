@@ -88,7 +88,7 @@ const serverInfo = (req: Request, res: Response) => {
  // Reload server
  const reloadProcess = (req: Request, res: Response) => {
     console.log('Server reload');
-    pM2Service.managerList();
+    pM2Service.managerReload();
     //process.abort();
  }
 

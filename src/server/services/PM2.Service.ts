@@ -12,6 +12,23 @@ export default class Pm2Service implements IPm2Service {
             PM2.list((error: Error, list: PM2.ProcessDescription[]) =>{
                 console.log('PM2 Services list', list);
             });
-        })
+        });
     }
+
+    managerReload = (): void => {
+        PM2.connect((error: Error) => {
+            if(error){
+                console.error(error);
+                process.exit(2);
+            }
+            // Use reload.
+            PM2.reload('server',(error: Error) => {
+                if(error){
+                    console.error('Error Reloading the server:', error);
+                    process.exit(2);
+                }
+            });
+        });
+    }
+
 }
