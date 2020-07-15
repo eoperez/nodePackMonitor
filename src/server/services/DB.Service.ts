@@ -114,7 +114,7 @@ export default class DbService implements IDbService{
                 precision: 's',
               })
               .catch(error => {
-                console.error(`Error inverter stats information data to InfluxDB, error: ${error}`)
+                // console.error(`Error inverter stats information data to InfluxDB, error: ${error}`)
               });
         }
     }
@@ -136,7 +136,7 @@ export default class DbService implements IDbService{
                 precision: 's',
               })
               .catch(error => {
-                console.error(`Error battery bank information data to InfluxDB, error: ${error}`)
+                // console.error(`Error battery bank information data to InfluxDB, error: ${error}`)
               });
         }
     }
