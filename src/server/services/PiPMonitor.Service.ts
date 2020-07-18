@@ -104,7 +104,7 @@ export default class PiPMonitor implements IPiPMonitorService  {
 
         setInterval(() => {
             this.port.write(QPIGS);
-        }, 2000);
+        }, 3000);
 
         parser.on('data', (data) => {
             if (data.length == 109 && data.substring(0,1)=="(") {
