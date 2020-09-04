@@ -78,6 +78,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             // Listen to serial port for incoming data 
             parser.on('data', (data)=>{
                 // Handle the response
+                console.log('Listening to Batterry Serial Monitor: ' + config.commPort);
                 this.responseHandler(data); 
             });
         } 
@@ -101,7 +102,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             // increase the loopcount to capture number of tries.
             loopCount++;
             // we consider 000 loops a hanging call. It will execute the call again.
-            if(loopCount > 4000){
+            if(loopCount > 10000){
                 console.error('Maximum loops reached. Requesting monitor info again:', sentCall);
                 this.port.close();
                 loopCount = 0;
@@ -166,8 +167,10 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                     // persisting temp value 
                     this.bankInfo[key] = {id: response.address, voltage: response.value/1000, temp: this.bankInfo[key].temp};
                 }
+                console.log(`Volatge information from monitor:${response.address}`, this.bankInfo[key]);
                 // 2nd  request chain with current address now move to temp
                 this.getMonitorInfo(response.address, this.REG_TEMP);
+                console.log('Temperature request for:', response.address);
                 break;
             case this.REG_TEMP:
                 // update record to include temperature.
@@ -181,6 +184,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                     // Start request again
                     this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
                 }
+                console.log(`With temp information from monitor:${response.address}`, this.bankInfo[key]);
                 break;
             case this.REG_ADDRESS:
                 // This is broadcast 
@@ -212,6 +216,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             this.packet.value = this.startAddress;
             this.packet.write = true
         }
+        console.log('Pakage ready to send: ', this.packet)
         const buffer: Array<number> = this.encode(this.packet);
         this.sendSerialMessage(buffer);
     }
@@ -228,6 +233,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 this.healthCheck(this.activeCall, 0);
             }
         });
+        console.log('Packet sent using port write')
     }
 
     crc8(buffer: Array<number>, length: number) {
