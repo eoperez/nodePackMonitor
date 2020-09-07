@@ -78,7 +78,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             // Listen to serial port for incoming data 
             parser.on('data', (data)=>{
                 // Handle the response
-                console.log('Listening to Batterry Serial Monitor: ' + config.commPort);
+                // console.log('Listening to Batterry Serial Monitor: ' + config.commPort);
                 this.responseHandler(data); 
             });
         } 
@@ -91,7 +91,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     }
     
     portOpenCallback = (): void => {
-        console.log(`Port opened, listening using serial configuraiton`);
+        // console.log(`Port opened, listening using serial configuraiton`);
         //get monitor information
         this.getMonitorInfo(this.ADDRESS_BROADCAST, this.REG_ADDRESS);
     }
@@ -167,10 +167,10 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                     // persisting temp value 
                     this.bankInfo[key] = {id: response.address, voltage: response.value/1000, temp: this.bankInfo[key].temp};
                 }
-                console.log(`Volatge information from monitor:${response.address}`, this.bankInfo[key]);
+                // console.log(`Volatge information from monitor:${response.address}`, this.bankInfo[key]);
                 // 2nd  request chain with current address now move to temp
                 this.getMonitorInfo(response.address, this.REG_TEMP);
-                console.log('Temperature request for:', response.address);
+                // console.log('Temperature request for:', response.address);
                 break;
             case this.REG_TEMP:
                 // update record to include temperature.
@@ -184,17 +184,18 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                     // Start request again
                     this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
                 }
-                console.log(`With temp information from monitor:${response.address}`, this.bankInfo[key]);
+                // console.log(`With temp information from monitor:${response.address}`, this.bankInfo[key]);
                 break;
             case this.REG_ADDRESS:
                 // This is broadcast 
                 this.numberPacks = response.value - 1;
-                console.log('number of packs:', this.numberPacks);
+                // console.log('number of packs:', this.numberPacks);
                 // start the request chain with startAddress and start with Voltage
                 this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
                 break;
             default:
-                console.log('Serial package data bad formatted.', buffer);
+                console.log('Serial package data bad formatted, last packet sent:', this.activeCall);
+                this.getMonitorInfo(this.activeCall.address, this.activeCall.REG);
                 break;
         }
         this.dbServices.pushInfluxBatteryInfo(this.bankInfo[key]);
@@ -216,7 +217,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             this.packet.value = this.startAddress;
             this.packet.write = true
         }
-        console.log('Pakage ready to send: ', this.packet)
+        // console.log('Pakage ready to send: ', this.packet)
         const buffer: Array<number> = this.encode(this.packet);
         this.sendSerialMessage(buffer);
     }
@@ -233,7 +234,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 this.healthCheck(this.activeCall, 0);
             }
         });
-        console.log('Packet sent using port write')
+        // console.log('Packet sent using port write')
     }
 
     crc8(buffer: Array<number>, length: number) {
