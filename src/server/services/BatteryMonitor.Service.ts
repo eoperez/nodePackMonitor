@@ -175,10 +175,10 @@ export default class BatteryMonitor implements IBaterryMonitorService {
             case this.REG_TEMP:
                 // update record to include temperature.
                 this.bankInfo[key].temp = response.value;
-                // move pointer to next monitor.
-                const nextMonitor = response.address + 1;
                 // if is less or equal to number of packs request voltage
-                if (nextMonitor <= this.numberPacks) {
+                if (response.address < this.numberPacks) {
+                    // move pointer to next monitor.
+                    const nextMonitor = response.address + 1;
                     // record cell info in InfluxDB
                     this.dbServices.pushInfluxBatteryInfo(this.bankInfo[key]);
                     this.getMonitorInfo(nextMonitor, this.REG_VOLTAGE);
