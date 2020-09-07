@@ -4,6 +4,7 @@ import { IPacket, IBatteriesMonitorConfig, IBaterryMonitorService, ICellInfo, IA
 import { IDbService } from "../interfaces/IDbService.interface";
 import { IPm2Service } from "../interfaces/IPM2Service.interface";
 import Pm2Service from "../services/PM2.Service";
+import { timeStamp } from "console";
 
 export default class BatteryMonitor implements IBaterryMonitorService {
     ioSocketServer: SocketIO.Server;
@@ -157,53 +158,57 @@ export default class BatteryMonitor implements IBaterryMonitorService {
     // Handles all serrial responses.
     responseHandler(buffer: Array<number>){
         const response: IPacket = this.decode(buffer);
-        const key: number = response.address - 1;
-        switch (response.reg) {
-            case this.REG_VOLTAGE:
-                // Upsert cell record with the voltage
-                if ( typeof this.bankInfo[key] === 'undefined') {
-                    this.bankInfo[key] = {id: response.address, voltage: response.value/1000}; // dividing by 1000 to send volts instead of milliVolts
-                } else {
-                    // persisting temp value 
-                    this.bankInfo[key] = {id: response.address, voltage: response.value/1000, temp: this.bankInfo[key].temp};
-                }
-                // console.log(`Volatge information from monitor:${response.address}`, this.bankInfo[key]);
-                // 2nd  request chain with current address now move to temp
-                this.getMonitorInfo(response.address, this.REG_TEMP);
-                // console.log('Temperature request for:', response.address);
-                break;
-            case this.REG_TEMP:
-                console.log('Getting key:', key, 'temp value of:', response.value);
-                // update record to include temperature.
-                this.bankInfo[key].temp = response.value;
-                // if is less or equal to number of packs request voltage
-                if (response.address < this.numberPacks) {
-                    // move pointer to next monitor.
-                    const nextMonitor = response.address + 1;
-                    console.log('num of monitors found:', this.numberPacks, 'next monitor:', nextMonitor, 'Response address:', response.address);
-                    // record cell info in InfluxDB
-                    this.dbServices.pushInfluxBatteryInfo(this.bankInfo[key]);
-                    this.getMonitorInfo(nextMonitor, this.REG_VOLTAGE);
-                } else {
-                    // emit bank information using socket service only when we reach full bank.
-                    this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
-                    console.log('bankInfo emitted:', this.bankInfo);
-                    // Start request again
+        // validate that the address is within scope
+        if(response.address <= this.numberPacks){
+            // set the array key - all arrays needs to start at 0 so we substract 1.
+            const key: number = response.address - 1;
+            switch (response.reg) {
+                case this.REG_VOLTAGE:
+                    // Upsert cell record with the voltage
+                    if ( typeof this.bankInfo[key] === 'undefined') {
+                        this.bankInfo[key] = {id: response.address, voltage: response.value/1000}; // dividing by 1000 to send volts instead of milliVolts
+                    } else {
+                        // persisting temp value 
+                        this.bankInfo[key] = {id: response.address, voltage: response.value/1000, temp: this.bankInfo[key].temp};
+                    }
+                    // console.log(`Volatge information from monitor:${response.address}`, this.bankInfo[key]);
+                    // 2nd  request chain with current address now move to temp
+                    this.getMonitorInfo(response.address, this.REG_TEMP);
+                    // console.log('Temperature request for:', response.address);
+                    break;
+                case this.REG_TEMP:
+                    console.log('Getting key:', key, 'temp value of:', response.value);
+                    // update record to include temperature.
+                    this.bankInfo[key].temp = response.value;
+                    // if is less or equal to number of packs request voltage
+                    if (response.address < this.numberPacks) {
+                        // move pointer to next monitor.
+                        const nextMonitor = response.address + 1;
+                        console.log('num of monitors found:', this.numberPacks, 'next monitor:', nextMonitor, 'Response address:', response.address);
+                        // record cell info in InfluxDB
+                        this.dbServices.pushInfluxBatteryInfo(this.bankInfo[key]);
+                        this.getMonitorInfo(nextMonitor, this.REG_VOLTAGE);
+                    } else {
+                        // emit bank information using socket service only when we reach full bank.
+                        this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
+                        console.log('bankInfo emitted:', this.bankInfo);
+                        // Start request again
+                        this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
+                    }
+                    // console.log(`With temp information from monitor:${response.address}`, this.bankInfo[key]);
+                    break;
+                case this.REG_ADDRESS:
+                    // This is broadcast 
+                    this.numberPacks = response.value - 1;
+                    // console.log('number of packs:', this.numberPacks);
+                    // start the request chain with startAddress and start with Voltage
                     this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
-                }
-                // console.log(`With temp information from monitor:${response.address}`, this.bankInfo[key]);
-                break;
-            case this.REG_ADDRESS:
-                // This is broadcast 
-                this.numberPacks = response.value - 1;
-                // console.log('number of packs:', this.numberPacks);
-                // start the request chain with startAddress and start with Voltage
-                this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
-                break;
-            default:
-                console.warn('Serial response bad formatted, last packet sent:', this.activeCall);
-                this.getMonitorInfo(this.activeCall.address, this.activeCall.REG);
-                break;
+                    break;
+                default:
+                    console.warn('Serial response bad formatted, last packet sent:', this.activeCall);
+                    this.getMonitorInfo(this.activeCall.address, this.activeCall.REG);
+                    break;
+            }
         }
     }
 
