@@ -192,7 +192,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                     } else {
                         // emit bank information using socket service only when we reach full bank.
                         this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
-                        // console.log('bankInfo emitted:', this.bankInfo);
+                        console.log('bankInfo emitted:', this.bankInfo);
                         // Start request again
                         this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
                     }
