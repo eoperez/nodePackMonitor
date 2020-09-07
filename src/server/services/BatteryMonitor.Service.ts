@@ -185,6 +185,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 } else {
                     // emit bank information using socket service only when we reach full bank.
                     this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
+                    console.log('bankInfo emitted:', this.bankInfo);
                     // Start request again
                     this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
                 }
@@ -198,7 +199,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
                 break;
             default:
-                console.log('Serial package data bad formatted, last packet sent:', this.activeCall);
+                console.warn('Serial response bad formatted, last packet sent:', this.activeCall);
                 this.getMonitorInfo(this.activeCall.address, this.activeCall.REG);
                 break;
         }
