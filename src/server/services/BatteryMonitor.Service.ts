@@ -179,8 +179,12 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 const nextMonitor = response.address + 1;
                 // if is less or equal to number of packs request voltage
                 if (nextMonitor <= this.numberPacks) {
+                    // record cell info in InfluxDB
+                    this.dbServices.pushInfluxBatteryInfo(this.bankInfo[key]);
                     this.getMonitorInfo(nextMonitor, this.REG_VOLTAGE);
                 } else {
+                    // emit bank information using socket service only when we reach full bank.
+                    this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
                     // Start request again
                     this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
                 }
@@ -198,9 +202,6 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 this.getMonitorInfo(this.activeCall.address, this.activeCall.REG);
                 break;
         }
-        this.dbServices.pushInfluxBatteryInfo(this.bankInfo[key]);
-        //emit bank information using socket service.
-        this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
     }
 
     getMonitorInfo(monitorAddress: number, REG: number){
