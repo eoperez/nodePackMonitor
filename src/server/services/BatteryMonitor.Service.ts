@@ -188,6 +188,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                         // console.log('num of monitors found:', this.numberPacks, 'next monitor:', nextMonitor, 'Response address:', response.address);
                         // record cell info in InfluxDB
                         this.dbServices.pushInfluxBatteryInfo(this.bankInfo[key]);
+                        console.log('Pack info completed:', this.bankInfo[key]);
                         this.getMonitorInfo(nextMonitor, this.REG_VOLTAGE);
                     } else {
                         // emit bank information using socket service only when we reach full bank.
