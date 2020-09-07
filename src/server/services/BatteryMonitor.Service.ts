@@ -198,11 +198,18 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                     // console.log(`With temp information from monitor:${response.address}`, this.bankInfo[key]);
                     break;
                 case this.REG_ADDRESS:
-                    // This is broadcast 
-                    this.numberPacks = response.value - 1;
-                    // console.log('number of packs:', this.numberPacks);
-                    // start the request chain with startAddress and start with Voltage
-                    this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
+                    // This is broadcast address, vallidate if current number of pack was set before
+                    if(this.numberPacks === 0){
+                        // set the number of pack within scope
+                        this.numberPacks = response.value - 1;
+                        // console.log('number of packs:', this.numberPacks);
+                        // start the request chain with startAddress and start with Voltage
+                        this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
+                    } else {
+                        /* if the number of packs were set and we got here then we need to call
+                           then the packet was corrupted, will send last call gain */
+                        this.getMonitorInfo(this.activeCall.address, this.activeCall.REG);
+                    }
                     break;
                 default:
                     console.warn('Serial response bad formatted, last packet sent:', this.activeCall);
