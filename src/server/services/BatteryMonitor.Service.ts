@@ -178,21 +178,21 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                     // console.log('Temperature request for:', response.address);
                     break;
                 case this.REG_TEMP:
-                    console.log('Getting key:', key, 'temp value of:', response.value);
+                    // console.log('Getting key:', key, 'temp value of:', response.value);
                     // update record to include temperature.
                     this.bankInfo[key].temp = response.value;
                     // if is less or equal to number of packs request voltage
                     if (response.address < this.numberPacks) {
                         // move pointer to next monitor.
                         const nextMonitor = response.address + 1;
-                        console.log('num of monitors found:', this.numberPacks, 'next monitor:', nextMonitor, 'Response address:', response.address);
+                        // console.log('num of monitors found:', this.numberPacks, 'next monitor:', nextMonitor, 'Response address:', response.address);
                         // record cell info in InfluxDB
                         this.dbServices.pushInfluxBatteryInfo(this.bankInfo[key]);
                         this.getMonitorInfo(nextMonitor, this.REG_VOLTAGE);
                     } else {
                         // emit bank information using socket service only when we reach full bank.
                         this.ioSocketServer.sockets.emit('bankInfo', this.bankInfo);
-                        console.log('bankInfo emitted:', this.bankInfo);
+                        // console.log('bankInfo emitted:', this.bankInfo);
                         // Start request again
                         this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
                     }
