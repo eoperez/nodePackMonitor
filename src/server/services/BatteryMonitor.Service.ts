@@ -179,6 +179,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 if (response.address < this.numberPacks) {
                     // move pointer to next monitor.
                     const nextMonitor = response.address + 1;
+                    console.log('num of monitors found:', this.numberPacks, 'next monitor:', nextMonitor, 'Response address:', response.address);
                     // record cell info in InfluxDB
                     this.dbServices.pushInfluxBatteryInfo(this.bankInfo[key]);
                     this.getMonitorInfo(nextMonitor, this.REG_VOLTAGE);
