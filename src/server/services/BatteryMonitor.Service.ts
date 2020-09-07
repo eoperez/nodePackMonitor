@@ -173,6 +173,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                 // console.log('Temperature request for:', response.address);
                 break;
             case this.REG_TEMP:
+                console.log('Getting key:', key, 'temp value of:', response.value);
                 // update record to include temperature.
                 this.bankInfo[key].temp = response.value;
                 // if is less or equal to number of packs request voltage
