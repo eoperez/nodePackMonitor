@@ -4,7 +4,6 @@ import { IPacket, IBatteriesMonitorConfig, IBaterryMonitorService, ICellInfo, IA
 import { IDbService } from "../interfaces/IDbService.interface";
 import { IPm2Service } from "../interfaces/IPM2Service.interface";
 import Pm2Service from "../services/PM2.Service";
-import { timeStamp } from "console";
 
 export default class BatteryMonitor implements IBaterryMonitorService {
     ioSocketServer: SocketIO.Server;
@@ -215,7 +214,7 @@ export default class BatteryMonitor implements IBaterryMonitorService {
                     break;
                 default:
                     console.warn('Serial response bad formatted, last packet sent:', this.activeCall);
-                    this.getMonitorInfo(this.activeCall.address, this.activeCall.REG);
+                    this.getMonitorInfo(this.startAddress, this.REG_VOLTAGE);
                     break;
             }
         }
