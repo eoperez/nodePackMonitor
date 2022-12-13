@@ -35,7 +35,7 @@
     "cors": "^2.8.5",
     "crc": "^3.8.0",
     "ejs": "^3.1.2",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "influx": "^5.5.2",
     "localtunnel": "^2.0.0",
     "node-schedule": "^1.3.2",
